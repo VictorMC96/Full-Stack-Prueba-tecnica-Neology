@@ -19,7 +19,7 @@ Principalmente los siguientes aspectos:
 
 ## Consideraciones al finalizar la prueba:
 Enviar la prueba tecnica hacía el correo de la consultora y copiando la prueba al correo vmiranda@neology.mx y lluna@neopartners.mx.
-Cumplir con los puntos que solicitan, hacer enfasis en el detalle de las interfaces.
+Cumplir con los puntos que solicitan, hacer enfasis en el detalle de las interfaces.<br>
 Clonar el proyecto y subirlo como una rama adicional.
 
 
