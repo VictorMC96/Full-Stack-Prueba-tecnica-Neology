@@ -34,7 +34,6 @@ Clonar el proyecto y subirlo como una rama adicional.
 Desarrollar un sistema web que permita gestionar el acceso de vehículos a un estacionamiento, con una interfaz frontend en Angular y una API backend en Spring Boot.<br>
 El sistema debe registrar entradas y salidas, calcular cobros y mostrar reportes.
 
-## Objetivo General de la prueba Técnica:
 
 ### Parte 1 – Backend (Spring Boot):
 ## Tecnologías:
