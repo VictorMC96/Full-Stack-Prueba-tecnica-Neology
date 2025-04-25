@@ -10,17 +10,17 @@ Este repositorio contiene una serie de requerimientos de un Caso Práctico, que 
 ## ¿Qué se busca evaluar?
 Principalmente los siguientes aspectos:
 
-* Creatividad para resolver los requerimientos,
-* Uso de experiencia y conocimiento en base a buenas praticas,
-* Eficiencia de los algoritmos entregados,
-* Mostrar la experencía y la manera de poder salir de la caja para romper o identificar cualquier falla o mejora,
+* Creatividad para resolver los requerimientos.
+* Uso de experiencia y conocimiento en base a buenas praticas.
+* Eficiencia de los algoritmos entregados.
+* Mostrar la experencía y la manera de poder salir de la caja para romper o identificar cualquier falla o mejora.
 * Familiaridad con Frameworks y plataformas.
 
 
 ## Consideraciones al finalizar la prueba:
 Enviar la prueba tecnica hacía el correo de la consultora y copiando la prueba al correo vmiranda@neology.mx y lluna@neopartners.mx.
 Cumplir con los puntos que solicitan, hacer enfasis en el detalle de las interfaces.
-Clonar el proyecto y subirlo como una rama adicional
+Clonar el proyecto y subirlo como una rama adicional.
 
 
 
@@ -31,11 +31,13 @@ Clonar el proyecto y subirlo como una rama adicional
 
 ## Objetivo General de la prueba Técnica:
 
-Desarrollar un sistema web que permita gestionar el acceso de vehículos a un estacionamiento, con una interfaz frontend en Angular y una API backend en Spring Boot. El sistema debe registrar entradas y salidas, calcular cobros y mostrar reportes.
+Desarrollar un sistema web que permita gestionar el acceso de vehículos a un estacionamiento, con una interfaz frontend en Angular y una API backend en Spring Boot. 
+El sistema debe registrar entradas y salidas, calcular cobros y mostrar reportes.
 
 ## Objetivo General de la prueba Técnica:
 
 ### Parte 1 – Backend (Spring Boot):
+## Tecnologías:
 * Java 17+
 * Spring Boot 3.x
 * Maven
@@ -47,21 +49,19 @@ Desarrollar un sistema web que permita gestionar el acceso de vehículos a un es
 
 ### 1. Endpoints requeridos:
 
-POST neo/vehiculos/oficiales: Alta de vehículo oficial
-POST neo/vehiculos/residentes: Alta de vehículo residente
-POST neo/vehiculos/no-residentes: Alta de vehículo no residente (opcional)
-POST neo/estancias/entrada: Registrar entrada de vehículo
-POST neo/estancias/salida: Registrar salida de vehículo
-GET neo/residentes/pagos: Generar informe de pagos
-POST neo/mes/iniciar: Reiniciar mes (reseteo de tiempos y estancias)
+* POST neo/vehiculos/oficiales: Alta de vehículo oficial
+* POST neo/vehiculos/residentes: Alta de vehículo residente
+* POST neo/vehiculos/no-residentes: Alta de vehículo no residente (opcional)
+* POST neo/estancias/entrada: Registrar entrada de vehículo
+* POST neo/estancias/salida: Registrar salida de vehículo
+* GET neo/residentes/pagos: Generar informe de pagos
+* POST neo/mes/iniciar: Reiniciar mes (reseteo de tiempos y estancias)
 
 ### 2. Modelos principales:
 
-Vehículo (placa, tipo)
-
-Estancia (placa, fecha/hora entrada, fecha/hora salida)
-
-Residente (placa, tiempo acumulado)
+* Vehículo (placa, tipo)
+* Estancia (placa, fecha/hora entrada, fecha/hora salida)
+* Residente (placa, tiempo acumulado)
 
 ### 3. Reglas de negocio:
 
@@ -76,7 +76,7 @@ Residente (placa, tiempo acumulado)
 
 
 ## Parte 2 – Frontend (Angular):
-### Requisitos:
+### Tecnologías:
 * Angular 16+
 * Angular Material
 * SCSS o CSS
@@ -84,11 +84,11 @@ Residente (placa, tiempo acumulado)
 ### 1. Requerimientos funcionales:
 
 * Página de listado de vehículos (consumir desde el backend).
-* Formulario para:
-- Registrar entrada
-- Registrar salida
-- Dar de alta vehículo oficial o residente
-- Iniciar nuevo mes
+Formulario para:
+* Registrar entrada
+* Registrar salida
+* Dar de alta vehículo oficial o residente
+* Iniciar nuevo mes
 
 * Vista de detalle para cada vehículo (estancias, pagos acumulados si aplica).
 * Página de reporte de residentes (visualización de informe).
@@ -101,8 +101,6 @@ Residente (placa, tiempo acumulado)
 * Prevenir XSS en campos de entrada.
 * Pruebas unitarias básicas con Jasmine + Karma.
 * Utiliza Angular Material para mejorar el diseño y la experiencia del usuario.
-
-
 
 ## Entrega:
 
