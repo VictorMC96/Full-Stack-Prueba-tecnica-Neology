@@ -31,7 +31,7 @@ Clonar el proyecto y subirlo como una rama adicional.
 
 ## Objetivo General de la prueba Técnica:
 
-Desarrollar un sistema web que permita gestionar el acceso de vehículos a un estacionamiento, con una interfaz frontend en Angular y una API backend en Spring Boot. 
+Desarrollar un sistema web que permita gestionar el acceso de vehículos a un estacionamiento, con una interfaz frontend en Angular y una API backend en Spring Boot.<br>
 El sistema debe registrar entradas y salidas, calcular cobros y mostrar reportes.
 
 ## Objetivo General de la prueba Técnica:
@@ -83,14 +83,14 @@ El sistema debe registrar entradas y salidas, calcular cobros y mostrar reportes
 
 ### 1. Requerimientos funcionales:
 
-* Página de listado de vehículos (consumir desde el backend).
+* Página de listado de vehículos (consumir desde el backend).<br> 
 Formulario para:
 * Registrar entrada
 * Registrar salida
 * Dar de alta vehículo oficial o residente
 * Iniciar nuevo mes
 
-* Vista de detalle para cada vehículo (estancias, pagos acumulados si aplica).
+* Vista de detalle para cada vehículo (estancias, pagos acumulados si aplica).<br>
 * Página de reporte de residentes (visualización de informe).
 
 ### 2. Extras recomendados:
@@ -112,9 +112,8 @@ Formulario para:
 * Levantar backend y frontend
 * Realizar pruebas
 * Base de datos precargada opcionalmente
-
-### Capturas de pantalla del frontend funcionando
-### Código bien organizado, modular, con buenas prácticas
+* Capturas de pantalla del frontend funcionando
+* Código bien organizado, modular, con buenas prácticas
 
 
 
