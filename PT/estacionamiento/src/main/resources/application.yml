@@ -1,0 +1,14 @@
+spring:
+    datasource:
+        url: jdbc:h2:mem:estacionamiento
+        username: sa
+        password:
+    jpa:
+        hibernate:
+            ddl-auto: update
+    output: #me muestra la info que estemos ejecutando
+        ansi:
+            enable: always
+    h2:
+        console:
+            enabled: true
