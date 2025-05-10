@@ -1,0 +1,20 @@
+-- Vehículos oficiales
+INSERT INTO vehiculo (placa, tipo) VALUES ('ABC123', 'OFICIAL');
+INSERT INTO vehiculo (placa, tipo) VALUES ('XYZ789', 'OFICIAL');
+
+-- Vehículos residentes
+INSERT INTO vehiculo (placa, tipo) VALUES ('RES111', 'RESIDENTE');
+INSERT INTO vehiculo (placa, tipo) VALUES ('RES222', 'RESIDENTE');
+
+-- Vehículos no residentes
+INSERT INTO vehiculo (placa, tipo) VALUES ('NR001', 'NO_RESIDENTE');
+INSERT INTO vehiculo (placa, tipo) VALUES ('NR002', 'NO_RESIDENTE');
+
+-- Residentes (tiempo acumulado en minutos)
+INSERT INTO residente (placa, tiempo_acumulado) VALUES ('RES111', 60);
+INSERT INTO residente (placa, tiempo_acumulado) VALUES ('RES222', 120);
+
+-- Estancias previas
+INSERT INTO estancia (placa, fecha_hora_entrada, fecha_hora_salida) VALUES ('NR001', '2025-05-06T08:00:00', '2025-05-06T08:30:00');
+INSERT INTO estancia (placa, fecha_hora_entrada, fecha_hora_salida) VALUES ('RES111', '2025-05-05T10:00:00', '2025-05-05T11:00:00');
+INSERT INTO estancia (placa, fecha_hora_entrada, fecha_hora_salida) VALUES ('ABC123', '2025-05-04T09:00:00', '2025-05-04T09:45:00');
