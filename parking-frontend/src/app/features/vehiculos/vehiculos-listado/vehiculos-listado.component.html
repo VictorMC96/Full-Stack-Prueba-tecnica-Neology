@@ -1,0 +1,81 @@
+<div class="header">
+  <h1>Vehículos</h1>
+  <a mat-raised-button color="primary" routerLink="/operaciones">
+    <mat-icon>add</mat-icon>
+    Dar de alta un vehículo
+  </a>
+</div>
+
+<mat-form-field appearance="outline" class="filtro">
+  <mat-label>Filtrar por placa</mat-label>
+  <input
+    matInput
+    #filtroInput
+    (keyup)="aplicarFiltro(filtroInput.value)"
+    placeholder="Ej. ABC123"
+    maxlength="20"
+  />
+  <mat-icon matSuffix>search</mat-icon>
+</mat-form-field>
+
+<div class="tabla-container mat-elevation-z2">
+  <table mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="placa">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Placa</th>
+      <td mat-cell *matCellDef="let vehiculo">{{ vehiculo.placa }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="tipo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+      <td mat-cell *matCellDef="let vehiculo">
+        <mat-chip-listbox>
+          <mat-chip-option [selected]="false" disabled>{{ vehiculo.tipo }}</mat-chip-option>
+        </mat-chip-listbox>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <td mat-cell *matCellDef="let vehiculo">
+        <button
+          mat-icon-button
+          color="primary"
+          matTooltip="Ver detalle"
+          (click)="verDetalle(vehiculo.placa)"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          matTooltip="Registrar entrada"
+          [disabled]="placaEnProceso === vehiculo.placa"
+          (click)="registrarEntrada(vehiculo.placa)"
+        >
+          <mat-icon>login</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="accent"
+          matTooltip="Registrar salida"
+          [disabled]="placaEnProceso === vehiculo.placa"
+          (click)="registrarSalida(vehiculo.placa)"
+        >
+          <mat-icon>logout</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+        <ng-container *ngIf="!cargando">No hay vehículos que coincidan con el filtro.</ng-container>
+        <ng-container *ngIf="cargando">Cargando vehículos…</ng-container>
+      </td>
+    </tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+</div>

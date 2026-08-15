@@ -1,0 +1,18 @@
+.subtitulo {
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: -8px;
+}
+
+.tabla-container {
+  overflow-x: auto;
+  border-radius: 4px;
+
+  table {
+    width: 100%;
+  }
+}
+
+.total {
+  margin-top: 16px;
+  text-align: right;
+}

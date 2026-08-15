@@ -1,0 +1,63 @@
+<a mat-button routerLink="/vehiculos">
+  <mat-icon>arrow_back</mat-icon>
+  Volver al listado
+</a>
+
+<div class="estado" *ngIf="cargando">
+  <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
+</div>
+
+<div class="estado" *ngIf="noEncontrado && !cargando">
+  <mat-icon color="warn">error_outline</mat-icon>
+  <span>No se encontró un vehículo con esa placa.</span>
+</div>
+
+<ng-container *ngIf="vehiculo as v">
+  <div class="header">
+    <h1>{{ v.placa }}</h1>
+    <mat-chip-listbox>
+      <mat-chip-option disabled>{{ v.tipo }}</mat-chip-option>
+    </mat-chip-listbox>
+  </div>
+
+  <div class="resumen" *ngIf="v.tipo === 'RESIDENTE'">
+    <mat-card>
+      <mat-card-subtitle>Tiempo acumulado</mat-card-subtitle>
+      <mat-card-title>{{ v.tiempoAcumuladoMinutos ?? 0 }} min</mat-card-title>
+    </mat-card>
+    <mat-card>
+      <mat-card-subtitle>Pago acumulado</mat-card-subtitle>
+      <mat-card-title>{{ v.pagoAcumulado ?? 0 | currency }}</mat-card-title>
+    </mat-card>
+  </div>
+
+  <h2>Historial de estancias</h2>
+
+  <div class="tabla-container mat-elevation-z2">
+    <table mat-table [dataSource]="v.estancias">
+      <ng-container matColumnDef="fechaEntrada">
+        <th mat-header-cell *matHeaderCellDef>Entrada</th>
+        <td mat-cell *matCellDef="let estancia">{{ estancia.fechaEntrada | date: 'short' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="fechaSalida">
+        <th mat-header-cell *matHeaderCellDef>Salida</th>
+        <td mat-cell *matCellDef="let estancia">
+          {{ estancia.fechaSalida ? (estancia.fechaSalida | date: 'short') : 'En curso' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cobro">
+        <th mat-header-cell *matHeaderCellDef>Cobro</th>
+        <td mat-cell *matCellDef="let estancia">{{ estancia.cobro | currency }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">Este vehículo no tiene estancias registradas.</td>
+      </tr>
+    </table>
+  </div>
+</ng-container>

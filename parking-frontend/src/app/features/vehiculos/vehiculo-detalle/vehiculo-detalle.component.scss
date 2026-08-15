@@ -1,0 +1,37 @@
+.estado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.resumen {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+
+  mat-card {
+    min-width: 200px;
+  }
+}
+
+.tabla-container {
+  overflow-x: auto;
+  border-radius: 4px;
+
+  table {
+    width: 100%;
+  }
+}

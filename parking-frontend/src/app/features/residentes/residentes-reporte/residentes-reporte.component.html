@@ -1,0 +1,37 @@
+<h1>Reporte de pagos de residentes</h1>
+<p class="subtitulo">Tiempo y monto acumulado por residente desde el último inicio de mes.</p>
+
+<div class="tabla-container mat-elevation-z2">
+  <table mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="placa">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Placa</th>
+      <td mat-cell *matCellDef="let r">{{ r.placa }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="tiempoAcumuladoMinutos">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Tiempo acumulado</th>
+      <td mat-cell *matCellDef="let r">{{ r.tiempoAcumuladoMinutos }} min</td>
+    </ng-container>
+
+    <ng-container matColumnDef="pagoAcumulado">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Pago acumulado</th>
+      <td mat-cell *matCellDef="let r">{{ r.pagoAcumulado | currency }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+        <ng-container *ngIf="!cargando">Todavía no hay residentes registrados.</ng-container>
+        <ng-container *ngIf="cargando">Cargando informe…</ng-container>
+      </td>
+    </tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+</div>
+
+<p class="total" *ngIf="dataSource.data.length">
+  Total acumulado: <strong>{{ totalPagoAcumulado | currency }}</strong>
+</p>

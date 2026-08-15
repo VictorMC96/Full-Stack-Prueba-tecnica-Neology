@@ -1,0 +1,33 @@
+<mat-toolbar color="primary" class="toolbar">
+  <mat-icon class="brand-icon">local_parking</mat-icon>
+  <span class="brand">Neology Parking</span>
+
+  <span class="spacer"></span>
+
+  <nav class="nav-links">
+    <a
+      mat-button
+      *ngFor="let link of links"
+      [routerLink]="link.path"
+      routerLinkActive="active-link"
+    >
+      <mat-icon>{{ link.icon }}</mat-icon>
+      {{ link.label }}
+    </a>
+  </nav>
+
+  <button
+    mat-raised-button
+    color="accent"
+    (click)="iniciarNuevoMes()"
+    [disabled]="iniciandoMes"
+    matTooltip="Cierra las estancias abiertas y reinicia los acumulados de residentes"
+  >
+    <mat-icon>restart_alt</mat-icon>
+    Iniciar nuevo mes
+  </button>
+</mat-toolbar>
+
+<main class="content">
+  <router-outlet></router-outlet>
+</main>

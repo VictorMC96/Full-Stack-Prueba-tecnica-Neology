@@ -1,0 +1,71 @@
+<h1>Operaciones</h1>
+
+<mat-tab-group>
+  <mat-tab label="Registrar entrada">
+    <form [formGroup]="entradaForm" (ngSubmit)="registrarEntrada(entradaFormDir)" #entradaFormDir="ngForm" class="form-tab">
+      <mat-form-field appearance="outline">
+        <mat-label>Placa</mat-label>
+        <input matInput formControlName="placa" placeholder="Ej. ABC123" maxlength="10" />
+        <mat-error *ngIf="entradaForm.controls.placa.hasError('required')">La placa es obligatoria.</mat-error>
+        <mat-error *ngIf="entradaForm.controls.placa.hasError('pattern')">
+          Solo letras, números y guiones.
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="enviandoEntrada">
+        <mat-icon>login</mat-icon>
+        Registrar entrada
+      </button>
+    </form>
+  </mat-tab>
+
+  <mat-tab label="Registrar salida">
+    <form [formGroup]="salidaForm" (ngSubmit)="registrarSalida(salidaFormDir)" #salidaFormDir="ngForm" class="form-tab">
+      <mat-form-field appearance="outline">
+        <mat-label>Placa</mat-label>
+        <input matInput formControlName="placa" placeholder="Ej. ABC123" maxlength="10" />
+        <mat-error *ngIf="salidaForm.controls.placa.hasError('required')">La placa es obligatoria.</mat-error>
+        <mat-error *ngIf="salidaForm.controls.placa.hasError('pattern')">
+          Solo letras, números y guiones.
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="enviandoSalida">
+        <mat-icon>logout</mat-icon>
+        Registrar salida
+      </button>
+    </form>
+  </mat-tab>
+
+  <mat-tab label="Dar de alta vehículo">
+    <form [formGroup]="altaForm" (ngSubmit)="darDeAlta(altaFormDir)" #altaFormDir="ngForm" class="form-tab">
+      <mat-form-field appearance="outline">
+        <mat-label>Placa</mat-label>
+        <input matInput formControlName="placa" placeholder="Ej. ABC123" maxlength="10" />
+        <mat-error *ngIf="altaForm.controls.placa.hasError('required')">La placa es obligatoria.</mat-error>
+        <mat-error *ngIf="altaForm.controls.placa.hasError('pattern')">
+          Solo letras, números y guiones.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo de vehículo</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option *ngFor="let tipo of tiposVehiculo" [value]="tipo.value">{{ tipo.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="enviandoAlta">
+        <mat-icon>add</mat-icon>
+        Dar de alta
+      </button>
+    </form>
+  </mat-tab>
+
+  <mat-tab label="Iniciar nuevo mes">
+    <div class="form-tab">
+      <button mat-raised-button color="warn" (click)="iniciarNuevoMes()" [disabled]="iniciandoMes">
+        <mat-icon>restart_alt</mat-icon>
+        Iniciar nuevo mes
+      </button>
+    </div>
+  </mat-tab>
+</mat-tab-group>
