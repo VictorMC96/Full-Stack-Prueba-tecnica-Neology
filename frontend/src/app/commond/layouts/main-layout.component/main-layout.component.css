@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+mat-sidenav-container {
+  height: 100%;
+}
+
+mat-sidenav {
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+}

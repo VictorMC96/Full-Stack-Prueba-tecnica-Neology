@@ -1,122 +1,167 @@
-# Full-Stack-Prueba-tecnica-Neology
+# Parking Lot
 
-Instrucciones de la prueba tecnica 
+Sistema de gestión de estacionamiento con backend en Spring Boot (Java) y frontend en Angular. Permite registrar la entrada de vehículos en lugares (spots), consultar su detalle, calcular el cobro según el tipo de vehículo y registrar la salida con su pago.
 
-La siguiente es una prueba para evaluar a los postulantes para un perfil de Full Stack.
+## Stack tecnológico
 
-## INTRODUCCIÓN
-Este repositorio contiene una serie de requerimientos de un Caso Práctico, que busca evaluar las capacidades técnicas del candidato con respecto a las principales funciones y responsabilidades que se requieren dentro del área de Desarrollo de software de Neology.
+- **Java 21**
+- **Spring boot 4**
+- **Hibernate, Spring JPA**
+- **Angular 21, tailwind, angular material**
+- **Node v22**
 
-## ¿Qué se busca evaluar?
-Principalmente los siguientes aspectos:
+## Requisitos previos
 
-* Creatividad para resolver los requerimientos.
-* Uso de experiencia y conocimiento en base a buenas praticas.
-* Eficiencia de los algoritmos entregados.
-* Mostrar la experencía y la manera de poder salir de la caja para romper o identificar cualquier falla o mejora.
-* Familiaridad con Frameworks y plataformas.
+- **Java 21** y Maven (se usa el wrapper `./mvnw`, no necesitas instalar Maven aparte).
+- **Node.js** y **Angular CLI** para el frontend.
+- La base de datos es **H2 en memoria**, por lo que no requiere instalación ni configuración externa: se crea al arrancar el backend y se borra al detenerlo.
 
+## Primer paso: clonar y cambiar de rama
 
-## Consideraciones al finalizar la prueba:
-Enviar la prueba tecnica hacía el correo de la consultora y copiando la prueba al correo vmiranda@neology.mx y lluna@neopartners.mx.
-Cumplir con los puntos que solicitan, hacer enfasis en el detalle de las interfaces.<br>
-Clonar el proyecto y subirlo como una rama adicional.
+Después de clonar el repositorio de GitHub, cámbiate a la rama de trabajo antes de hacer cualquier otra cosa:
 
+```bash
+git checkout feature/fullstack-parking-lot
+```
 
+Todo el código del proyecto (backend y frontend) vive en esta rama.
 
-## Instrucciones:
-* Tiempo estimado: 5 horas
-* Se espera que completes las tareas especificadas a continuación utilizando Angular & Spring Boot.
-* La prueba se evaluará en función de la calidad del código, la organización, la atención al detalle y la precisión en la implementación de los requisitos.
+## Despliegue del backend
 
-## Objetivo General de la prueba Técnica:
+Desde la carpeta del backend, ejecuta:
 
-Desarrollar un sistema web que permita gestionar el acceso de vehículos a un estacionamiento, con una interfaz frontend en Angular y una API backend en Spring Boot.<br>
-El sistema debe registrar entradas y salidas, calcular cobros y mostrar reportes.
+```bash
+./mvnw clean spring-boot:run
+```
 
+Esto compila y levanta la aplicación en `http://localhost:8080`.
 
-### Parte 1 – Backend (Spring Boot):
-## Tecnologías:
-* Java 17+
-* Spring Boot 3.x
-* Maven
-* Hibernate + JPA
-* Base de datos H2 (en memoria)
-* Lombok (opcional)
-* Swagger (opcional)
+### URLs útiles del backend
 
+Una vez arrancado, quedan disponibles:
 
-### 1. Endpoints requeridos:
+- **Consola H2** (para inspeccionar la base de datos en memoria): `http://localhost:8080/h2-console`
+- **Documentación de la API (Swagger UI)**: `http://localhost:8080/swagger-ui/index.html#/`
 
-* POST neo/vehiculos/oficiales: Alta de vehículo oficial
-* POST neo/vehiculos/residentes: Alta de vehículo residente
-* POST neo/vehiculos/no-residentes: Alta de vehículo no residente (opcional)
-* POST neo/estancias/entrada: Registrar entrada de vehículo
-* POST neo/estancias/salida: Registrar salida de vehículo
-* GET neo/residentes/pagos: Generar informe de pagos
-* POST neo/mes/iniciar: Reiniciar mes (reseteo de tiempos y estancias)
+### Acceso a la consola H2
 
-### 2. Modelos principales:
+En la consola H2, inicia sesión con estas credenciales:
 
-* Vehículo (placa, tipo)
-* Estancia (placa, fecha/hora entrada, fecha/hora salida)
-* Residente (placa, tiempo acumulado)
+- **URL JDBC**: `jdbc:h2:mem:parkinglotdb`
+- **Usuario**: `sa`
+- **Contraseña**: `password`
 
-### 3. Reglas de negocio:
+Recuerda que al ser una base de datos en memoria, los datos existen solo mientras el backend está corriendo; al detenerlo se pierden.
 
-* Vehículos oficiales no pagan.
-* Residentes pagan $0.05/minuto (acumulado).
-* No residentes pagan $0.5/minuto al salir.
-* El sistema debe permitir agregar fácilmente nuevos tipos de vehículos.
+## Endpoints
 
-### 4. Pruebas unitarias:
+Vehículo.
+* POST neo/vehicles/official: Alta de vehículo oficial
+* POST neo/vehicles/resident: Alta de vehículo residente
+* POST neo/vehicles/no-resident: Alta de vehículo no residente
+* GET neo/vehicles: Listado de vehículos
+* GET neo/vehicles/{plate}/detail: Detalle de vehículo
 
-* Crear pruebas mínimas para los servicios más importantes (ej: cálculo de cobro, registro de estancias).
+Estancia.
+* POST neo/stays/entry: Registrar entrada de vehículo
+* POST neo/stays/exit/{license}: Registrar salida de vehículo
 
+Cajon de estacionamiento.
+* POST neo/spots: Alta de cajon de estacionamiento
+* GET neo/spots: Listado de cajones de estacionamiento
+* GET neo/spots/{id}/status: Actualizar estatus de cajon de estacionamiento Disponible-Ocupado, Ocupado-Disponible
 
-## Parte 2 – Frontend (Angular):
-### Tecnologías:
-* Angular 16+
-* Angular Material
-* SCSS o CSS
+Pagos.
+* POST neo/payments: Registrar un pago
+* GET neo/payments: Listado de pagos
 
-### 1. Requerimientos funcionales:
+## Despliegue del frontend
 
-* Página de listado de vehículos (consumir desde el backend).<br> 
-Formulario para:
-* Registrar entrada
-* Registrar salida
-* Dar de alta vehículo oficial o residente
-* Iniciar nuevo mes
+Desde la carpeta del frontend, instala dependencias la primera vez y luego arranca el servidor de desarrollo:
 
-* Vista de detalle para cada vehículo (estancias, pagos acumulados si aplica).<br>
-* Página de reporte de residentes (visualización de informe).
+```bash
+npm install
+ng serve -o
+```
 
-### 2. Extras recomendados:
+La bandera `-o` abre el navegador automáticamente. La aplicación queda disponible en `http://localhost:4200`.
 
-* Filtro por placa en el listado.
-* Paginación y ordenamiento.
-* Validación de campos.
-* Prevenir XSS en campos de entrada.
-* Pruebas unitarias básicas con Jasmine + Karma.
-* Utiliza Angular Material para mejorar el diseño y la experiencia del usuario.
+> El frontend consume el backend en `http://localhost:8080`, así que el backend debe estar corriendo para que la aplicación funcione.
 
-## Entrega:
+## Datos iniciales (seed) y botón "Insertar spots"
 
-### Repositorio GitHub con:
-* Proyecto Angular (frontend/)
-* Proyecto Spring Boot (backend/)
+Un "spot" es un cajon de estacionamiento con un ID único, está prueba técnica simula los lugares disponibles.
 
-### Instrucciones claras en el README para:
-* Levantar backend y frontend
-* Realizar pruebas
-* Base de datos precargada opcionalmente
-* Capturas de pantalla del frontend funcionando
-* Código bien organizado, modular, con buenas prácticas
+Como la base de datos es **en memoria**, cada vez que se reinicia el backend la tabla de spots (`t_spots`) queda vacía. Para no tener que crear los lugares a mano, el frontend incluye un mecanismo de carga inicial.
 
+### El archivo de seed
 
+En el frontend existe un archivo de datos (`spots.data.json`) que define el catálogo fijo de lugares del estacionamiento, del **A-01 al B-08** (16 spots en total). Este archivo es la fuente de la carga inicial: describe qué lugares existen en el layout.
 
-Nota:
-No te preocupes si no puedes completar todos los requisitos en el tiempo asignado. Se valorará el progreso y la calidad del trabajo realizado.
+### El botón "Insertar spots"
+
+En la pantalla principal (Parking Lot) hay un botón **Insertar spots**. Al presionarlo:
+
+1. Lee el catálogo de lugares desde el archivo de seed.
+2. Envía cada lugar al backend mediante peticiones `POST /spots`, insertándolos todos como **disponibles** (`available`).
+3. Al terminar, recarga la cuadrícula para mostrar los lugares ya creados.
+
+Comportamiento importante:
+
+- El botón se **deshabilita automáticamente** cuando ya existen spots cargados, para evitar insertarlos dos veces (la placa/código de cada spot es único, por lo que una segunda inserción provocaría un conflicto en el backend).
+- Si reinicias el backend, la tabla vuelve a quedar vacía y el botón se habilita de nuevo para volver a sembrar los datos.
+
+### Flujo recomendado al iniciar
+
+1. Clona el repositorio y cámbiate a la rama `feature/fullstack-parking-lot`.
+2. Arranca el backend (`./mvnw clean spring-boot:run`).
+3. Arranca el frontend (`ng serve -o`).
+4. En la pantalla Parking Lot, presiona **Insertar spots** una vez.
+5. La cuadrícula se llena con los 16 lugares disponibles y el sistema queda listo para registrar entradas y salidas de vehículos.
+
+## Evidencias
+
+Página principal (fronted)
+![Pantalla principal del estacionamiento](docs/img/home.png)
+
+Para comenzar con la prueba técnica "click" en el botón insertar spots, esta acción va a cargar los lugares de estacionamiento.
+![Pantalla principal del estacionamiento](docs/img/spots.png)
+Base de datos:
+Listado de Cajones de estacionamiento (Spot).
+![Pantalla principal del estacionamiento](docs/img/spots-db.png)
+
+El caso de uso que resuelve esta funcionalidad:
+
+Imaginemos que tenemos una persona que quiere registrar un vehículo en el estacionamiento con la herramienta "parking-lot", este actor tendrá la posibilidad de ver todos los lugares del estacionamiento disponibles. Cuando llegue un vehículo y escoja un "cajon de estacionamiento" el actor dará click en el botón verde igual al que el dueño del vehiculo escogio para estacionar su auto, y regitrará los datos del vehículo en dicho "cajon de estacionamiento", y su hora de llegada.
+![Pantalla principal del estacionamiento](docs/img/insert-vehicle.png)
+
+Después de insertar un vehículo, el "cajon de estacionamiento" aparecerá como ocupado
+![Pantalla principal del estacionamiento](docs/img/inserted-vehicles.png)
+Base de datos:
+Listado de Vehiculos.
+![Pantalla principal del estacionamiento](docs/img/vehicles-db.png)
+Listado de estancias.
+![Pantalla principal del estacionamiento](docs/img/stays-db.png)
+
+Cuando demos click al "cajon de estacionamiento" podremos ver el detalle del vehiculo que se estaciono ahí, junto con el tiempo acumulado y el total.
+![Pantalla principal del estacionamiento](docs/img/detail-vehicle.png)
+
+Si damos "click" en el boton terminar, se registrara la fecha de salida de la estancia, y se creará un registro en la BD con los datos del pago. Y el "cajon de estacionamiento" pasará de un estatus ocupado a disponible.
+![Pantalla principal del estacionamiento](docs/img/available-spot.png)
+Base de datos:
+Listado de pagos.
+![Pantalla principal del estacionamiento](docs/img/payments-db.png)
+
+/vehicles
+Listado de vehiculos registrados en la BD.
+![Pantalla principal del estacionamiento](docs/img/vehicle-list.png)
+
+/vehicles
+Detalle del vehículo
+![Pantalla principal del estacionamiento](docs/img/vehicle-detail.png)
+
+Listado de endpoints.
+![Pantalla principal del estacionamiento](docs/img/swagger.png)
+
 
 

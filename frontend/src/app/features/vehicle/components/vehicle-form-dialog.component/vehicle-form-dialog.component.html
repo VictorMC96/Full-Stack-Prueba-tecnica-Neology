@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Registrar vehículo · {{ data.spot.code }}</h2>
+
+<mat-dialog-content>
+  @if (errorMsg()) {
+    <div class="mb-4 rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-400">
+      {{ errorMsg() }}
+    </div>
+  }
+
+  <app-vehicle-form (submitForm)="onSubmit($event)" (cancel)="onCancel()" />
+</mat-dialog-content>

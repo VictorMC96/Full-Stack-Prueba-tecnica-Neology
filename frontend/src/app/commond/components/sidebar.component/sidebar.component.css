@@ -1,0 +1,21 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+mat-nav-list {
+  padding: 0;
+}
+
+mat-nav-list a {
+  margin-bottom: 4px;
+  border-radius: 10px;
+}
+
+mat-nav-list a.active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+mat-nav-list a.active mat-icon {
+  color: var(--mat-sys-primary);
+}
