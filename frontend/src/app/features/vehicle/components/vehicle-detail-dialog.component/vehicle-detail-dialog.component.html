@@ -1,0 +1,49 @@
+<h2 mat-dialog-title>Detalle del vehículo</h2>
+
+<mat-dialog-content>
+  @if (loading()) {
+    <p class="text-sm text-neutral-500">Cargando...</p>
+  } @else if (errorMsg()) {
+    <div class="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-400">{{ errorMsg() }}</div>
+  } @else if (detail(); as d) {
+    <div class="flex flex-col gap-4">
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div><span class="text-neutral-500">Placa:</span> {{ d.licensePlate }}</div>
+        <div><span class="text-neutral-500">Tipo:</span> {{ d.type }}</div>
+        <div><span class="text-neutral-500">Marca:</span> {{ d.brand || '—' }}</div>
+        <div><span class="text-neutral-500">Modelo:</span> {{ d.model || '—' }}</div>
+        <div><span class="text-neutral-500">Color:</span> {{ d.color || '—' }}</div>
+        <div><span class="text-neutral-500">Carrocería:</span> {{ d.bodyType || '—' }}</div>
+      </div>
+
+      @if (showExitInfo(d)) {
+        <div class="rounded-lg bg-neutral-800/50 p-4">
+          <div class="text-sm">
+            <span class="text-neutral-500">Entrada:</span>
+            {{ d.entryDate | date: 'dd/MM/yyyy HH:mm' }}
+          </div>
+          <div class="text-sm">
+            <span class="text-neutral-500">Tiempo:</span> {{ minutes() }} min
+          </div>
+          <div class="mt-2 text-lg font-semibold">
+            Total: {{ total() | currency: 'USD' }}
+          </div>
+        </div>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">Cerrar</button>
+  @if (data.showExit) {
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="loading() || finishing() || !detail()"
+      (click)="onFinish()"
+    >
+      {{ finishing() ? 'Procesando...' : 'Terminar' }}
+    </button>
+  }
+</mat-dialog-actions>

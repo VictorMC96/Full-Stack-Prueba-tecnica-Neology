@@ -1,0 +1,62 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+  <div class="grid grid-cols-2 gap-4">
+    <mat-form-field appearance="outline" class="col-span-2">
+      <mat-label>Placa</mat-label>
+      <input matInput formControlName="licensePlate" maxlength="10" placeholder="ABC-1234" />
+      @if (form.controls.licensePlate.hasError('required')) {
+        <mat-error>La placa es obligatoria</mat-error>
+      }
+      @if (form.controls.licensePlate.hasError('maxlength')) {
+        <mat-error>Máximo 10 caracteres</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="col-span-2">
+      <mat-label>Tipo</mat-label>
+      <mat-select formControlName="type">
+        @for (t of vehicleTypes; track t.value) {
+          <mat-option [value]="t.value">{{ t.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Marca</mat-label>
+      <input matInput formControlName="brand" placeholder="Nissan" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Modelo</mat-label>
+      <input matInput formControlName="model" placeholder="Versa" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Color</mat-label>
+      <input matInput formControlName="color" placeholder="Blanco" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Carrocería</mat-label>
+      <mat-select formControlName="bodyType">
+        @for (b of bodyTypes; track b) {
+          <mat-option [value]="b">{{ b }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Año</mat-label>
+      <input matInput type="number" formControlName="year" placeholder="2020" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>País / Estado de placa</mat-label>
+      <input matInput formControlName="countryPlate" placeholder="CDMX" />
+    </mat-form-field>
+  </div>
+
+  <div class="flex justify-end gap-2">
+    <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit">Registrar</button>
+  </div>
+</form>

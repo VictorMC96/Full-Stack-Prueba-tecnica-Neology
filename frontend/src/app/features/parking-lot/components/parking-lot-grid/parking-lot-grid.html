@@ -1,0 +1,73 @@
+<div class="flex flex-col gap-4">
+  <div class="flex items-center justify-end gap-3">
+    @if (spots().length > 0) {
+      <span class="text-sm text-neutral-500">Spots ya cargados</span>
+    }
+    <button mat-stroked-button [disabled]="loading()" (click)="loadSpots()">
+      {{ loading() ? 'Cargando...' : 'Recargar' }}
+    </button>
+    <button mat-flat-button color="primary" [disabled]="seeding() || spots().length > 0" (click)="seedSpots()">
+      {{ seeding() ? 'Insertando...' : 'Insertar spots' }}
+    </button>
+  </div>
+
+  <div class="flex items-stretch gap-4">
+    <div class="flex flex-col items-center justify-center gap-2">
+      <div class="flex h-full w-6 items-center justify-center rounded-lg border border-neutral-700 bg-[repeating-linear-gradient(45deg,#3f3f46_0px,#3f3f46_3px,#27272a_3px,#27272a_6px)]"></div>
+      <span class="text-[10px] font-semibold uppercase tracking-widest text-red-400">Salida</span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 rounded-2xl border border-neutral-800 bg-neutral-950 p-8">
+      @for (block of blocks(); track block.title) {
+        <div class="flex flex-col gap-2">
+          <span class="text-center text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">{{ block.title }}</span>
+          <div class="flex flex-col gap-4 rounded-xl bg-neutral-900 p-5">
+            @for (row of block.rows; track $index) {
+              <div class="grid grid-cols-[130px_130px_70px_130px_130px] items-stretch gap-x-3">
+                @for (spot of row.left; track $index) {
+                  @if (spot) {
+                    <app-parking-lot-spot
+                      [spot]="spot"
+                      (click)="onSpotClick(spot)"
+                      [class.cursor-pointer]="spot.status === 'available' || spot.status === 'occupied'"
+                      [class.cursor-not-allowed]="spot.status === 'disabled' || spot.status === 'reserved'"
+                    />
+                  } @else {
+                    <div class="h-[82px] rounded-[10px] border border-dashed border-neutral-800"></div>
+                  }
+                }
+
+                <div class="relative flex items-center justify-center">
+                  <div class="absolute inset-y-1 left-1/2 w-px -translate-x-1/2 border-l-2 border-dashed border-yellow-600/40"></div>
+                  <span class="relative select-none text-2xl font-light text-neutral-400">{{ row.arrow }}</span>
+                </div>
+
+                @for (spot of row.right; track $index) {
+                  @if (spot) {
+                    <app-parking-lot-spot
+                      [spot]="spot"
+                      (click)="onSpotClick(spot)"
+                      [class.cursor-pointer]="spot.status === 'available' || spot.status === 'occupied'"
+                      [class.cursor-not-allowed]="spot.status === 'disabled' || spot.status === 'reserved'"
+                    />
+                  } @else {
+                    <div class="h-[82px] rounded-[10px] border border-dashed border-neutral-800"></div>
+                  }
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="flex flex-col items-center justify-center gap-2">
+      <div class="flex h-full w-6 items-center justify-center rounded-lg border border-neutral-700 bg-[repeating-linear-gradient(45deg,#14532d_0px,#14532d_3px,#052e16_3px,#052e16_6px)]"></div>
+      <span class="text-[10px] font-semibold uppercase tracking-widest text-green-400">Entrada</span>
+    </div>
+  </div>
+
+  @if (spots().length === 0 && !loading()) {
+    <p class="text-sm text-neutral-500">No hay spots. Presiona "Insertar spots" para cargarlos.</p>
+  }
+</div>

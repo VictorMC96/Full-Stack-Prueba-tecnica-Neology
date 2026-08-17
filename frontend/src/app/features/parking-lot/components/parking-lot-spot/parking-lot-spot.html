@@ -1,0 +1,11 @@
+<div
+  class="flex h-[82px] w-[140px] flex-col justify-between rounded-[10px] border p-3 transition-[background-color,border-color,transform] duration-150 ease-out hover:-translate-y-0.5"
+  [class]="statusClasses()"
+>
+  <div class="flex items-center justify-between">
+    <span class="text-sm font-semibold">{{ spot().code }}</span>
+    <mat-icon class="!h-5 !w-5 !text-xl">{{ statusIcon() }}</mat-icon>
+  </div>
+
+  <div class="text-[11px] opacity-70">{{ statusLabel() }}</div>
+</div>

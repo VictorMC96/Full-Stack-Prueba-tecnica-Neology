@@ -1,0 +1,16 @@
+<div class="flex h-full flex-col gap-6 p-2">
+  <header>
+    <h1 class="text-2xl font-semibold text-neutral-900">Vehículos</h1>
+    <p class="text-sm text-neutral-500">Listado de vehículos registrados</p>
+  </header>
+
+  <app-vehicle-list
+    [vehicles]="vehicles()"
+    [total]="total()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [loading]="loading()"
+    (pageChange)="onPageChange($event)"
+    (detail)="onDetail($event)"
+  />
+</div>

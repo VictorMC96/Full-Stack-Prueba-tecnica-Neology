@@ -1,0 +1,23 @@
+<aside class="flex h-full w-full flex-col bg-neutral-950 text-neutral-100">
+  <div class="flex h-20 items-center gap-3 px-6">
+    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 font-bold text-white">P</div>
+    <h1 class="text-lg font-semibold tracking-tight">Parking</h1>
+  </div>
+
+  <nav class="flex flex-1 flex-col gap-1 px-3 py-4">
+    <a routerLink="/parking-lot" routerLinkActive="bg-blue-600/15 text-blue-400" [routerLinkActiveOptions]="routerActiveOptions" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-neutral-800/60 hover:text-neutral-100">
+      <mat-icon class="!h-5 !w-5 !text-xl">local_parking</mat-icon>
+      <span>Parking Lot</span>
+    </a>
+
+    <a routerLink="/vehicles" routerLinkActive="bg-blue-600/15 text-blue-400" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-neutral-800/60 hover:text-neutral-100">
+      <mat-icon class="!h-5 !w-5 !text-xl">directions_car</mat-icon>
+      <span>Vehicles</span>
+    </a>
+
+    <a routerLink="/parking-log" routerLinkActive="bg-blue-600/15 text-blue-400" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-neutral-800/60 hover:text-neutral-100">
+      <mat-icon class="!h-5 !w-5 !text-xl">payment</mat-icon>
+      <span>Payments</span>
+    </a>
+  </nav>
+</aside>
