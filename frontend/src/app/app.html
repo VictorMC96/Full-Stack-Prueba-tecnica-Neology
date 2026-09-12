@@ -22,9 +22,15 @@
     </a>
   </nav>
 
-  <div class="estado-sistema">
-    <span class="punto-activo"></span>
-    <span class="estado-texto">En linea</span>
+  <div class="herramientas">
+    <button mat-icon-button (click)="alternarTema()" [matTooltip]="esOscuro() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'" class="btn-tema">
+      <mat-icon>{{ esOscuro() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+
+    <div class="estado-sistema">
+      <span class="punto-activo"></span>
+      <span class="estado-texto">En linea</span>
+    </div>
   </div>
 </mat-toolbar>
 

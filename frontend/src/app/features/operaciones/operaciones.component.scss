@@ -10,23 +10,24 @@
   h1 {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text-main);
     margin: 0 0 4px 0;
   }
 
   .subtitulo {
     font-size: 0.875rem;
-    color: #64748b;
+    color: var(--text-sub);
     margin: 0;
   }
 }
 
 .tarjeta-operaciones {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .icono-tab {
@@ -46,13 +47,13 @@
   h3 {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--text-main);
     margin: 0 0 4px 0;
   }
 
   p {
     font-size: 0.875rem;
-    color: #64748b;
+    color: var(--text-sub);
     margin: 0;
   }
 }
@@ -95,10 +96,10 @@
 }
 
 .ticket-recibo {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 12px;
-  border: 1px solid #cbd5e1;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-card);
   padding: 20px;
   animation: slideIn 0.3s ease-out;
 
@@ -106,14 +107,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px dashed #cbd5e1;
+    border-bottom: 1px dashed var(--card-border);
     padding-bottom: 10px;
     margin-bottom: 14px;
 
     .ticket-titulo {
       font-weight: 700;
       font-size: 0.9375rem;
-      color: #0f172a;
+      color: var(--text-main);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -131,12 +132,12 @@
       font-size: 0.875rem;
 
       .label {
-        color: #64748b;
+        color: var(--text-sub);
       }
 
       .val {
         font-weight: 600;
-        color: #1e293b;
+        color: var(--text-main);
 
         &.placa-val {
           font-family: ui-monospace, monospace;
@@ -147,7 +148,7 @@
   }
 
   .ticket-total {
-    border-top: 2px solid #e2e8f0;
+    border-top: 2px solid var(--card-border);
     padding-top: 14px;
     text-align: center;
     display: flex;
@@ -157,14 +158,14 @@
     .total-label {
       font-size: 0.75rem;
       font-weight: 700;
-      color: #475569;
+      color: var(--text-sub);
       letter-spacing: 1px;
     }
 
     .total-monto {
       font-size: 2rem;
       font-weight: 800;
-      color: #16a34a;
+      color: #10b981;
     }
   }
 }
@@ -184,14 +185,14 @@
   display: flex;
   gap: 16px;
   padding: 18px 20px;
-  background-color: #fffbeb;
-  border: 1px solid #fef3c7;
+  background-color: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   border-left: 4px solid #f59e0b;
   border-radius: 8px;
   margin-bottom: 2rem;
 
   .icono-alerta {
-    color: #d97706;
+    color: #f59e0b;
     font-size: 28px;
     width: 28px;
     height: 28px;
@@ -201,13 +202,13 @@
     h3 {
       font-size: 1rem;
       font-weight: 700;
-      color: #92400e;
+      color: var(--text-main);
       margin: 0 0 6px 0;
     }
 
     p {
       font-size: 0.875rem;
-      color: #78350f;
+      color: var(--text-sub);
       margin: 0 0 6px 0;
 
       &:last-child {
