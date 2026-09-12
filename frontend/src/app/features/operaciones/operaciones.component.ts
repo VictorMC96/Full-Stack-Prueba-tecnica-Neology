@@ -13,8 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../core/api.service';
 import { ETIQUETAS_TIPO, TipoVehiculo } from '../../core/modelos';
 import { ConfirmarDialog } from './confirmar.dialog';
+import { validadorPlaca } from '../../core/validadores';
 
-export const PATRON_PLACA = /^[A-Za-z0-9-]{5,12}$/;
 
 export interface TicketCobro {
   placa: string;
@@ -45,15 +45,15 @@ export class OperacionesComponent {
   readonly ticketCobro = signal<TicketCobro | null>(null);
 
   readonly formularioEntrada = this.fb.nonNullable.group({
-    placa: ['', [Validators.required, Validators.pattern(PATRON_PLACA)]],
+    placa: ['', [Validators.required, validadorPlaca()]],
   });
 
   readonly formularioSalida = this.fb.nonNullable.group({
-    placa: ['', [Validators.required, Validators.pattern(PATRON_PLACA)]],
+    placa: ['', [Validators.required, validadorPlaca()]],
   });
 
   readonly formularioAlta = this.fb.nonNullable.group({
-    placa: ['', [Validators.required, Validators.pattern(PATRON_PLACA)]],
+    placa: ['', [Validators.required, validadorPlaca()]],
     propietario: ['', [Validators.maxLength(120)]],
     tipo: ['RESIDENTE' as TipoVehiculo, [Validators.required]],
   });

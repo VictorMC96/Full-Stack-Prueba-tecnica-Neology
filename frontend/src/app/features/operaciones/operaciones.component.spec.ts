@@ -43,6 +43,7 @@ describe('OperacionesComponent', () => {
     fixture.componentInstance.registrarEntrada();
 
     http.expectNone('/neo/estancias/entrada');
+    expect(fixture.componentInstance.formularioEntrada.invalid).toBeTrue();
   });
 
   it('envia la entrada cuando el formulario es valido', () => {
@@ -63,6 +64,34 @@ describe('OperacionesComponent', () => {
 
     fixture.componentInstance.darDeAlta();
 
-    http.expectOne('/neo/vehiculos/residentes').flush({});
+    const peticion = http.expectOne('/neo/vehiculos/residentes');
+    expect(peticion.request.body.propietario).toBe('Aldo');
+    peticion.flush({});
+  });
+
+  it('rechaza una placa que al quitar el guion queda por debajo del minimo', () => {
+    const campo = fixture.componentInstance.formularioEntrada.controls.placa;
+
+    campo.setValue('AB-12');
+
+    expect(campo.valid).toBeFalse();
+    expect(campo.hasError('placaLargo')).toBeTrue();
+  });
+
+  it('rechaza una placa que excede el maximo del backend', () => {
+    const campo = fixture.componentInstance.formularioEntrada.controls.placa;
+
+    campo.setValue('ABCDEFGHIJKL');
+
+    expect(campo.valid).toBeFalse();
+    expect(campo.hasError('placaLargo')).toBeTrue();
+  });
+
+  it('acepta una placa con espacios que al limpiarse cabe en el rango', () => {
+    const campo = fixture.componentInstance.formularioEntrada.controls.placa;
+
+    campo.setValue('ABC 123');
+
+    expect(campo.valid).toBeTrue();
   });
 });

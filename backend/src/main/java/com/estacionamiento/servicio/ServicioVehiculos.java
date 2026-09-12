@@ -42,7 +42,7 @@ public class ServicioVehiculos {
 
     @Transactional(readOnly = true)
     public Page<Vehiculo> listar(String filtroPlaca, Pageable pageable) {
-        String filtro = filtroPlaca == null ? "" : filtroPlaca.trim().toUpperCase().replace(" ", "").replace("-", "");
+        String filtro = Placas.limpiar(filtroPlaca);
         return repositorioVehiculo.findByPlacaContainingIgnoreCase(filtro, pageable);
     }
 

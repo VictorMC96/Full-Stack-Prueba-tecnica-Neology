@@ -47,10 +47,14 @@ describe('ApiService', () => {
 
   it('da de alta un residente y un no residente en las rutas que les tocan', () => {
     servicio.altaVehiculo('RESIDENTE', { placa: 'RES-001', propietario: 'Aldo' }).subscribe();
-    http.expectOne('/neo/vehiculos/residentes').flush({});
+    const residente = http.expectOne('/neo/vehiculos/residentes');
+    expect(residente.request.method).toBe('POST');
+    residente.flush({});
 
     servicio.altaVehiculo('NO_RESIDENTE', { placa: 'VIS-001', propietario: 'Visita' }).subscribe();
-    http.expectOne('/neo/vehiculos/no-residentes').flush({});
+    const noResidente = http.expectOne('/neo/vehiculos/no-residentes');
+    expect(noResidente.request.body.placa).toBe('VIS-001');
+    noResidente.flush({});
   });
 
   it('registra entrada y salida', () => {

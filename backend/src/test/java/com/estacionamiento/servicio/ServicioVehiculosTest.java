@@ -3,6 +3,7 @@ package com.estacionamiento.servicio;
 import com.estacionamiento.dominio.TipoVehiculo;
 import com.estacionamiento.error.RecursoNoEncontrado;
 import com.estacionamiento.error.ReglaDeNegocio;
+import com.estacionamiento.error.SolicitudInvalida;
 import com.estacionamiento.repositorio.RepositorioResidente;
 import com.estacionamiento.repositorio.RepositorioVehiculo;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,19 @@ class ServicioVehiculosTest {
     @Test
     void rechaza_una_placa_con_formato_invalido() {
         assertThatThrownBy(() -> servicio.alta("a!", TipoVehiculo.OFICIAL, "Nadie"))
-                .isInstanceOf(ReglaDeNegocio.class);
+                .isInstanceOf(SolicitudInvalida.class);
+    }
+
+    @Test
+    void rechaza_una_placa_que_al_quitar_el_guion_queda_por_debajo_del_minimo() {
+        assertThatThrownBy(() -> servicio.alta("AB-12", TipoVehiculo.OFICIAL, "Corta"))
+                .isInstanceOf(SolicitudInvalida.class);
+    }
+
+    @Test
+    void rechaza_una_placa_que_excede_el_maximo() {
+        assertThatThrownBy(() -> servicio.alta("ABCDEFGHIJKL", TipoVehiculo.OFICIAL, "Larga"))
+                .isInstanceOf(SolicitudInvalida.class);
     }
 
     @Test

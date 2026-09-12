@@ -29,22 +29,31 @@ public class ServicioEstancias {
 
     @Transactional
     public Estancia registrarEntrada(String placa) {
+        return registrarEntradaEn(placa, LocalDateTime.now());
+    }
+
+    @Transactional
+    public Estancia registrarEntradaEn(String placa, LocalDateTime entrada) {
         Vehiculo vehiculo = servicioVehiculos.buscar(placa);
         repositorioEstancia.findByVehiculoAndSalidaIsNull(vehiculo).ifPresent(abierta -> {
             throw new ReglaDeNegocio("El vehiculo " + vehiculo.getPlaca() + " ya se encuentra dentro del estacionamiento");
         });
         return repositorioEstancia.save(
-                Estancia.abrir(vehiculo, LocalDateTime.now(), servicioPeriodo.numeroActual()));
+                Estancia.abrir(vehiculo, entrada, servicioPeriodo.numeroActual()));
     }
 
     @Transactional
     public Estancia registrarSalida(String placa) {
+        return registrarSalidaEn(placa, LocalDateTime.now());
+    }
+
+    @Transactional
+    public Estancia registrarSalidaEn(String placa, LocalDateTime salida) {
         Vehiculo vehiculo = servicioVehiculos.buscar(placa);
         Estancia estancia = repositorioEstancia.findByVehiculoAndSalidaIsNull(vehiculo)
                 .orElseThrow(() -> new ReglaDeNegocio(
                         "El vehiculo " + vehiculo.getPlaca() + " no tiene una entrada abierta"));
 
-        LocalDateTime salida = LocalDateTime.now();
         long minutos = Minutos.entre(estancia.getEntrada(), salida);
         Tarifa tarifa = resolutorTarifas.para(vehiculo.getTipo());
 

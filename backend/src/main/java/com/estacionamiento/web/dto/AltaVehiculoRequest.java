@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record AltaVehiculoRequest(
         @NotBlank(message = "La placa es obligatoria")
-        @Pattern(regexp = "^[A-Za-z0-9 -]{5,12}$", message = "La placa solo admite letras, numeros y guion")
+        @Pattern(regexp = "^[A-Za-z0-9 -]+$", message = "La placa solo admite letras, numeros, espacios y guion")
         String placa,
 
         @Size(max = 120, message = "El propietario no puede exceder 120 caracteres")

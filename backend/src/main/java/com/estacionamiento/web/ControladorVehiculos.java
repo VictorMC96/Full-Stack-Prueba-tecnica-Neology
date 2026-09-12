@@ -2,6 +2,7 @@ package com.estacionamiento.web;
 
 import com.estacionamiento.dominio.TipoVehiculo;
 import com.estacionamiento.dominio.Vehiculo;
+import com.estacionamiento.error.SolicitudInvalida;
 import com.estacionamiento.servicio.ServicioEstancias;
 import com.estacionamiento.servicio.ServicioVehiculos;
 import com.estacionamiento.web.dto.AltaVehiculoRequest;
@@ -18,12 +19,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/neo/vehiculos")
 @RequiredArgsConstructor
 @Tag(name = "Vehiculos", description = "Alta y consulta de vehiculos")
 public class ControladorVehiculos {
+
+    private static final Set<String> ORDENES_PERMITIDOS = Set.of("placa", "tipo", "propietario", "alta");
 
     private final ServicioVehiculos servicioVehiculos;
     private final ServicioEstancias servicioEstancias;
@@ -56,7 +60,7 @@ public class ControladorVehiculos {
             @RequestParam(defaultValue = "placa") String sort,
             @RequestParam(defaultValue = "asc") String direccion) {
 
-        Sort orden = Sort.by(Sort.Direction.fromString(direccion), sort);
+        Sort orden = Sort.by(direccionValida(direccion), campoValido(sort));
         Page<Vehiculo> pagina = servicioVehiculos.listar(placa, PageRequest.of(page, size, orden));
         List<Respuestas.Vehiculo> contenido = pagina.getContent().stream().map(mapeador::aVehiculo).toList();
 
@@ -71,6 +75,17 @@ public class ControladorVehiculos {
         List<Respuestas.Estancia> estancias = servicioEstancias.historial(vehiculo).stream()
                 .map(mapeador::aEstancia).toList();
         return new Respuestas.DetalleVehiculo(mapeador.aVehiculo(vehiculo), estancias);
+    }
+
+    private String campoValido(String campo) {
+        if (!ORDENES_PERMITIDOS.contains(campo)) {
+            throw new SolicitudInvalida("Solo se puede ordenar por " + String.join(", ", ORDENES_PERMITIDOS));
+        }
+        return campo;
+    }
+
+    private Sort.Direction direccionValida(String direccion) {
+        return "desc".equalsIgnoreCase(direccion) ? Sort.Direction.DESC : Sort.Direction.ASC;
     }
 
     private ResponseEntity<Respuestas.Vehiculo> crear(AltaVehiculoRequest peticion, TipoVehiculo tipo) {

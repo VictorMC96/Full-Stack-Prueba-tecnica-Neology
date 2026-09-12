@@ -202,6 +202,22 @@ Los minutos se redondean hacia arriba. Los montos usan decimal exacto con dos po
 
 Ningún archivo existente se modifica. Spring detecta la implementación nueva y el resolutor la indexa sola.
 
+## Codigos de respuesta
+
+| Situacion | Codigo HTTP | Codigo en el cuerpo |
+|---|---|---|
+| Alta correcta de vehiculo o entrada registrada | 201 | |
+| Consulta o salida correcta | 200 | |
+| Datos mal formados, placa fuera de rango, campo de orden invalido | 400 | `SOLICITUD_INVALIDA` |
+| Placa no registrada o ruta inexistente | 404 | `NO_ENCONTRADO` |
+| Metodo HTTP no soportado por la ruta | 405 | `METODO_NO_PERMITIDO` |
+| Placa duplicada, entrada repetida, salida sin entrada previa | 409 | `REGLA_DE_NEGOCIO` |
+| Fallo no previsto | 500 | `ERROR_INTERNO` |
+
+Todos los errores comparten el mismo cuerpo, con codigo, mensaje y momento. Nunca se expone una traza de excepcion.
+
+La placa se valida en tres puntos: el formulario, el objeto de entrada de la API y la normalizacion del servicio. Se admiten entre 5 y 10 letras o numeros, sin contar espacios ni guiones, que se eliminan al guardar.
+
 ## Capturas
 
 ![Listado de vehículos](docs/capturas/listado.png)

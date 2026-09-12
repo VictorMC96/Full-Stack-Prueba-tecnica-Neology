@@ -20,12 +20,14 @@
           <form class="formulario" [formGroup]="formularioEntrada" (ngSubmit)="registrarEntrada()">
             <mat-form-field appearance="outline" class="campo-ancho">
               <mat-label>Placa del vehículo</mat-label>
-              <input matInput formControlName="placa" maxlength="12" autocomplete="off" placeholder="Ej. ABC-123" />
+              <input matInput formControlName="placa" maxlength="14" autocomplete="off" placeholder="Ej. ABC-123" />
               <mat-icon matSuffix>directions_car</mat-icon>
               @if (formularioEntrada.controls.placa.hasError('required')) {
                 <mat-error>La placa es obligatoria</mat-error>
-              } @else if (formularioEntrada.controls.placa.hasError('pattern')) {
-                <mat-error>Solo letras, números y guion (5 a 12 caracteres)</mat-error>
+              } @else if (formularioEntrada.controls.placa.hasError('placaCaracteres')) {
+                <mat-error>La placa solo admite letras y numeros</mat-error>
+              } @else if (formularioEntrada.controls.placa.hasError('placaLargo')) {
+                <mat-error>La placa debe tener entre 5 y 10 letras o números</mat-error>
               }
             </mat-form-field>
             <button mat-flat-button color="primary" type="submit" class="btn-accion"
@@ -53,12 +55,14 @@
             <form class="formulario" [formGroup]="formularioSalida" (ngSubmit)="registrarSalida()">
               <mat-form-field appearance="outline" class="campo-ancho">
                 <mat-label>Placa del vehículo</mat-label>
-                <input matInput formControlName="placa" maxlength="12" autocomplete="off" placeholder="Ej. ABC-123" />
+                <input matInput formControlName="placa" maxlength="14" autocomplete="off" placeholder="Ej. ABC-123" />
                 <mat-icon matSuffix>directions_car</mat-icon>
                 @if (formularioSalida.controls.placa.hasError('required')) {
                   <mat-error>La placa es obligatoria</mat-error>
-                } @else if (formularioSalida.controls.placa.hasError('pattern')) {
-                  <mat-error>Solo letras, números y guion (5 a 12 caracteres)</mat-error>
+                } @else if (formularioSalida.controls.placa.hasError('placaCaracteres')) {
+                <mat-error>La placa solo admite letras y numeros</mat-error>
+              } @else if (formularioSalida.controls.placa.hasError('placaLargo')) {
+                  <mat-error>La placa debe tener entre 5 y 10 letras o números</mat-error>
                 }
               </mat-form-field>
               <button mat-flat-button color="primary" type="submit" class="btn-accion btn-salida"
@@ -114,12 +118,14 @@
           <form class="formulario" [formGroup]="formularioAlta" (ngSubmit)="darDeAlta()">
             <mat-form-field appearance="outline" class="campo-ancho">
               <mat-label>Placa del vehículo</mat-label>
-              <input matInput formControlName="placa" maxlength="12" autocomplete="off" placeholder="Ej. ABC-123" />
+              <input matInput formControlName="placa" maxlength="14" autocomplete="off" placeholder="Ej. ABC-123" />
               <mat-icon matSuffix>badge</mat-icon>
               @if (formularioAlta.controls.placa.hasError('required')) {
                 <mat-error>La placa es obligatoria</mat-error>
-              } @else if (formularioAlta.controls.placa.hasError('pattern')) {
-                <mat-error>Solo letras, números y guion (5 a 12 caracteres)</mat-error>
+              } @else if (formularioAlta.controls.placa.hasError('placaCaracteres')) {
+                <mat-error>La placa solo admite letras y numeros</mat-error>
+              } @else if (formularioAlta.controls.placa.hasError('placaLargo')) {
+                <mat-error>La placa debe tener entre 5 y 10 letras o números</mat-error>
               }
             </mat-form-field>
 

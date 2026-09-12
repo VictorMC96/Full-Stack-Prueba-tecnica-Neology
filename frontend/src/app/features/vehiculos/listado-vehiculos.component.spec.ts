@@ -60,6 +60,7 @@ describe('ListadoVehiculosComponent', () => {
     fixture.detectChanges();
 
     const peticion = http.expectOne(r => r.url === '/neo/vehiculos' && r.params.get('placa') === 'OFI');
+    expect(peticion.request.params.get('page')).toBe('0');
     peticion.flush(pagina);
   });
 });

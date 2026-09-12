@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Map;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -113,5 +114,50 @@ class ApiTest {
         mockMvc.perform(post("/neo/mes/iniciar"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.periodo").isNumber());
+    }
+
+    @Test
+    void una_ruta_inexistente_responde_no_encontrado_y_no_error_interno() throws Exception {
+        mockMvc.perform(get("/neo/inventado"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.codigo").value("NO_ENCONTRADO"));
+    }
+
+    @Test
+    void un_metodo_no_permitido_responde_con_su_propio_codigo() throws Exception {
+        mockMvc.perform(delete("/neo/mes/iniciar"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.codigo").value("METODO_NO_PERMITIDO"));
+    }
+
+    @Test
+    void un_campo_de_orden_inexistente_responde_solicitud_invalida() throws Exception {
+        mockMvc.perform(get("/neo/vehiculos").param("sort", "noExiste"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("SOLICITUD_INVALIDA"));
+    }
+
+    @Test
+    void una_placa_mas_larga_que_el_limite_responde_solicitud_invalida() throws Exception {
+        mockMvc.perform(post("/neo/vehiculos/oficiales")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo(Map.of("placa", "ABCDEFGHIJKL", "propietario", "Prueba"))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("SOLICITUD_INVALIDA"));
+    }
+
+    @Test
+    void una_placa_que_al_normalizar_queda_muy_corta_se_rechaza() throws Exception {
+        mockMvc.perform(post("/neo/vehiculos/oficiales")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo(Map.of("placa", "AB-12", "propietario", "Corta"))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("SOLICITUD_INVALIDA"));
+    }
+
+    @Test
+    void el_listado_acepta_los_campos_de_orden_permitidos() throws Exception {
+        mockMvc.perform(get("/neo/vehiculos").param("sort", "tipo").param("direccion", "desc"))
+                .andExpect(status().isOk());
     }
 }
