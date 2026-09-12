@@ -1,0 +1,106 @@
+<section class="pagina">
+  <div class="nav-regresar">
+    <a mat-button routerLink="/vehiculos" class="btn-volver">
+      <mat-icon>arrow_back</mat-icon>
+      Volver al listado
+    </a>
+  </div>
+
+  @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" class="barra-progreso" />
+  }
+
+  @if (detalle(); as datos) {
+    <div class="ficha-tarjeta">
+      <div class="ficha-encabezado">
+        <div class="ficha-titulos">
+          <span class="placa-destacada">{{ datos.vehiculo.placa }}</span>
+          <span class="badge-tipo" [class]="'tipo-' + datos.vehiculo.tipo.toLowerCase().replace('_', '-')">
+            {{ etiquetas[datos.vehiculo.tipo] }}
+          </span>
+        </div>
+        <div>
+          <span class="badge-estado" [class.dentro]="datos.vehiculo.dentro">
+            <span class="punto-estado"></span>
+            {{ datos.vehiculo.dentro ? 'DENTRO DEL ESTACIONAMIENTO' : 'FUERA' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="ficha-cuerpo">
+        <div class="dato-item">
+          <span class="etiqueta">Propietario</span>
+          <span class="valor">{{ datos.vehiculo.propietario || 'Sin registrar' }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="etiqueta">Fecha de alta</span>
+          <span class="valor">{{ datos.vehiculo.alta | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+
+        @if (datos.vehiculo.tipo === 'RESIDENTE') {
+          <div class="dato-item">
+            <span class="etiqueta">Minutos acumulados del mes</span>
+            <span class="valor valor-minutos">{{ datos.vehiculo.minutosAcumulados }} min</span>
+          </div>
+          <div class="dato-item item-cobro">
+            <span class="etiqueta">Monto acumulado a cobrar</span>
+            <span class="valor monto-resaltado">${{ acumuladoACobrar() | number: '1.2-2' }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="seccion-historial">
+      <h2>Historial de estancias</h2>
+
+      @if (datos.estancias.length === 0) {
+        <div class="vacio-box">
+          <mat-icon class="icono-vacio">history</mat-icon>
+          <p class="vacio">Este vehiculo aun no tiene estancias registradas.</p>
+        </div>
+      } @else {
+        <div class="tabla-tarjeta">
+          <table mat-table [dataSource]="datos.estancias">
+            <ng-container matColumnDef="entrada">
+              <th mat-header-cell *matHeaderCellDef>Entrada</th>
+              <td mat-cell *matCellDef="let estancia">{{ estancia.entrada | date: 'dd/MM/yyyy HH:mm' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="salida">
+              <th mat-header-cell *matHeaderCellDef>Salida</th>
+              <td mat-cell *matCellDef="let estancia">
+                @if (estancia.salida) {
+                  {{ estancia.salida | date: 'dd/MM/yyyy HH:mm' }}
+                } @else {
+                  <span class="badge-curso">En curso</span>
+                }
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="minutos">
+              <th mat-header-cell *matHeaderCellDef>Minutos</th>
+              <td mat-cell *matCellDef="let estancia">
+                {{ estancia.minutos !== null ? (estancia.minutos + ' min') : '-' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="monto">
+              <th mat-header-cell *matHeaderCellDef>Cobrado</th>
+              <td mat-cell *matCellDef="let estancia">
+                {{ estancia.monto !== null ? ('$' + (estancia.monto | number: '1.2-2')) : '-' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="periodo">
+              <th mat-header-cell *matHeaderCellDef>Periodo</th>
+              <td mat-cell *matCellDef="let estancia">#{{ estancia.periodo }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+            <tr mat-row *matRowDef="let renglon; columns: columnas"></tr>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</section>
