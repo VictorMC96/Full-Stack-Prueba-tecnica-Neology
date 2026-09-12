@@ -60,4 +60,9 @@ public class ServicioEstancias {
     public List<Estancia> historial(Vehiculo vehiculo) {
         return repositorioEstancia.findByVehiculoOrderByEntradaDesc(vehiculo);
     }
+
+    @Transactional(readOnly = true)
+    public boolean estaDentro(Vehiculo vehiculo) {
+        return repositorioEstancia.findByVehiculoAndSalidaIsNull(vehiculo).isPresent();
+    }
 }

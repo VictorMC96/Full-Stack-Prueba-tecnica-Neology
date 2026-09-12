@@ -45,4 +45,11 @@ public class ServicioVehiculos {
         String filtro = filtroPlaca == null ? "" : filtroPlaca.trim().toUpperCase().replace(" ", "").replace("-", "");
         return repositorioVehiculo.findByPlacaContainingIgnoreCase(filtro, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public long minutosAcumulados(Vehiculo vehiculo) {
+        return repositorioResidente.findByVehiculo(vehiculo)
+                .map(residente -> residente.getMinutosAcumulados())
+                .orElse(0L);
+    }
 }
