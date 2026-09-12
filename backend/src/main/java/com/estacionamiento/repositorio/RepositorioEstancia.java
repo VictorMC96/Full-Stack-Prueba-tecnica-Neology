@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
+//Consultas-Estancia
 public interface RepositorioEstancia extends JpaRepository<Estancia, Long> {
     Optional<Estancia> findByVehiculoAndSalidaIsNull(Vehiculo vehiculo);
     List<Estancia> findByVehiculoOrderByEntradaDesc(Vehiculo vehiculo);

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+//Controlador-Estancias
 @RestController
 @RequestMapping("/neo/estancias")
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class ControladorEstancias {
     private final ServicioEstancias servicioEstancias;
     private final Mapeador mapeador;
 
+    //Registro-Entrada
     @PostMapping("/entrada")
     @Operation(summary = "Registrar la entrada de un vehiculo")
     public ResponseEntity<Respuestas.Estancia> entrada(@Valid @RequestBody PlacaRequest peticion) {
@@ -30,6 +32,7 @@ public class ControladorEstancias {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapeador.aEstancia(estancia));
     }
 
+    //Registro-Salida
     @PostMapping("/salida")
     @Operation(summary = "Registrar la salida de un vehiculo y calcular su cobro")
     public Respuestas.Estancia salida(@Valid @RequestBody PlacaRequest peticion) {

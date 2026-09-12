@@ -33,6 +33,7 @@ export interface TicketCobro {
   templateUrl: './operaciones.component.html',
   styleUrl: './operaciones.component.scss',
 })
+//Componente-Operaciones
 export class OperacionesComponent {
   private readonly api = inject(ApiService);
   private readonly fb = inject(FormBuilder);
@@ -44,6 +45,7 @@ export class OperacionesComponent {
   readonly enviando = signal(false);
   readonly ticketCobro = signal<TicketCobro | null>(null);
 
+  //Formularios-Reactivos
   readonly formularioEntrada = this.fb.nonNullable.group({
     placa: ['', [Validators.required, validadorPlaca()]],
   });
@@ -58,6 +60,7 @@ export class OperacionesComponent {
     tipo: ['RESIDENTE' as TipoVehiculo, [Validators.required]],
   });
 
+  //Registro-Entrada
   registrarEntrada(): void {
     if (this.formularioEntrada.invalid) {
       this.formularioEntrada.markAllAsTouched();
@@ -73,6 +76,7 @@ export class OperacionesComponent {
     });
   }
 
+  //Registro-Salida
   registrarSalida(): void {
     if (this.formularioSalida.invalid) {
       this.formularioSalida.markAllAsTouched();
@@ -99,6 +103,7 @@ export class OperacionesComponent {
     });
   }
 
+  //Alta-Vehiculo
   darDeAlta(): void {
     if (this.formularioAlta.invalid) {
       this.formularioAlta.markAllAsTouched();
@@ -115,6 +120,7 @@ export class OperacionesComponent {
     });
   }
 
+  //Inicio-Mes
   iniciarMes(): void {
     this.dialogo.open(ConfirmarDialog).afterClosed().subscribe(confirmado => {
       if (!confirmado) {
@@ -128,10 +134,12 @@ export class OperacionesComponent {
     });
   }
 
+  //Cierre-Ticket
   cerrarTicket(): void {
     this.ticketCobro.set(null);
   }
 
+  //Aviso-Exito
   private exito(mensaje: string): void {
     this.enviando.set(false);
     this.aviso.open(mensaje, 'Cerrar', { duration: 5000 });

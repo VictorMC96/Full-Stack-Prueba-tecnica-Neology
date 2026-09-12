@@ -12,6 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
+//Componente-Raiz
 export class App implements OnInit {
   readonly titulo = 'Control de acceso al estacionamiento';
   readonly esOscuro = signal(true);
@@ -26,6 +27,7 @@ export class App implements OnInit {
     this.aplicarTema(!this.esOscuro());
   }
 
+  //Aplicacion-Tema
   private aplicarTema(oscuro: boolean): void {
     this.esOscuro.set(oscuro);
     localStorage.setItem('neology_theme', oscuro ? 'dark' : 'light');

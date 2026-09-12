@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+//Controlador-Residentes
 @RestController
 @RequestMapping("/neo/residentes")
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class ControladorResidentes {
     private final ServicioReportes servicioReportes;
     private final Mapeador mapeador;
 
+    //Informe-Pagos
     @GetMapping("/pagos")
     @Operation(summary = "Generar el informe de pagos de residentes del periodo actual")
     public Respuestas.InformePagos pagos() {

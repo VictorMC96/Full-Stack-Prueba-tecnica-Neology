@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+//Entidad-Residente
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,14 +28,17 @@ public class Residente {
         this.minutosAcumulados = 0L;
     }
 
+    //Alta-Residente
     public static Residente de(Vehiculo vehiculo) {
         return new Residente(vehiculo);
     }
 
+    //Acumulado-Minutos
     public void sumarMinutos(long minutos) {
         this.minutosAcumulados += minutos;
     }
 
+    //Reinicio-Mes
     public void reiniciar() {
         this.minutosAcumulados = 0L;
     }

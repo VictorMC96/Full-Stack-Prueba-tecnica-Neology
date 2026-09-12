@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+//Tarifa-NoResidente
 @Component
 public class TarifaNoResidente implements Tarifa {
 

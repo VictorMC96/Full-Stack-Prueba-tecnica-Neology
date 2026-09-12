@@ -4,6 +4,7 @@ import com.estacionamiento.error.SolicitudInvalida;
 
 import java.util.regex.Pattern;
 
+//Normalizacion-Placa
 public final class Placas {
 
     public static final int LARGO_MINIMO = 5;
@@ -15,6 +16,7 @@ public final class Placas {
     private Placas() {
     }
 
+    //Validacion-Formato
     public static String normalizar(String placa) {
         if (placa == null) {
             throw new SolicitudInvalida("La placa es obligatoria");
@@ -27,6 +29,7 @@ public final class Placas {
         return limpia;
     }
 
+    //Limpieza-Texto
     public static String limpiar(String placa) {
         return placa == null ? "" : placa.trim().toUpperCase().replace(" ", "").replace("-", "");
     }

@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
 
+//Datos-Iniciales
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
@@ -21,12 +22,15 @@ public class CargaInicial {
     private final ServicioVehiculos servicioVehiculos;
     private final ServicioEstancias servicioEstancias;
 
+    //Carga-Ejemplo
     @Bean
     public ApplicationRunner datosDeEjemplo() {
         return argumentos -> {
+            //Revision-Existencia
             if (repositorioVehiculo.count() > 0) {
                 return;
             }
+            //Creacion-Datos
             servicioVehiculos.alta("OFI-100", TipoVehiculo.OFICIAL, "Patrulla municipal");
             servicioVehiculos.alta("OFI-200", TipoVehiculo.OFICIAL, "Ambulancia");
             servicioVehiculos.alta("RES-100", TipoVehiculo.RESIDENTE, "Aldo Zetina");
@@ -36,7 +40,7 @@ public class CargaInicial {
 
             LocalDateTime ahora = LocalDateTime.now();
 
-            // Estancias cerradas con duracion real, para que el informe de pagos muestre montos.
+            //Historial-Cerrado
             cerrada("RES-100", ahora.minusHours(30), ahora.minusHours(28));
             cerrada("RES-100", ahora.minusHours(10), ahora.minusHours(9));
             cerrada("RES-200", ahora.minusHours(20), ahora.minusMinutes(1155));
@@ -44,7 +48,7 @@ public class CargaInicial {
             cerrada("VIS-200", ahora.minusHours(5), ahora.minusMinutes(288));
             cerrada("OFI-200", ahora.minusHours(8), ahora.minusMinutes(390));
 
-            // Dos vehiculos siguen dentro del estacionamiento.
+            //Vehiculos-Dentro
             servicioEstancias.registrarEntradaEn("OFI-100", ahora.minusHours(1));
             servicioEstancias.registrarEntradaEn("RES-200", ahora.minusMinutes(20));
 
@@ -52,6 +56,7 @@ public class CargaInicial {
         };
     }
 
+    //Estancia-Cerrada
     private void cerrada(String placa, LocalDateTime entrada, LocalDateTime salida) {
         servicioEstancias.registrarEntradaEn(placa, entrada);
         servicioEstancias.registrarSalidaEn(placa, salida);

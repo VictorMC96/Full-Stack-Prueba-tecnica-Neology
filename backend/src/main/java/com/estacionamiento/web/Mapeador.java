@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+//Mapeo-Respuestas
 @Component
 @RequiredArgsConstructor
 public class Mapeador {
@@ -16,6 +17,7 @@ public class Mapeador {
     private final ServicioVehiculos servicioVehiculos;
     private final ServicioEstancias servicioEstancias;
 
+    //Mapeo-Vehiculo
     public Respuestas.Vehiculo aVehiculo(com.estacionamiento.dominio.Vehiculo vehiculo) {
         return new Respuestas.Vehiculo(
                 vehiculo.getPlaca(),
@@ -26,6 +28,7 @@ public class Mapeador {
                 servicioVehiculos.minutosAcumulados(vehiculo));
     }
 
+    //Mapeo-Estancia
     public Respuestas.Estancia aEstancia(com.estacionamiento.dominio.Estancia estancia) {
         return new Respuestas.Estancia(
                 estancia.getId(),
@@ -37,6 +40,7 @@ public class Mapeador {
                 estancia.getPeriodo());
     }
 
+    //Mapeo-Informe
     public Respuestas.InformePagos aInforme(ServicioReportes.Informe informe) {
         List<Respuestas.RenglonPago> renglones = informe.renglones().stream()
                 .map(renglon -> new Respuestas.RenglonPago(

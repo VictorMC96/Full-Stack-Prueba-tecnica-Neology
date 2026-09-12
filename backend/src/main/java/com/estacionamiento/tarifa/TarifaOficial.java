@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
+//Tarifa-Oficial
 @Component
 public class TarifaOficial implements Tarifa {
 

@@ -4,6 +4,7 @@ import com.estacionamiento.dominio.TipoVehiculo;
 
 import java.math.BigDecimal;
 
+//Contrato-Tarifa
 public interface Tarifa {
 
     TipoVehiculo tipo();

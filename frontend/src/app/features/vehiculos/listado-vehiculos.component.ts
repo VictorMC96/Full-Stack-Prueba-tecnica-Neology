@@ -22,6 +22,7 @@ import { ConsultaListado, ETIQUETAS_TIPO, Vehiculo } from '../../core/modelos';
   templateUrl: './listado-vehiculos.component.html',
   styleUrl: './listado-vehiculos.component.scss',
 })
+//Componente-Listado
 export class ListadoVehiculosComponent {
   private readonly api = inject(ApiService);
 
@@ -40,6 +41,7 @@ export class ListadoVehiculosComponent {
     this.consultar();
   }
 
+  //Consulta-Vehiculos
   consultar(): void {
     this.cargando.set(true);
     this.api.listarVehiculos(this.consulta()).subscribe({
@@ -52,22 +54,26 @@ export class ListadoVehiculosComponent {
     });
   }
 
+  //Filtro-Placa
   filtrarPor(placa: string): void {
     this.consulta.update(actual => ({ ...actual, placa, page: 0 }));
     this.consultar();
   }
 
+  //Cambio-Pagina
   cambiarPagina(evento: PageEvent): void {
     this.consulta.update(actual => ({ ...actual, page: evento.pageIndex, size: evento.pageSize }));
     this.consultar();
   }
 
+  //Cambio-Orden
   cambiarOrden(evento: Sort): void {
     const direccion = evento.direction === 'desc' ? 'desc' : 'asc';
     this.consulta.update(actual => ({ ...actual, sort: evento.active || 'placa', direccion }));
     this.consultar();
   }
 
+  //Formato-Tiempo
   horas(minutos: number): string {
     const h = Math.floor(minutos / 60);
     const m = minutos % 60;

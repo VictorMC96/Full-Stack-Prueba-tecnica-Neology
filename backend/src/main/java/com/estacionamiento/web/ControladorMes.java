@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+//Controlador-Mes
 @RestController
 @RequestMapping("/neo/mes")
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class ControladorMes {
 
     private final ServicioMes servicioMes;
 
+    //Inicio-Mes
     @PostMapping("/iniciar")
     @Operation(summary = "Reiniciar el mes: pone en cero los acumulados de residentes")
     public Respuestas.Mes iniciar() {

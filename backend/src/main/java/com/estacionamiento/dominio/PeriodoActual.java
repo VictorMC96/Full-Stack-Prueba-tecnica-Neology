@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+//Contador-Periodo
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,10 +23,12 @@ public class PeriodoActual {
         this.numero = numero;
     }
 
+    //Periodo-Inicial
     public static PeriodoActual inicial() {
         return new PeriodoActual(1L, 1);
     }
 
+    //Avance-Periodo
     public void avanzar() {
         this.numero++;
     }

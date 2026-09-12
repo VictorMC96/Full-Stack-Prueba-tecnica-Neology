@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+//Consultas-Residente
 public interface RepositorioResidente extends JpaRepository<Residente, Long> {
     Optional<Residente> findByVehiculo(Vehiculo vehiculo);
 }

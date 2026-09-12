@@ -1,3 +1,5 @@
+//Modelos-API
+//Tipos-Vehiculo
 export type TipoVehiculo = 'OFICIAL' | 'RESIDENTE' | 'NO_RESIDENTE';
 
 export interface Vehiculo {
@@ -50,6 +52,7 @@ export interface Mes {
   mensaje: string;
 }
 
+//Parametros-Listado
 export interface ConsultaListado {
   placa: string;
   page: number;
@@ -58,6 +61,7 @@ export interface ConsultaListado {
   direccion: 'asc' | 'desc';
 }
 
+//Etiquetas-Pantalla
 export const ETIQUETAS_TIPO: Record<TipoVehiculo, string> = {
   OFICIAL: 'Oficial',
   RESIDENTE: 'Residente',

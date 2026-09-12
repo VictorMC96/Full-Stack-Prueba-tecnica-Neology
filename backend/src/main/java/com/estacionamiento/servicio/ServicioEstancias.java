@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+//Servicio-Estancias
 @Service
 @RequiredArgsConstructor
 public class ServicioEstancias {
@@ -27,14 +28,17 @@ public class ServicioEstancias {
     private final ServicioPeriodo servicioPeriodo;
     private final ResolutorTarifas resolutorTarifas;
 
+    //Registro-Entrada
     @Transactional
     public Estancia registrarEntrada(String placa) {
         return registrarEntradaEn(placa, LocalDateTime.now());
     }
 
+    //Entrada-ConFecha
     @Transactional
     public Estancia registrarEntradaEn(String placa, LocalDateTime entrada) {
         Vehiculo vehiculo = servicioVehiculos.buscar(placa);
+        //Revision-Duplicado
         repositorioEstancia.findByVehiculoAndSalidaIsNull(vehiculo).ifPresent(abierta -> {
             throw new ReglaDeNegocio("El vehiculo " + vehiculo.getPlaca() + " ya se encuentra dentro del estacionamiento");
         });
@@ -42,11 +46,13 @@ public class ServicioEstancias {
                 Estancia.abrir(vehiculo, entrada, servicioPeriodo.numeroActual()));
     }
 
+    //Registro-Salida
     @Transactional
     public Estancia registrarSalida(String placa) {
         return registrarSalidaEn(placa, LocalDateTime.now());
     }
 
+    //Salida-ConFecha
     @Transactional
     public Estancia registrarSalidaEn(String placa, LocalDateTime salida) {
         Vehiculo vehiculo = servicioVehiculos.buscar(placa);
@@ -55,6 +61,7 @@ public class ServicioEstancias {
                         "El vehiculo " + vehiculo.getPlaca() + " no tiene una entrada abierta"));
 
         long minutos = Minutos.entre(estancia.getEntrada(), salida);
+        //Cobro-PorTipo
         Tarifa tarifa = resolutorTarifas.para(vehiculo.getTipo());
 
         repositorioResidente.findByVehiculo(vehiculo)
@@ -65,11 +72,13 @@ public class ServicioEstancias {
         return repositorioEstancia.save(estancia);
     }
 
+    //Historial-Vehiculo
     @Transactional(readOnly = true)
     public List<Estancia> historial(Vehiculo vehiculo) {
         return repositorioEstancia.findByVehiculoOrderByEntradaDesc(vehiculo);
     }
 
+    //Estado-Vehiculo
     @Transactional(readOnly = true)
     public boolean estaDentro(Vehiculo vehiculo) {
         return repositorioEstancia.findByVehiculoAndSalidaIsNull(vehiculo).isPresent();

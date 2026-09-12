@@ -15,6 +15,7 @@ import { InformePagos } from '../../core/modelos';
   templateUrl: './reporte-residentes.component.html',
   styleUrl: './reporte-residentes.component.scss',
 })
+//Componente-Reporte
 export class ReporteResidentesComponent {
   private readonly api = inject(ApiService);
 
@@ -26,6 +27,7 @@ export class ReporteResidentesComponent {
     this.consultar();
   }
 
+  //Consulta-Informe
   consultar(): void {
     this.cargando.set(true);
     this.api.informePagos().subscribe({
@@ -37,6 +39,7 @@ export class ReporteResidentesComponent {
     });
   }
 
+  //Impresion-Informe
   imprimir(): void {
     window.print();
   }

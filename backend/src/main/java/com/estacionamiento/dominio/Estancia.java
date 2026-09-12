@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+//Entidad-Estancia
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,16 +42,19 @@ public class Estancia {
         this.periodo = periodo;
     }
 
+    //Apertura-Estancia
     public static Estancia abrir(Vehiculo vehiculo, LocalDateTime entrada, int periodo) {
         return new Estancia(vehiculo, entrada, periodo);
     }
 
+    //Cierre-Cobro
     public void cerrar(LocalDateTime salida, long minutos, BigDecimal monto) {
         this.salida = salida;
         this.minutos = minutos;
         this.monto = monto;
     }
 
+    //Estado-Estancia
     public boolean estaAbierta() {
         return salida == null;
     }

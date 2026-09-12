@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
+//Controlador-Vehiculos
 @RestController
 @RequestMapping("/neo/vehiculos")
 @RequiredArgsConstructor
@@ -33,24 +34,28 @@ public class ControladorVehiculos {
     private final ServicioEstancias servicioEstancias;
     private final Mapeador mapeador;
 
+    //Alta-Oficial
     @PostMapping("/oficiales")
     @Operation(summary = "Alta de vehiculo oficial")
     public ResponseEntity<Respuestas.Vehiculo> altaOficial(@Valid @RequestBody AltaVehiculoRequest peticion) {
         return crear(peticion, TipoVehiculo.OFICIAL);
     }
 
+    //Alta-Residente
     @PostMapping("/residentes")
     @Operation(summary = "Alta de vehiculo residente")
     public ResponseEntity<Respuestas.Vehiculo> altaResidente(@Valid @RequestBody AltaVehiculoRequest peticion) {
         return crear(peticion, TipoVehiculo.RESIDENTE);
     }
 
+    //Alta-NoResidente
     @PostMapping("/no-residentes")
     @Operation(summary = "Alta de vehiculo no residente")
     public ResponseEntity<Respuestas.Vehiculo> altaNoResidente(@Valid @RequestBody AltaVehiculoRequest peticion) {
         return crear(peticion, TipoVehiculo.NO_RESIDENTE);
     }
 
+    //Listado-Vehiculos
     @GetMapping
     @Operation(summary = "Listado de vehiculos con filtro, paginacion y orden")
     public Respuestas.Pagina<Respuestas.Vehiculo> listar(
@@ -68,6 +73,7 @@ public class ControladorVehiculos {
                 contenido, pagina.getNumber(), pagina.getSize(), pagina.getTotalElements(), pagina.getTotalPages());
     }
 
+    //Detalle-Vehiculo
     @GetMapping("/{placa}")
     @Operation(summary = "Detalle de un vehiculo con su historial de estancias")
     public Respuestas.DetalleVehiculo detalle(@PathVariable String placa) {
@@ -77,6 +83,7 @@ public class ControladorVehiculos {
         return new Respuestas.DetalleVehiculo(mapeador.aVehiculo(vehiculo), estancias);
     }
 
+    //Revision-Orden
     private String campoValido(String campo) {
         if (!ORDENES_PERMITIDOS.contains(campo)) {
             throw new SolicitudInvalida("Solo se puede ordenar por " + String.join(", ", ORDENES_PERMITIDOS));
@@ -84,10 +91,12 @@ public class ControladorVehiculos {
         return campo;
     }
 
+    //Revision-Direccion
     private Sort.Direction direccionValida(String direccion) {
         return "desc".equalsIgnoreCase(direccion) ? Sort.Direction.DESC : Sort.Direction.ASC;
     }
 
+    //Creacion-Datos
     private ResponseEntity<Respuestas.Vehiculo> crear(AltaVehiculoRequest peticion, TipoVehiculo tipo) {
         Vehiculo vehiculo = servicioVehiculos.alta(peticion.placa(), tipo, peticion.propietario());
         return ResponseEntity.status(HttpStatus.CREATED).body(mapeador.aVehiculo(vehiculo));

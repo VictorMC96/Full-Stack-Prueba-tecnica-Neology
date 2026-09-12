@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+//Cierre-Mes
 @Service
 @RequiredArgsConstructor
 public class ServicioMes {
@@ -15,6 +16,7 @@ public class ServicioMes {
     private final RepositorioResidente repositorioResidente;
     private final ServicioPeriodo servicioPeriodo;
 
+    //Reinicio-Acumulados
     @Transactional
     public int iniciar() {
         List<Residente> residentes = repositorioResidente.findAll();

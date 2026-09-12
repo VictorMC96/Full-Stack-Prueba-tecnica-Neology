@@ -5,6 +5,7 @@ import {
   ConsultaListado, DetalleVehiculo, Estancia, InformePagos, Mes, Pagina, TipoVehiculo, Vehiculo,
 } from './modelos';
 
+//Rutas-PorTipo
 const RUTA_POR_TIPO: Record<TipoVehiculo, string> = {
   OFICIAL: 'oficiales',
   RESIDENTE: 'residentes',
@@ -12,10 +13,12 @@ const RUTA_POR_TIPO: Record<TipoVehiculo, string> = {
 };
 
 @Injectable({ providedIn: 'root' })
+//Servicio-API
 export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly base = '/neo';
 
+  //Consulta-Listado
   listarVehiculos(consulta: ConsultaListado): Observable<Pagina<Vehiculo>> {
     const params = new HttpParams()
       .set('placa', consulta.placa)
@@ -30,6 +33,7 @@ export class ApiService {
     return this.http.get<DetalleVehiculo>(`${this.base}/vehiculos/${encodeURIComponent(placa)}`);
   }
 
+  //Alta-Vehiculo
   altaVehiculo(tipo: TipoVehiculo, datos: { placa: string; propietario: string }): Observable<Vehiculo> {
     return this.http.post<Vehiculo>(`${this.base}/vehiculos/${RUTA_POR_TIPO[tipo]}`, datos);
   }

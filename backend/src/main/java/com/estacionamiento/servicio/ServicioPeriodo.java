@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+//Servicio-Periodo
 @Service
 @RequiredArgsConstructor
 public class ServicioPeriodo {
@@ -14,6 +15,7 @@ public class ServicioPeriodo {
 
     private final RepositorioPeriodo repositorio;
 
+    //Periodo-Vigente
     @Transactional
     public PeriodoActual actual() {
         return repositorio.findById(UNICO).orElseGet(() -> repositorio.save(PeriodoActual.inicial()));
@@ -24,6 +26,7 @@ public class ServicioPeriodo {
         return actual().getNumero();
     }
 
+    //Avance-Periodo
     @Transactional
     public int avanzar() {
         PeriodoActual periodo = actual();

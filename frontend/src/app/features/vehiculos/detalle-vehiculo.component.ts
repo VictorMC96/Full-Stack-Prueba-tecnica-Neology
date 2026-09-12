@@ -22,6 +22,7 @@ const TARIFA_RESIDENTE = 0.05;
   templateUrl: './detalle-vehiculo.component.html',
   styleUrl: './detalle-vehiculo.component.scss',
 })
+//Componente-Detalle
 export class DetalleVehiculoComponent {
   private readonly api = inject(ApiService);
   private readonly ruta = inject(ActivatedRoute);
@@ -46,6 +47,7 @@ export class DetalleVehiculoComponent {
     });
   }
 
+  //Calculo-Acumulado
   acumuladoACobrar(): number {
     const actual = this.detalle();
     if (!actual || actual.vehiculo.tipo !== 'RESIDENTE') {

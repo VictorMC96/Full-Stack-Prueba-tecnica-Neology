@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+//Consultas-Vehiculo
 public interface RepositorioVehiculo extends JpaRepository<Vehiculo, Long> {
     Optional<Vehiculo> findByPlaca(String placa);
     boolean existsByPlaca(String placa);

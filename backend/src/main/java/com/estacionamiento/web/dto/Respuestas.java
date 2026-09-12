@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+//Respuestas-API
 public final class Respuestas {
 
     private Respuestas() {
@@ -31,6 +32,7 @@ public final class Respuestas {
     public record DetalleVehiculo(Vehiculo vehiculo, List<Estancia> estancias) {
     }
 
+    //Salida-Paginada
     public record Pagina<T>(List<T> contenido, int pagina, int tamano, long total, int totalPaginas) {
     }
 
@@ -43,6 +45,7 @@ public final class Respuestas {
     public record Mes(int periodo, String mensaje) {
     }
 
+    //Salida-Error
     public record Error(String codigo, String mensaje, LocalDateTime momento) {
     }
 }

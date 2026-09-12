@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+//Entidad-Vehiculo
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,6 +38,7 @@ public class Vehiculo {
         this.alta = LocalDateTime.now();
     }
 
+    //Alta-Vehiculo
     public static Vehiculo de(String placa, TipoVehiculo tipo, String propietario) {
         return new Vehiculo(placa, tipo, propietario);
     }
