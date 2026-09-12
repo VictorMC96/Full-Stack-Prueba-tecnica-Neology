@@ -1,0 +1,177 @@
+<section class="pagina">
+  <div class="encabezado-operaciones">
+    <h1>Operaciones de Estacionamiento</h1>
+    <p class="subtitulo">Registro de entradas, salidas con cobro inmediato, altas de vehículos y cierre mensual</p>
+  </div>
+
+  <div class="tarjeta-operaciones">
+    <mat-tab-group animationDuration="200ms">
+      <!-- TAB ENTRADA -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="icono-tab">login</mat-icon>
+          Registrar Entrada
+        </ng-template>
+        <div class="contenido-tab">
+          <div class="descripcion-operacion">
+            <h3>Registrar Entrada de Vehículo</h3>
+            <p>Ingresa la placa del vehículo para abrir una nueva estancia en el estacionamiento.</p>
+          </div>
+          <form class="formulario" [formGroup]="formularioEntrada" (ngSubmit)="registrarEntrada()">
+            <mat-form-field appearance="outline" class="campo-ancho">
+              <mat-label>Placa del vehículo</mat-label>
+              <input matInput formControlName="placa" maxlength="12" autocomplete="off" placeholder="Ej. ABC-123" />
+              <mat-icon matSuffix>directions_car</mat-icon>
+              @if (formularioEntrada.controls.placa.hasError('required')) {
+                <mat-error>La placa es obligatoria</mat-error>
+              } @else if (formularioEntrada.controls.placa.hasError('pattern')) {
+                <mat-error>Solo letras, números y guion (5 a 12 caracteres)</mat-error>
+              }
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" class="btn-accion"
+                    [disabled]="formularioEntrada.invalid || enviando()">
+              <mat-icon>login</mat-icon>
+              Registrar Entrada
+            </button>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- TAB SALIDA CON COBRO -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="icono-tab">logout</mat-icon>
+          Registrar Salida
+        </ng-template>
+        <div class="contenido-tab">
+          <div class="descripcion-operacion">
+            <h3>Registrar Salida y Calcular Cobro</h3>
+            <p>Cierra la estancia actual y calcula automáticamente la tarifa a cobrar.</p>
+          </div>
+
+          <div class="salida-layout">
+            <form class="formulario" [formGroup]="formularioSalida" (ngSubmit)="registrarSalida()">
+              <mat-form-field appearance="outline" class="campo-ancho">
+                <mat-label>Placa del vehículo</mat-label>
+                <input matInput formControlName="placa" maxlength="12" autocomplete="off" placeholder="Ej. ABC-123" />
+                <mat-icon matSuffix>directions_car</mat-icon>
+                @if (formularioSalida.controls.placa.hasError('required')) {
+                  <mat-error>La placa es obligatoria</mat-error>
+                } @else if (formularioSalida.controls.placa.hasError('pattern')) {
+                  <mat-error>Solo letras, números y guion (5 a 12 caracteres)</mat-error>
+                }
+              </mat-form-field>
+              <button mat-flat-button color="primary" type="submit" class="btn-accion btn-salida"
+                      [disabled]="formularioSalida.invalid || enviando()">
+                <mat-icon>logout</mat-icon>
+                Registrar Salida y Cobrar
+              </button>
+            </form>
+
+            @if (ticketCobro(); as ticket) {
+              <div class="ticket-recibo">
+                <div class="ticket-header">
+                  <span class="ticket-titulo">Resumen de Cobro</span>
+                  <button mat-icon-button (click)="cerrarTicket()" aria-label="Cerrar recibo">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+                <div class="ticket-datos">
+                  <div class="linea-dato">
+                    <span class="label">Placa:</span>
+                    <span class="val placa-val">{{ ticket.placa }}</span>
+                  </div>
+                  <div class="linea-dato">
+                    <span class="label">Tiempo Estancia:</span>
+                    <span class="val">{{ ticket.minutos }} min</span>
+                  </div>
+                  <div class="linea-dato">
+                    <span class="label">Tarifa aplicada:</span>
+                    <span class="val">{{ ticket.tarifaInfo }}</span>
+                  </div>
+                </div>
+                <div class="ticket-total">
+                  <span class="total-label">TOTAL COBRADO</span>
+                  <span class="total-monto">${{ ticket.total | number: '1.2-2' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- TAB ALTA DE VEHICULO -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="icono-tab">add_circle_outline</mat-icon>
+          Alta de Vehículo
+        </ng-template>
+        <div class="contenido-tab">
+          <div class="descripcion-operacion">
+            <h3>Dar de Alta un Nuevo Vehículo</h3>
+            <p>Registra un nuevo vehículo Oficial, Residente o No Residente en el sistema.</p>
+          </div>
+          <form class="formulario" [formGroup]="formularioAlta" (ngSubmit)="darDeAlta()">
+            <mat-form-field appearance="outline" class="campo-ancho">
+              <mat-label>Placa del vehículo</mat-label>
+              <input matInput formControlName="placa" maxlength="12" autocomplete="off" placeholder="Ej. ABC-123" />
+              <mat-icon matSuffix>badge</mat-icon>
+              @if (formularioAlta.controls.placa.hasError('required')) {
+                <mat-error>La placa es obligatoria</mat-error>
+              } @else if (formularioAlta.controls.placa.hasError('pattern')) {
+                <mat-error>Solo letras, números y guion (5 a 12 caracteres)</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="campo-ancho">
+              <mat-label>Propietario / Dependencia</mat-label>
+              <input matInput formControlName="propietario" maxlength="120" autocomplete="off" placeholder="Ej. Juan Pérez / Depto. Obras" />
+              <mat-icon matSuffix>person</mat-icon>
+              @if (formularioAlta.controls.propietario.hasError('maxlength')) {
+                <mat-error>Máximo 120 caracteres</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="campo-ancho">
+              <mat-label>Tipo de vehículo</mat-label>
+              <mat-select formControlName="tipo">
+                @for (tipo of tipos; track tipo) {
+                  <mat-option [value]="tipo">{{ etiquetas[tipo] }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matSuffix>category</mat-icon>
+            </mat-form-field>
+
+            <button mat-flat-button color="primary" type="submit" class="btn-accion"
+                    [disabled]="formularioAlta.invalid || enviando()">
+              <mat-icon>add</mat-icon>
+              Dar de Alta Vehículo
+            </button>
+          </form>
+        </div>
+      </mat-tab>
+
+      <!-- TAB INICIAR MES -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="icono-tab">event_repeat</mat-icon>
+          Iniciar Mes
+        </ng-template>
+        <div class="contenido-tab">
+          <div class="alerta-cierre">
+            <mat-icon class="icono-alerta">info</mat-icon>
+            <div class="texto-alerta">
+              <h3>Cierre e Inicio de Periodo Mensual</h3>
+              <p>Al iniciar un mes nuevo, los minutos acumulados de todos los residentes volverán a cero.</p>
+              <p>El historial de estancias cerradas se conservará intacto y los vehículos que se encuentren dentro del estacionamiento continuarán su estancia sin verse afectados.</p>
+            </div>
+          </div>
+          <button mat-flat-button color="warn" class="btn-cierre" (click)="iniciarMes()" [disabled]="enviando()">
+            <mat-icon>restart_alt</mat-icon>
+            Iniciar Mes Nuevo
+          </button>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</section>
