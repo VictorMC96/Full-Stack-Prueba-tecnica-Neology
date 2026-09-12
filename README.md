@@ -119,4 +119,111 @@ Formulario para:
 Nota:
 No te preocupes si no puedes completar todos los requisitos en el tiempo asignado. Se valorará el progreso y la calidad del trabajo realizado.
 
+---
+
+# Solución
+
+Sistema de gestión de acceso a un estacionamiento. Backend en Spring Boot y frontend en Angular.
+
+## Requisitos
+
+- Java 21 o superior
+- Maven 3.9 o superior
+- Node 20 o superior
+
+## Levantar el backend
+
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+Queda disponible en `http://localhost:8080`.
+
+- Documentación de la API: `http://localhost:8080/swagger-ui.html`
+- Consola de la base en memoria: `http://localhost:8080/h2-console`
+  - Cadena de conexión: `jdbc:h2:mem:estacionamiento`
+  - Usuario: `sa`, sin contraseña
+
+La base arranca precargada con seis vehículos de los tres tipos, dos estancias cerradas y dos vehículos dentro del estacionamiento.
+
+## Levantar el frontend
+
+```bash
+cd frontend
+npm install
+npx ng serve
+```
+
+Queda disponible en `http://localhost:4200`. El cliente usa un proxy hacia el puerto 8080, así que ambos proyectos deben estar corriendo.
+
+## Ejecutar las pruebas
+
+Backend:
+
+```bash
+cd backend && ./mvnw test
+```
+
+Frontend:
+
+```bash
+cd frontend && npx ng test --watch=false --browsers=ChromeHeadless
+```
+
+## Endpoints
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| POST | `/neo/vehiculos/oficiales` | Alta de vehículo oficial |
+| POST | `/neo/vehiculos/residentes` | Alta de vehículo residente |
+| POST | `/neo/vehiculos/no-residentes` | Alta de vehículo no residente |
+| POST | `/neo/estancias/entrada` | Registrar entrada |
+| POST | `/neo/estancias/salida` | Registrar salida y cobrar |
+| GET | `/neo/residentes/pagos` | Informe de pagos del periodo |
+| POST | `/neo/mes/iniciar` | Reiniciar mes |
+| GET | `/neo/vehiculos` | Listado con filtro, paginación y orden |
+| GET | `/neo/vehiculos/{placa}` | Detalle con historial de estancias |
+
+## Reglas de cobro
+
+| Tipo | Cuándo paga | Tarifa por minuto |
+|---|---|---|
+| Oficial | Nunca | 0 |
+| Residente | Al cerrar el mes, sobre minutos acumulados | 0.05 |
+| No residente | Al registrar su salida | 0.50 |
+
+Los minutos se redondean hacia arriba. Los montos usan decimal exacto con dos posiciones.
+
+## Cómo agregar un tipo de vehículo nuevo
+
+1. Agregar la constante al enum `TipoVehiculo`.
+2. Crear una clase que implemente `Tarifa` y marcarla como componente de Spring.
+
+Ningún archivo existente se modifica. Spring detecta la implementación nueva y el resolutor la indexa sola.
+
+## Codigos de respuesta
+
+| Situacion | Codigo HTTP | Codigo en el cuerpo |
+|---|---|---|
+| Alta correcta de vehiculo o entrada registrada | 201 | |
+| Consulta o salida correcta | 200 | |
+| Datos mal formados, placa fuera de rango, campo de orden invalido | 400 | `SOLICITUD_INVALIDA` |
+| Placa no registrada o ruta inexistente | 404 | `NO_ENCONTRADO` |
+| Metodo HTTP no soportado por la ruta | 405 | `METODO_NO_PERMITIDO` |
+| Placa duplicada, entrada repetida, salida sin entrada previa | 409 | `REGLA_DE_NEGOCIO` |
+| Fallo no previsto | 500 | `ERROR_INTERNO` |
+
+Todos los errores comparten el mismo cuerpo, con codigo, mensaje y momento. Nunca se expone una traza de excepcion.
+
+La placa se valida en tres puntos: el formulario, el objeto de entrada de la API y la normalizacion del servicio. Se admiten entre 5 y 10 letras o numeros, sin contar espacios ni guiones, que se eliminan al guardar.
+
+## Capturas
+
+![Listado de vehículos](docs/capturas/listado.png)
+![Detalle de un vehículo](docs/capturas/detalle.png)
+![Operaciones](docs/capturas/operaciones.png)
+![Informe de pagos](docs/capturas/reporte.png)
+![Documentación de la API](docs/capturas/swagger.png)
+
 

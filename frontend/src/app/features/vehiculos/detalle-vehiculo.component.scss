@@ -1,0 +1,215 @@
+.pagina {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.nav-regresar {
+  margin-bottom: 1.5rem;
+
+  .btn-volver {
+    font-weight: 600;
+    color: var(--text-sub);
+  }
+}
+
+.barra-progreso {
+  margin-bottom: 1rem;
+}
+
+.ficha-tarjeta {
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.ficha-encabezado {
+  padding: 20px 24px;
+  background: var(--header-table-bg);
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .ficha-titulos {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.placa-destacada {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.badge-tipo {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.tipo-oficial {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  &.tipo-residente {
+    background-color: rgba(59, 80, 223, 0.15);
+    color: #6366f1;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+  }
+
+  &.tipo-no-residente {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+}
+
+.badge-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: rgba(148, 163, 184, 0.15);
+  color: var(--text-sub);
+
+  .punto-estado {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #94a3b8;
+  }
+
+  &.dentro {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+
+    .punto-estado {
+      background-color: #10b981;
+    }
+  }
+}
+
+.ficha-cuerpo {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+
+  .dato-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .etiqueta {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-sub);
+      letter-spacing: 0.5px;
+    }
+
+    .valor {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .valor-minutos {
+      font-weight: 600;
+    }
+
+    &.item-cobro {
+      .monto-resaltado {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #10b981;
+      }
+    }
+  }
+}
+
+.seccion-historial {
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+  }
+}
+
+.tabla-tarjeta {
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+
+  table {
+    width: 100%;
+  }
+
+  th.mat-mdc-header-cell {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: var(--header-table-text);
+    background-color: var(--header-table-bg);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  td.mat-mdc-cell {
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--cell-border);
+  }
+}
+
+.badge-curso {
+  background-color: rgba(59, 80, 223, 0.15);
+  color: #6366f1;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.vacio-box {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+
+  .icono-vacio {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: var(--text-sub);
+    margin-bottom: 8px;
+  }
+
+  .vacio {
+    font-size: 0.9375rem;
+    color: var(--text-sub);
+    margin: 0;
+  }
+}

@@ -1,0 +1,243 @@
+.pagina {
+  padding: 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.encabezado-operaciones {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 4px 0;
+  }
+
+  .subtitulo {
+    font-size: 0.875rem;
+    color: var(--text-sub);
+    margin: 0;
+  }
+}
+
+.tarjeta-operaciones {
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.icono-tab {
+  margin-right: 6px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.contenido-tab {
+  padding: 2rem;
+}
+
+.descripcion-operacion {
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--text-sub);
+    margin: 0;
+  }
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 440px;
+
+  .campo-ancho {
+    width: 100%;
+  }
+
+  .btn-accion {
+    height: 48px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #3b50df;
+    color: #ffffff;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.salida-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 320px);
+  gap: 2rem;
+  align-items: start;
+}
+
+.ticket-recibo {
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-card);
+  padding: 20px;
+  animation: slideIn 0.3s ease-out;
+
+  .ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed var(--card-border);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+
+    .ticket-titulo {
+      font-weight: 700;
+      font-size: 0.9375rem;
+      color: var(--text-main);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .ticket-datos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+
+    .linea-dato {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+
+      .label {
+        color: var(--text-sub);
+      }
+
+      .val {
+        font-weight: 600;
+        color: var(--text-main);
+
+        &.placa-val {
+          font-family: ui-monospace, monospace;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+
+  .ticket-total {
+    border-top: 2px solid var(--card-border);
+    padding-top: 14px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .total-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      letter-spacing: 1px;
+    }
+
+    .total-monto {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #10b981;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alerta-cierre {
+  display: flex;
+  gap: 16px;
+  padding: 18px 20px;
+  background-color: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-left: 4px solid #f59e0b;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+
+  .icono-alerta {
+    color: #f59e0b;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .texto-alerta {
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0 0 6px 0;
+    }
+
+    p {
+      font-size: 0.875rem;
+      color: var(--text-sub);
+      margin: 0 0 6px 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.btn-cierre {
+  height: 48px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .salida-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pagina {
+    padding: 1rem;
+  }
+
+  .contenido-tab {
+    padding: 1.25rem;
+  }
+}

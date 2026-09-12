@@ -1,0 +1,39 @@
+<mat-toolbar class="barra">
+  <div class="marca">
+    <div class="logo-badge">N</div>
+    <div class="marca-info">
+      <span class="titulo">{{ titulo }}</span>
+      <span class="subtitulo">Neology Parking Management</span>
+    </div>
+  </div>
+
+  <nav class="enlaces">
+    <a mat-button routerLink="/vehiculos" routerLinkActive="activo">
+      <mat-icon>directions_car</mat-icon>
+      <span>Vehiculos</span>
+    </a>
+    <a mat-button routerLink="/operaciones" routerLinkActive="activo">
+      <mat-icon>swap_horiz</mat-icon>
+      <span>Operaciones</span>
+    </a>
+    <a mat-button routerLink="/reportes" routerLinkActive="activo">
+      <mat-icon>assessment</mat-icon>
+      <span>Reportes</span>
+    </a>
+  </nav>
+
+  <div class="herramientas">
+    <button mat-icon-button (click)="alternarTema()" [matTooltip]="esOscuro() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'" class="btn-tema">
+      <mat-icon>{{ esOscuro() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+
+    <div class="estado-sistema">
+      <span class="punto-activo"></span>
+      <span class="estado-texto">En linea</span>
+    </div>
+  </div>
+</mat-toolbar>
+
+<main>
+  <router-outlet />
+</main>

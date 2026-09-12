@@ -1,0 +1,116 @@
+@use '@angular/material' as mat;
+
+:root {
+  --bg-color: #f8fafc;
+  --text-main: #0f172a;
+  --text-sub: #64748b;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --header-table-bg: #f8fafc;
+  --header-table-text: #475569;
+  --row-hover-bg: #f1f5f9;
+  --cell-border: #f1f5f9;
+  --badge-placa-bg: #f8fafc;
+  --badge-placa-border: #cbd5e1;
+  --badge-placa-color: #0f172a;
+  --card-info-bg: #f1f5f9;
+  --card-info-border: #e2e8f0;
+  --card-info-text: #334155;
+  --nav-bg: #ffffff;
+  --nav-border: #e2e8f0;
+  --nav-text: #0f172a;
+  --nav-link: #64748b;
+  --nav-link-active: #3b50df;
+  --nav-link-active-bg: #eef2ff;
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+html.dark-theme, :root.dark-theme {
+  --bg-color: #0b0f19;
+  --text-main: #f9fafb;
+  --text-sub: #9ca3af;
+  --card-bg: #111827;
+  --card-border: #1f2937;
+  --header-table-bg: #161f30;
+  --header-table-text: #cbd5e1;
+  --row-hover-bg: #1e293b;
+  --cell-border: #1f2937;
+  --badge-placa-bg: #1f2937;
+  --badge-placa-border: #374151;
+  --badge-placa-color: #f9fafb;
+  --card-info-bg: #1e293b;
+  --card-info-border: #334155;
+  --card-info-text: #cbd5e1;
+  --nav-bg: #111827;
+  --nav-border: #1f2937;
+  --nav-text: #f9fafb;
+  --nav-link: #9ca3af;
+  --nav-link-active: #818cf8;
+  --nav-link-active-bg: #1e1b4b;
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+}
+
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+html.dark-theme {
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+      theme-type: dark,
+    ),
+  ));
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', Arial, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+html.dark-theme body {
+  color-scheme: dark;
+}
+
+html, body {
+  height: 100%;
+}
+
+main {
+  display: block;
+  padding-bottom: 2rem;
+}
+
+.aviso-error {
+  --mdc-snackbar-container-color: #b3261e;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+}
+
+html.dark-theme {
+  .mat-mdc-dialog-surface {
+    background-color: #111827 !important;
+    color: #f9fafb !important;
+  }
+
+  .mat-mdc-paginator {
+    background-color: var(--card-bg) !important;
+    color: var(--text-sub) !important;
+  }
+
+  .mat-mdc-select-value, .mat-mdc-select-arrow {
+    color: var(--text-sub) !important;
+  }
+}
