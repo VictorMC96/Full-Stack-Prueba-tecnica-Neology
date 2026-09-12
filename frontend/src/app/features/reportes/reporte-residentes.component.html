@@ -1,0 +1,74 @@
+<section class="pagina">
+  <header class="encabezado">
+    <div>
+      <h1>Informe de pagos de residentes</h1>
+      <p class="subtitulo">Desglose de minutos y montos acumulados por vehiculo durante el periodo activo</p>
+    </div>
+    <div class="acciones">
+      <button mat-stroked-button (click)="consultar()"><mat-icon>refresh</mat-icon> Actualizar</button>
+      <button mat-flat-button color="primary" (click)="imprimir()"><mat-icon>print</mat-icon> Imprimir</button>
+    </div>
+  </header>
+
+  @if (cargando()) {
+    <mat-progress-bar mode="indeterminate" class="barra-progreso" />
+  }
+
+  @if (informe(); as datos) {
+    <div class="tarjeta-periodo">
+      <mat-icon class="icono-periodo">calendar_month</mat-icon>
+      <div>
+        <span class="periodo-badge">Periodo {{ datos.periodo }}</span>
+        <p class="periodo">Tarifa de residente: <strong>$0.05</strong> por minuto acumulado.</p>
+      </div>
+    </div>
+
+    @if (datos.renglones.length === 0) {
+      <div class="vacio">
+        <mat-icon class="icono-vacio">folder_open</mat-icon>
+        <p>No hay residentes registrados todavia.</p>
+      </div>
+    } @else {
+      <div class="contenedor-tabla mat-elevation-z1">
+        <table mat-table [dataSource]="datos.renglones">
+          <ng-container matColumnDef="placa">
+            <th mat-header-cell *matHeaderCellDef>Placa</th>
+            <td mat-cell *matCellDef="let renglon">
+              <span class="placa-badge">{{ renglon.placa }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="propietario">
+            <th mat-header-cell *matHeaderCellDef>Propietario</th>
+            <td mat-cell *matCellDef="let renglon" class="propietario-col">
+              {{ renglon.propietario || 'Sin registrar' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="minutos">
+            <th mat-header-cell *matHeaderCellDef>Minutos acumulados</th>
+            <td mat-cell *matCellDef="let renglon">{{ renglon.minutos }} min</td>
+          </ng-container>
+
+          <ng-container matColumnDef="monto">
+            <th mat-header-cell *matHeaderCellDef>Monto a pagar</th>
+            <td mat-cell *matCellDef="let renglon" class="monto-col">
+              ${{ renglon.monto | number: '1.2-2' }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+          <tr mat-row *matRowDef="let renglon; columns: columnas"></tr>
+        </table>
+      </div>
+
+      <div class="total-card">
+        <div class="total-info">
+          <span class="total-label">Total del periodo</span>
+          <span class="total-sub">Suma consolidada de cobro a residentes</span>
+        </div>
+        <strong class="total-monto">${{ datos.total | number: '1.2-2' }}</strong>
+      </div>
+    }
+  }
+</section>

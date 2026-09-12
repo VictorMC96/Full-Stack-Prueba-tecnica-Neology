@@ -27,7 +27,7 @@ export class DetalleVehiculoComponent {
   private readonly ruta = inject(ActivatedRoute);
 
   readonly columnas = ['entrada', 'salida', 'minutos', 'monto', 'periodo'];
-  readonly etiquetas = ETIQUETAS_TIPO;
+  readonly etiquetas: Record<string, string> = ETIQUETAS_TIPO;
 
   readonly detalle = signal<DetalleVehiculo | null>(null);
   readonly cargando = signal(true);

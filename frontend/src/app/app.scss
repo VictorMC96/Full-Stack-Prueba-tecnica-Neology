@@ -1,0 +1,119 @@
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 64px;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .logo-badge {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #3b50df, #6366f1);
+    color: white;
+    font-weight: 700;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(59, 80, 223, 0.3);
+  }
+
+  .marca-info {
+    display: flex;
+    flex-direction: column;
+
+    .titulo {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+
+    .subtitulo {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+  }
+}
+
+.enlaces {
+  display: flex;
+  gap: 0.5rem;
+
+  a {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #64748b;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      color: #3b50df;
+      background: #eef2ff;
+    }
+
+    &.activo {
+      color: #3b50df;
+      background: #eef2ff;
+      font-weight: 700;
+    }
+  }
+}
+
+.estado-sistema {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  .punto-activo {
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+  }
+}
+
+@media (max-width: 820px) {
+  .subtitulo, .estado-sistema {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .barra {
+    padding: 0 0.75rem;
+  }
+  .marca-info {
+    display: none;
+  }
+}

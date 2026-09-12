@@ -26,7 +26,7 @@ export class ListadoVehiculosComponent {
   private readonly api = inject(ApiService);
 
   readonly columnas = ['placa', 'tipo', 'propietario', 'estado', 'acumulado', 'acciones'];
-  readonly etiquetas = ETIQUETAS_TIPO;
+  readonly etiquetas: Record<string, string> = ETIQUETAS_TIPO;
 
   readonly vehiculos = signal<Vehiculo[]>([]);
   readonly total = signal(0);
