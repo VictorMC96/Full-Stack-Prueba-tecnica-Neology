@@ -1,0 +1,13 @@
+<main class="main">
+ <div class="app-container">
+  <nav class="app-nav">
+    <a routerLink="/vehicles" routerLinkActive="app-nav__link--active" class="app-nav__link">Vehicles</a>
+    <a routerLink="/residents/report" routerLinkActive="app-nav__link--active" class="app-nav__link">Resident report</a>
+    <a routerLink="/entries/new" routerLinkActive="app-nav__link--active" class="app-nav__link">Register entry</a>
+    <a routerLink="/exits/new" routerLinkActive="app-nav__link--active" class="app-nav__link">Register exit</a>
+    <app-start-month-button></app-start-month-button>
+  </nav>
+
+  <router-outlet />
+</div>
+</main>

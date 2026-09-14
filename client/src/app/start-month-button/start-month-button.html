@@ -1,0 +1,16 @@
+<button
+  type="button"
+  class="start-month-button"
+  [disabled]="loading()"
+  (click)="startNewMonth()"
+>
+  {{ loading() ? 'Starting…' : 'Start new month' }}
+</button>
+
+@if (feedback()) {
+  <p class="start-month-button__feedback">{{ feedback() }}</p>
+}
+
+@if (error()) {
+  <p class="start-month-button__error">{{ error() }}</p>
+}

@@ -1,0 +1,23 @@
+.start-month-button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #d93025;
+  background: white;
+  color: #d93025;
+  cursor: pointer;
+}
+
+.start-month-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.start-month-button__feedback {
+  color: #1a7a1a;
+  font-size: 0.875rem;
+}
+
+.start-month-button__error {
+  color: #b00020;
+  font-size: 0.875rem;
+}

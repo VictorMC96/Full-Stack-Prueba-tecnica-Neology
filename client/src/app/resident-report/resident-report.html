@@ -1,0 +1,48 @@
+<section class="resident-report">
+  <div class="resident-report__header">
+    <h1>Resident report</h1>
+
+    <button
+      type="button"
+      class="button"
+      (click)="loadReport()"
+      [disabled]="loading()"
+    >
+      {{ loading() ? 'Loading…' : 'Refresh' }}
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p class="state">Loading resident report…</p>
+  }
+
+  @if (errorMessage()) {
+    <p class="state state--error">{{ errorMessage() }}</p>
+  }
+
+  @if (!loading() && !errorMessage()) {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Plate</th>
+          <th>Total minutes</th>
+          <th>Amount to pay</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (payment of payments(); track payment.plate) {
+          <tr>
+            <td>{{ payment.plate }}</td>
+            <td>{{ payment.totalMinutes }}</td>
+            <td>{{ payment.amountToPay | number: '1.2-2' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="3">No resident payment information found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
