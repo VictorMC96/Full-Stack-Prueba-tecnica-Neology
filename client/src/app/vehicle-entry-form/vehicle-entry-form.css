@@ -1,0 +1,53 @@
+.vehicle-entry-form {
+  max-width: 420px;
+}
+
+.field {
+  display: block;
+  margin-bottom: 1.25rem;
+}
+
+.field__label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 0.4rem;
+  color: #444;
+}
+
+.field__input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.field__error {
+  color: #b00020;
+  font-size: 0.85rem;
+  margin: 0.25rem 0 1rem;
+}
+
+.field__success {
+  color: #1a7a1a;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 1rem;
+}
+
+.button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.button--primary {
+  background: #1a73e8;
+  color: white;
+}
+
+.button--primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

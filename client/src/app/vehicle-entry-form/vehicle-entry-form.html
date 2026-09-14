@@ -1,0 +1,37 @@
+<section class="vehicle-entry-form">
+  <h1>Register entry</h1>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <label class="field">
+      <span class="field__label">Plate</span>
+      <input
+        type="text"
+        class="field__input"
+        placeholder="e.g. ABC123"
+        autocomplete="off"
+        formControlName="plate"
+      />
+    </label>
+    @if (form.controls.plate.invalid && form.controls.plate.touched) {
+      <p class="field__error">
+        @if (form.controls.plate.hasError('required')) {
+          Plate is required.
+        } @else if (form.controls.plate.hasError('unsafePlate')) {
+          Only letters, numbers and hyphens are allowed.
+        }
+      </p>
+    }
+
+    @if (errorMessage()) {
+      <p class="field__error">{{ errorMessage() }}</p>
+    }
+
+    @if (successMessage()) {
+      <p class="field__success">{{ successMessage() }}</p>
+    }
+
+    <button type="submit" class="button button--primary" [disabled]="submitting()">
+      {{ submitting() ? 'Registering…' : 'Register entry' }}
+    </button>
+  </form>
+</section>

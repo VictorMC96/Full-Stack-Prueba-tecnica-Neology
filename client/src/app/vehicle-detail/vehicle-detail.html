@@ -1,0 +1,73 @@
+<section class="vehicle-detail">
+  <a routerLink="/vehicles" class="back-link">&larr; Back to vehicles</a>
+
+  @if (vehicleLoading()) {
+    <p class="state state--loading">Loading vehicle…</p>
+  }
+
+  @if (vehicleError()) {
+    <p class="state state--error">{{ vehicleError() }}</p>
+  }
+
+  @if (!vehicleLoading() && !vehicleError() && !vehicle()) {
+    <p class="state">No vehicle found with plate "{{ plate() }}".</p>
+  }
+
+  @if (vehicle(); as currentVehicle) {
+    <h1>{{ currentVehicle.plate }}</h1>
+    <p class="vehicle-type">{{ vehicleTypeLabel(currentVehicle.type) }}</p>
+
+    @if (currentVehicle.type === 'RESIDENT') {
+      <div class="card">
+        <h2>Accumulated payment</h2>
+        @if (paymentLoading()) {
+          <p class="state state--loading">Loading payment…</p>
+        } @else if (payment(); as currentPayment) {
+          <p><strong>Total minutes:</strong> {{ currentPayment.totalMinutes }}</p>
+          <p><strong>Amount to pay:</strong> {{ currentPayment.amountToPay | number: '1.2-2' }}</p>
+        } @else {
+          <p class="state">No accumulated payment information yet.</p>
+        }
+      </div>
+    }
+
+    <div class="card">
+      <h2>Stay history</h2>
+
+      @if (staysLoading()) {
+        <p class="state state--loading">Loading stays…</p>
+      } @else {
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Entry date</th>
+              <th>Exit date</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (stay of stays(); track stay.id) {
+              <tr>
+                <td>{{ stay.entryDate | date: 'short' }}</td>
+                <td>{{ stay.exitDate ? (stay.exitDate | date: 'short') : 'Still parked' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="2">No stays recorded for this vehicle.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="pagination">
+          <button type="button" (click)="goToStayPage(stayPage() - 1)" [disabled]="stayPage() === 0">
+            Previous
+          </button>
+          <span>Page {{ stayPage() + 1 }} of {{ stayTotalPages() || 1 }}</span>
+          <button type="button" (click)="goToStayPage(stayPage() + 1)" [disabled]="stayPage() + 1 >= stayTotalPages()">
+            Next
+          </button>
+        </div>
+      }
+    </div>
+  }
+</section>
