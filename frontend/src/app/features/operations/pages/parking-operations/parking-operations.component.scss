@@ -1,0 +1,75 @@
+.operations-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 28px;
+  }
+
+  p {
+    margin: 0;
+    opacity: 0.7;
+  }
+}
+
+.operations-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    2,
+    minmax(0, 1fr)
+  );
+  gap: 24px;
+}
+
+mat-card-content {
+  padding-top: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.stay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.month-card {
+  grid-column: 1 / -1;
+
+  p {
+    margin-top: 0;
+    margin-bottom: 20px;
+    opacity: 0.75;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .operations-page {
+    padding: 16px;
+  }
+
+  .operations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .month-card {
+    grid-column: auto;
+  }
+
+  .stay-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

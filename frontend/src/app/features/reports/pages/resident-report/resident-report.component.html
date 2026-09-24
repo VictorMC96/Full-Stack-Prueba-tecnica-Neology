@@ -1,0 +1,207 @@
+<section class="report-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>Reporte de residentes</h1>
+
+      <p>
+        Consulta los minutos acumulados y pagos
+        correspondientes al periodo actual.
+      </p>
+    </div>
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="loadReport()">
+
+      <mat-icon>
+        refresh
+      </mat-icon>
+
+      Actualizar
+
+    </button>
+
+  </div>
+
+  <div class="summary">
+
+    <mat-card>
+
+      <mat-card-content>
+
+        <div class="summary-content">
+
+          <div>
+            <span class="summary-label">
+              Residentes
+            </span>
+
+            <strong class="summary-value">
+              {{ dataSource.data.length }}
+            </strong>
+          </div>
+
+          <div>
+            <span class="summary-label">
+              Total a cobrar
+            </span>
+
+            <strong class="summary-value">
+              {{ totalAmount | currency:'MXN':'symbol':'1.2-2' }}
+            </strong>
+          </div>
+
+        </div>
+
+      </mat-card-content>
+
+    </mat-card>
+
+  </div>
+
+  <mat-card>
+
+    <mat-card-content>
+
+      <div class="filters">
+
+        <mat-form-field appearance="outline">
+
+          <mat-label>
+            Buscar por placa
+          </mat-label>
+
+          <mat-icon matPrefix>
+            search
+          </mat-icon>
+
+          <input
+            matInput
+            [formControl]="filterControl"
+            placeholder="Ej. ABC-123">
+
+        </mat-form-field>
+
+      </div>
+
+      <div class="table-container">
+
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          matSort>
+
+          <!-- Placa -->
+          <ng-container matColumnDef="plate">
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header>
+
+              Placa
+
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let resident">
+
+              <strong>
+                {{ resident.plate }}
+              </strong>
+
+            </td>
+
+          </ng-container>
+
+          <!-- Minutos -->
+          <ng-container matColumnDef="accumulatedMinutes">
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header>
+
+              Minutos acumulados
+
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let resident">
+
+              {{ resident.accumulatedMinutes }}
+
+            </td>
+
+          </ng-container>
+
+          <!-- Monto -->
+          <ng-container matColumnDef="amount">
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header>
+
+              Monto
+
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let resident">
+
+              {{ resident.amount |
+                currency:'MXN':'symbol':'1.2-2' }}
+
+            </td>
+
+          </ng-container>
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="displayedColumns">
+          </tr>
+
+          <tr
+            mat-row
+            *matRowDef="
+              let row;
+              columns: displayedColumns;
+            ">
+          </tr>
+
+          <tr
+            class="mat-row"
+            *matNoDataRow>
+
+            <td
+              class="mat-cell no-data"
+              [attr.colspan]="displayedColumns.length">
+
+              No se encontraron residentes.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+      <mat-paginator
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 25]"
+        showFirstLastButtons>
+      </mat-paginator>
+
+    </mat-card-content>
+
+  </mat-card>
+
+</section>

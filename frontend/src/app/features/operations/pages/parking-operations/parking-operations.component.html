@@ -1,0 +1,230 @@
+<section class="operations-page">
+
+  <div class="page-header">
+    <h1>Operaciones</h1>
+
+    <p>
+      Administra vehículos, entradas, salidas y periodos mensuales.
+    </p>
+  </div>
+
+  <div class="operations-grid">
+
+    <!-- Alta de vehículo -->
+    <mat-card>
+
+      <mat-card-header>
+        <mat-card-title>
+          Alta de vehículo
+        </mat-card-title>
+
+        <mat-card-subtitle>
+          Registra un vehículo en el sistema
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <form
+          [formGroup]="registrationForm"
+          (ngSubmit)="registerVehicle()">
+
+          <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>
+              Placa
+            </mat-label>
+
+            <input
+              matInput
+              formControlName="plate"
+              maxlength="20"
+              placeholder="Ej. ABC-123">
+
+            @if (
+              registrationForm.controls.plate.hasError('required') &&
+              registrationForm.controls.plate.touched
+            ) {
+
+              <mat-error>
+                La placa es obligatoria
+              </mat-error>
+
+            }
+
+          </mat-form-field>
+
+          <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>
+              Tipo de vehículo
+            </mat-label>
+
+            <mat-select formControlName="type">
+
+              @for (
+                vehicleType of vehicleTypes;
+                track vehicleType.value
+              ) {
+
+                <mat-option
+                  [value]="vehicleType.value">
+
+                  {{ vehicleType.label }}
+
+                </mat-option>
+
+              }
+
+            </mat-select>
+
+          </mat-form-field>
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="registeringVehicle">
+
+            <mat-icon>
+              directions_car
+            </mat-icon>
+
+            Registrar vehículo
+
+          </button>
+
+        </form>
+
+      </mat-card-content>
+
+    </mat-card>
+
+    <!-- Entrada / salida -->
+    <mat-card>
+
+      <mat-card-header>
+        <mat-card-title>
+          Control de estancia
+        </mat-card-title>
+
+        <mat-card-subtitle>
+          Registra entradas y salidas del estacionamiento
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <form [formGroup]="stayForm">
+
+          <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>
+              Placa
+            </mat-label>
+
+            <input
+              matInput
+              formControlName="plate"
+              maxlength="20"
+              placeholder="Ej. ABC-123">
+
+            @if (
+              stayForm.controls.plate.hasError('required') &&
+              stayForm.controls.plate.touched
+            ) {
+
+              <mat-error>
+                La placa es obligatoria
+              </mat-error>
+
+            }
+
+          </mat-form-field>
+
+          <div class="stay-actions">
+
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              [disabled]="processingStay"
+              (click)="registerEntry()">
+
+              <mat-icon>
+                login
+              </mat-icon>
+
+              Registrar entrada
+
+            </button>
+
+            <button
+              mat-stroked-button
+              type="button"
+              [disabled]="processingStay"
+              (click)="registerExit()">
+
+              <mat-icon>
+                logout
+              </mat-icon>
+
+              Registrar salida
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </mat-card-content>
+
+    </mat-card>
+
+    <!-- Nuevo mes -->
+    <mat-card class="month-card">
+
+      <mat-card-header>
+        <mat-card-title>
+          Nuevo mes
+        </mat-card-title>
+
+        <mat-card-subtitle>
+          Reinicia el periodo mensual
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <p>
+          Esta operación reinicia los minutos acumulados de los
+          residentes y elimina las estancias registradas.
+        </p>
+
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="startingMonth"
+          (click)="startNewMonth()">
+
+          <mat-icon>
+            restart_alt
+          </mat-icon>
+
+          Iniciar nuevo mes
+
+        </button>
+
+      </mat-card-content>
+
+    </mat-card>
+
+  </div>
+
+</section>

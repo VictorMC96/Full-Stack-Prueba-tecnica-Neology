@@ -1,0 +1,70 @@
+<div class="app-container">
+
+  <mat-toolbar class="app-toolbar">
+
+    <div
+      class="brand"
+      routerLink="/vehiculos">
+
+      <mat-icon>
+        local_parking
+      </mat-icon>
+
+      <span>
+        Neology Parking
+      </span>
+
+    </div>
+
+    <nav class="navigation">
+
+      <a
+        mat-button
+        routerLink="/vehiculos"
+        routerLinkActive="active-link">
+
+        <mat-icon>
+          directions_car
+        </mat-icon>
+
+        Vehículos
+
+      </a>
+
+      <a
+        mat-button
+        routerLink="/operaciones"
+        routerLinkActive="active-link">
+
+        <mat-icon>
+          swap_vert
+        </mat-icon>
+
+        Operaciones
+
+      </a>
+
+      <a
+        mat-button
+        routerLink="/reportes"
+        routerLinkActive="active-link">
+
+        <mat-icon>
+          assessment
+        </mat-icon>
+
+        Reporte residentes
+
+      </a>
+
+    </nav>
+
+  </mat-toolbar>
+
+  <main class="app-content">
+
+    <router-outlet></router-outlet>
+
+  </main>
+
+</div>
