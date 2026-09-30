@@ -1,122 +1,129 @@
-# Full-Stack-Prueba-tecnica-Neology
+# Gestión de Acceso Vehicular
 
-Instrucciones de la prueba tecnica 
+Sistema web para gestionar el acceso de vehículos a un estacionamiento: registra entradas y salidas,
+calcula cobros por tipo de vehículo y genera el informe mensual de pagos de residentes.
 
-La siguiente es una prueba para evaluar a los postulantes para un perfil de Full Stack.
+Prueba técnica Full Stack para Neology. El enunciado original está en
+[Requerimientos.md](Requerimientos.md); las decisiones de diseño en [docs/decisiones.md](docs/decisiones.md).
 
-## INTRODUCCIÓN
-Este repositorio contiene una serie de requerimientos de un Caso Práctico, que busca evaluar las capacidades técnicas del candidato con respecto a las principales funciones y responsabilidades que se requieren dentro del área de Desarrollo de software de Neology.
+| Capa | Tecnología |
+|------|------------|
+| Backend | Java 21 · Spring Boot 4.1.1 · Spring Data JPA / Hibernate · H2 en memoria · Flyway · springdoc-openapi · Apache POI · Maven Wrapper |
+| Frontend | Angular 22 · Angular Material (M3, tema propio) · SCSS · Formularios reactivos · Jasmine + Karma |
+| Calidad | JUnit 5 + Mockito + AssertJ · JaCoCo · Spotless (google-java-format) · Prettier · GitHub Actions |
 
-## ¿Qué se busca evaluar?
-Principalmente los siguientes aspectos:
+## Requisitos previos
 
-* Creatividad para resolver los requerimientos.
-* Uso de experiencia y conocimiento en base a buenas praticas.
-* Eficiencia de los algoritmos entregados.
-* Mostrar la experencía y la manera de poder salir de la caja para romper o identificar cualquier falla o mejora.
-* Familiaridad con Frameworks y plataformas.
+- **Java 21** (`java -version`)
+- **Node.js 24** y npm (`node -v`)
+- Google Chrome (solo para ejecutar las pruebas del frontend)
 
+No hace falta instalar Maven ni Angular CLI: se usan `./mvnw` y los scripts de `npm`.
 
-## Consideraciones al finalizar la prueba:
-Enviar la prueba tecnica hacía el correo de la consultora y copiando la prueba al correo vmiranda@neology.mx y lluna@neopartners.mx.
-Cumplir con los puntos que solicitan, hacer enfasis en el detalle de las interfaces.<br>
-Clonar el proyecto y subirlo como una rama adicional.
+## Cómo levantar
 
+### Backend
 
+```bash
+cd backend
+./mvnw spring-boot:run          # Windows (cmd/PowerShell): mvnw.cmd spring-boot:run
+```
 
-## Instrucciones:
-* Tiempo estimado: 5 horas
-* Se espera que completes las tareas especificadas a continuación utilizando Angular & Spring Boot.
-* La prueba se evaluará en función de la calidad del código, la organización, la atención al detalle y la precisión en la implementación de los requisitos.
+- API: <http://localhost:8080/neo/...>
+- Swagger UI: <http://localhost:8080/swagger-ui.html> · OpenAPI: <http://localhost:8080/v3/api-docs>
+- Salud: <http://localhost:8080/actuator/health>
 
-## Objetivo General de la prueba Técnica:
+La base de datos H2 se crea en memoria al arrancar; Flyway aplica el esquema (`V1__esquema.sql`) y los
+datos de ejemplo (`V2__datos_iniciales.sql`). Al detener el backend los datos se pierden.
 
-Desarrollar un sistema web que permita gestionar el acceso de vehículos a un estacionamiento, con una interfaz frontend en Angular y una API backend en Spring Boot.<br>
-El sistema debe registrar entradas y salidas, calcular cobros y mostrar reportes.
+### Frontend
 
+```bash
+cd frontend
+npm ci
+npm start                       # ng serve con proxy: /neo y /actuator → http://localhost:8080
+```
 
-### Parte 1 – Backend (Spring Boot):
-## Tecnologías:
-* Java 17+
-* Spring Boot 3.x
-* Maven
-* Hibernate + JPA
-* Base de datos H2 (en memoria)
-* Lombok (opcional)
-* Swagger (opcional)
+Abrir <http://localhost:4200>. Páginas: **Vehículos** (listado con filtro, paginación y ordenamiento,
+detalle por placa), **Operación** (entrada, salida, alta de vehículo, iniciar mes) y **Reporte**
+(informe de pagos de residentes con descarga en Excel).
 
+## Cómo ejecutar las pruebas
 
-### 1. Endpoints requeridos:
+```bash
+# Backend: pruebas unitarias e integración + cobertura JaCoCo + formato
+cd backend && ./mvnw verify
+# Informe de cobertura: backend/target/site/jacoco/index.html
 
-* POST neo/vehiculos/oficiales: Alta de vehículo oficial
-* POST neo/vehiculos/residentes: Alta de vehículo residente
-* POST neo/vehiculos/no-residentes: Alta de vehículo no residente (opcional)
-* POST neo/estancias/entrada: Registrar entrada de vehículo
-* POST neo/estancias/salida: Registrar salida de vehículo
-* GET neo/residentes/pagos: Generar informe de pagos
-* POST neo/mes/iniciar: Reiniciar mes (reseteo de tiempos y estancias)
+# Frontend: Jasmine + Karma en Chrome headless, formato y build
+cd frontend && npm run test:ci && npm run format:check && npm run build
+```
 
-### 2. Modelos principales:
+El workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) ejecuta exactamente estos comandos en
+cada push.
 
-* Vehículo (placa, tipo)
-* Estancia (placa, fecha/hora entrada, fecha/hora salida)
-* Residente (placa, tiempo acumulado)
+## Base de datos precargada
 
-### 3. Reglas de negocio:
+`V2__datos_iniciales.sql` deja un periodo (mes) activo y estos vehículos:
 
-* Vehículos oficiales no pagan.
-* Residentes pagan $0.05/minuto (acumulado).
-* No residentes pagan $0.5/minuto al salir.
-* El sistema debe permitir agregar fácilmente nuevos tipos de vehículos.
+| Placa | Tipo |
+|-------|------|
+| `OFI001`, `OFI002` | Oficial |
+| `RES001`, `RES002`, `RES003` | Residente |
+| `NOR001` | No residente |
 
-### 4. Pruebas unitarias:
+Incluye estancias cerradas en el periodo actual (con su acumulado para los residentes) y una estancia
+abierta, de modo que el listado, el detalle y el reporte muestran datos desde el primer arranque.
 
-* Crear pruebas mínimas para los servicios más importantes (ej: cálculo de cobro, registro de estancias).
+## API
 
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/neo/vehiculos/oficiales` | Alta de vehículo oficial `{ "placa": "ABC123" }` |
+| POST | `/neo/vehiculos/residentes` | Alta de vehículo residente |
+| POST | `/neo/vehiculos/no-residentes` | Alta de vehículo no residente (opcional) |
+| POST | `/neo/estancias/entrada` | Registrar entrada `{ "placa": "ABC123" }` |
+| POST | `/neo/estancias/salida` | Registrar salida; devuelve minutos e importe |
+| GET | `/neo/residentes/pagos` | Informe de pagos del periodo activo. `Accept: application/json` → JSON; `Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` → `.xlsx` |
+| POST | `/neo/mes/iniciar` | Cierra el periodo activo y abre uno nuevo |
+| GET | `/neo/vehiculos?placa=&page=&size=&sort=` | Listado paginado con filtro y ordenamiento |
+| GET | `/neo/vehiculos/{placa}` | Detalle: tipo, estado, acumulado del periodo |
+| GET | `/neo/vehiculos/{placa}/estancias` | Estancias del vehículo, paginadas |
 
-## Parte 2 – Frontend (Angular):
-### Tecnologías:
-* Angular 16+
-* Angular Material
-* SCSS o CSS
+Los errores siguen RFC 7807 (`application/problem+json`) con un campo `code`
+(`VALIDACION`, `VEHICULO_YA_REGISTRADO`, `VEHICULO_YA_DENTRO`, `VEHICULO_NO_DENTRO`,
+`VEHICULO_NO_ENCONTRADO`, `PARAMETRO_INVALIDO`).
 
-### 1. Requerimientos funcionales:
+## Reglas de negocio
 
-* Página de listado de vehículos (consumir desde el backend).<br> 
-Formulario para:
-* Registrar entrada
-* Registrar salida
-* Dar de alta vehículo oficial o residente
-* Iniciar nuevo mes
+| Tipo | Tarifa | Cuándo se cobra |
+|------|--------|-----------------|
+| Oficial | No paga | — |
+| Residente | $0.05 / minuto | Acumulado por periodo; se liquida con el informe |
+| No residente | $0.50 / minuto | Al registrar la salida |
 
-* Vista de detalle para cada vehículo (estancias, pagos acumulados si aplica).<br>
-* Página de reporte de residentes (visualización de informe).
+- Se cobran minutos completos; los segundos sobrantes se descartan. Importes con dos decimales.
+- Una placa desconocida que registra entrada se da de alta como no residente; puede reclasificarse después.
+- Iniciar mes cierra el periodo activo y abre otro: las estancias quedan archivadas en su periodo y los
+  acumulados de residentes vuelven a cero. Las estancias abiertas cuentan en el periodo en que salen.
+- Las tarifas viven en `application.yml`; cada tipo de vehículo tiene su propia estrategia de cobro,
+  por lo que agregar un tipo nuevo no toca los servicios existentes.
 
-### 2. Extras recomendados:
+## Estructura
 
-* Filtro por placa en el listado.
-* Paginación y ordenamiento.
-* Validación de campos.
-* Prevenir XSS en campos de entrada.
-* Pruebas unitarias básicas con Jasmine + Karma.
-* Utiliza Angular Material para mejorar el diseño y la experiencia del usuario.
+```
+backend/   Spring Boot — mx.neology.acceso.{domain, application, infrastructure, web}
+frontend/  Angular — src/app/{core, shared, features/{vehiculos, operacion, reporte}}
+docs/      decisiones.md, PR.md, capturas/
+blueprints/, .specify/, CLAUDE.md   Metodología: blueprint de arquitectura y Spec Kit
+```
 
-## Entrega:
+## Capturas
 
-### Repositorio GitHub con:
-* Proyecto Angular (frontend/)
-* Proyecto Spring Boot (backend/)
+Las capturas del frontend funcionando están en [docs/capturas/](docs/capturas/).
 
-### Instrucciones claras en el README para:
-* Levantar backend y frontend
-* Realizar pruebas
-* Base de datos precargada opcionalmente
-* Capturas de pantalla del frontend funcionando
-* Código bien organizado, modular, con buenas prácticas
+## Mejoras futuras
 
-
-
-Nota:
-No te preocupes si no puedes completar todos los requisitos en el tiempo asignado. Se valorará el progreso y la calidad del trabajo realizado.
-
-
+Autenticación y roles (Spring Security + JWT), bitácora de auditoría, base de datos persistente,
+Docker Compose, tema oscuro y pruebas E2E con Playwright. Se dejaron fuera a propósito por el alcance
+de la prueba; ver [docs/decisiones.md](docs/decisiones.md).
