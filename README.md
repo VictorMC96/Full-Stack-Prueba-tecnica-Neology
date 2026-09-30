@@ -113,6 +113,20 @@ Los errores siguen RFC 7807 (`application/problem+json`) con un campo `code`
 - Las tarifas viven en `application.yml`; cada tipo de vehículo tiene su propia estrategia de cobro,
   por lo que agregar un tipo nuevo no toca los servicios existentes.
 
+### Cómo agregar un tipo de vehículo
+
+Ejemplo, un tipo «visitante» que paga $0.30 por minuto al salir:
+
+1. Constante `VISITANTE` en `TipoVehiculo` (dominio).
+2. Clase `CobroVisitante implements EstrategiaCobro` en `domain/cobro` (tipo, momento de cobro e importe).
+3. Línea `visitante: 0.30` bajo `acceso.tarifas` en `application.yml` y el bean en `CobroConfig`.
+4. Etiqueta del tipo en el chip de Angular (`shared/estado-chip`) y, si debe darse de alta desde la
+   interfaz, la opción en el formulario de alta y su ruta `POST /neo/vehiculos/visitantes`.
+
+Ningún caso de uso, repositorio ni migración cambia: la calculadora registra las estrategias por tipo y
+falla al arrancar si a un tipo le falta estrategia o tarifa. El procedimiento completo está en
+[.claude/skills/agregar-tipo-vehiculo](.claude/skills/agregar-tipo-vehiculo/SKILL.md).
+
 ## Estructura
 
 ```

@@ -3,6 +3,7 @@ package mx.neology.acceso;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import mx.neology.acceso.domain.TipoVehiculo;
 import mx.neology.acceso.infrastructure.config.TarifasProperties;
 import mx.neology.acceso.soporte.IntegracionBase;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ class BaseDatosMigradaTest extends IntegracionBase {
 
   @Test
   void lasTarifasSeLeenDeLaConfiguracion() {
-    assertThat(tarifas.residente()).isEqualByComparingTo("0.05");
-    assertThat(tarifas.noResidente()).isEqualByComparingTo("0.50");
+    assertThat(tarifas.porMinuto(TipoVehiculo.RESIDENTE)).isEqualByComparingTo("0.05");
+    assertThat(tarifas.porMinuto(TipoVehiculo.NO_RESIDENTE)).isEqualByComparingTo("0.50");
   }
 }
