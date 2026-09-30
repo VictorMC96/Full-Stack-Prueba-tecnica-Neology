@@ -17,7 +17,7 @@ Pasos manuales (no los ejecuta ningún agente):
 
 ## Título
 
-`Prueba técnica Full Stack – Xochitl (feature/xochitlgr)`
+`Prueba técnica Full Stack (feature/xochitlgr)`
 
 ## Descripción
 

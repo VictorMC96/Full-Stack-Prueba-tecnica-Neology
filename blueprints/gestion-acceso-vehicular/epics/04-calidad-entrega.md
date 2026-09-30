@@ -82,7 +82,7 @@ listed here, stop and report — it means the epic boundary is wrong.
 | Export | Signature | Used by |
 |---|---|---|
 | `.github/workflows/ci.yml` | Trabajos `backend` (Java 21, `chmod +x mvnw`, `./mvnw -B -ntp verify`) y `frontend` (Node 24, `npm ci`, `npm run format:check`, `npm run test:ci`, `npm run build`) | La persona, al abrir el PR |
-| `docs/PR.md` | Título `Prueba técnica Full Stack – Xochitl (feature/xochitlgr)`, destino `VictorMC96:main`, pasos manuales | La persona |
+| `docs/PR.md` | Título `Prueba técnica Full Stack (feature/xochitlgr)`, destino `VictorMC96:main`, pasos manuales | La persona |
 | `README.md` | Secciones `## Cómo levantar`, `## Pruebas`, `## Base de datos precargada`, `## API y Swagger`, `## Decisiones técnicas`, `## Capturas` | El evaluador |
 
 ## Conventions that bite in this area
@@ -288,7 +288,7 @@ mes vacía el informe del periodo activo. Al terminar, detén ambos procesos.
 
 **3. `docs/PR.md`** — contiene:
 
-- Título del PR: `Prueba técnica Full Stack – Xochitl (feature/xochitlgr)`.
+- Título del PR: `Prueba técnica Full Stack (feature/xochitlgr)`.
 - Cuerpo: resumen de lo entregado, cómo probarlo (los comandos del README), decisiones destacadas y
   lista de capturas.
 - Pasos manuales de entrega, **que ejecuta la persona y nunca el agente**: (1) crear el fork de
@@ -317,7 +317,7 @@ Copiados literalmente del arreglo `acceptance` de esta tarea en `tasks.json`. Ca
 1. **WHEN** `README.md` is read **THE SYSTEM SHALL** contain the headings `## Cómo levantar`, `## Pruebas`, `## Base de datos precargada`, `## API y Swagger`, `## Decisiones técnicas` and `## Capturas`.
 2. **WHEN** the commands in the README are inspected **THE SYSTEM SHALL** state `./mvnw spring-boot:run` for `backend/`, `npm ci` followed by `npm start` for `frontend/`, and the URLs `http://localhost:8080/swagger-ui.html` and `http://localhost:4200`.
 3. **WHEN** `docs/capturas/` is listed **THE SYSTEM SHALL** contain the 6 files `lista.png`, `detalle.png`, `operacion-entrada.png`, `operacion-salida.png`, `iniciar-mes.png` and `reporte.png`, each referenced from `README.md`.
-4. **WHEN** `docs/PR.md` is read **THE SYSTEM SHALL** contain the pull-request title `Prueba técnica Full Stack – Xochitl (feature/xochitlgr)`, the target `VictorMC96:main` and the manual fork, push and pull-request steps, none of which the builder executes.
+4. **WHEN** `docs/PR.md` is read **THE SYSTEM SHALL** contain the pull-request title `Prueba técnica Full Stack (feature/xochitlgr)`, the target `VictorMC96:main` and the manual fork, push and pull-request steps, none of which the builder executes.
 5. **WHEN** the full gates run **THE SYSTEM SHALL** exit 0 on `./mvnw -q -B -ntp verify` in `backend/` and on `npm run format:check`, `npm run test:ci` and `npm run build` in `frontend/`.
 
 **Verify** — todos los comandos, en orden, cada uno en su propio shell desde la raíz del proyecto. Cada uno sale con 0 cuando la tarea está bien; la tarea está hecha cuando el último sale con 0.

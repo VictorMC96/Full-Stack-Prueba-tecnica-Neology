@@ -2551,7 +2551,7 @@ mes vacía el informe del periodo activo. Al terminar, detén ambos procesos.
 
 **3. `docs/PR.md`** — contiene:
 
-- Título del PR: `Prueba técnica Full Stack – Xochitl (feature/xochitlgr)`.
+- Título del PR: `Prueba técnica Full Stack (feature/xochitlgr)`.
 - Cuerpo: resumen de lo entregado, cómo probarlo (los comandos del README), decisiones destacadas y
   lista de capturas.
 - Pasos manuales de entrega, **que ejecuta la persona y nunca el agente**: (1) crear el fork de
@@ -2578,7 +2578,7 @@ Archivos que toca este paso:
 - [ ] WHEN `README.md` is read THE SYSTEM SHALL contain the headings `## Cómo levantar`, `## Pruebas`, `## Base de datos precargada`, `## API y Swagger`, `## Decisiones técnicas` and `## Capturas`.
 - [ ] WHEN the commands in the README are inspected THE SYSTEM SHALL state `./mvnw spring-boot:run` for `backend/`, `npm ci` followed by `npm start` for `frontend/`, and the URLs `http://localhost:8080/swagger-ui.html` and `http://localhost:4200`.
 - [ ] WHEN `docs/capturas/` is listed THE SYSTEM SHALL contain the 6 files `lista.png`, `detalle.png`, `operacion-entrada.png`, `operacion-salida.png`, `iniciar-mes.png` and `reporte.png`, each referenced from `README.md`.
-- [ ] WHEN `docs/PR.md` is read THE SYSTEM SHALL contain the pull-request title `Prueba técnica Full Stack – Xochitl (feature/xochitlgr)`, the target `VictorMC96:main` and the manual fork, push and pull-request steps, none of which the builder executes.
+- [ ] WHEN `docs/PR.md` is read THE SYSTEM SHALL contain the pull-request title `Prueba técnica Full Stack (feature/xochitlgr)`, the target `VictorMC96:main` and the manual fork, push and pull-request steps, none of which the builder executes.
 - [ ] WHEN the full gates run THE SYSTEM SHALL exit 0 on `./mvnw -q -B -ntp verify` in `backend/` and on `npm run format:check`, `npm run test:ci` and `npm run build` in `frontend/`.
 
 **Verify**
