@@ -44,3 +44,7 @@ h2 {
   margin: 0 0 var(--app-space-3);
   color: var(--app-color-fg-muted);
 }
+
+.campo + .campo {
+  margin-top: var(--app-space-2);
+}

@@ -1,6 +1,12 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, signal, viewChild } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -34,6 +40,7 @@ export const ETIQUETA_COBRO: Record<MomentoCobro, string> = {
 export class SalidaForm {
   private readonly api = inject(EstanciasApi);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly formDir = viewChild(FormGroupDirective);
 
   readonly form = new FormGroup({
     placa: new FormControl('', {
@@ -61,7 +68,7 @@ export class SalidaForm {
           'Cerrar',
           { duration: 6000 },
         );
-        this.form.reset();
+        this.formDir()?.resetForm();
       },
       error: () => this.enviando.set(false),
     });

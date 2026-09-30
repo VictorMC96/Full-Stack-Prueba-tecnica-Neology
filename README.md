@@ -120,7 +120,17 @@ blueprints/, .specify/, CLAUDE.md   Metodología: blueprint de arquitectura y Sp
 
 ## Capturas
 
-Las capturas del frontend funcionando están en [docs/capturas/](docs/capturas/).
+| Pantalla | Captura |
+|----------|---------|
+| Listado de vehículos (filtro, paginación, orden) | [01-listado-vehiculos.png](docs/capturas/01-listado-vehiculos.png) |
+| Detalle de vehículo con acumulado y estancias | [02-detalle-vehiculo.png](docs/capturas/02-detalle-vehiculo.png) |
+| Operación: registrar entrada | [03-operacion-entrada.png](docs/capturas/03-operacion-entrada.png) |
+| Operación: registrar salida con cobro | [04-registrar-salida.png](docs/capturas/04-registrar-salida.png) |
+| Iniciar nuevo mes (confirmación) | [05-iniciar-mes-confirmacion.png](docs/capturas/05-iniciar-mes-confirmacion.png) |
+| Reporte de residentes con descarga en Excel | [06-reporte-residentes.png](docs/capturas/06-reporte-residentes.png) |
+| Manejo de errores RFC 7807 (salida sin entrada) | [07-error-salida-sin-entrada.png](docs/capturas/07-error-salida-sin-entrada.png) |
+
+![Listado de vehículos](docs/capturas/01-listado-vehiculos.png)
 
 ## Mejoras futuras
 

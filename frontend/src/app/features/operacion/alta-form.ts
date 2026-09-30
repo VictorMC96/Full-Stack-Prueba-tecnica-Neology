@@ -1,5 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, signal, viewChild } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -33,6 +39,7 @@ export const OPCIONES_TIPO: { valor: TipoAlta; etiqueta: string }[] = [
 export class AltaForm {
   private readonly api = inject(VehiculosApi);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly formDir = viewChild(FormGroupDirective);
 
   readonly opciones = OPCIONES_TIPO;
   readonly form = new FormGroup({
@@ -62,7 +69,7 @@ export class AltaForm {
         this.snackBar.open(`Vehículo ${vehiculo.placa} registrado como ${etiqueta}`, 'Cerrar', {
           duration: 4000,
         });
-        this.form.reset({ placa: '', tipo });
+        this.formDir()?.resetForm({ placa: '', tipo });
       },
       error: () => this.enviando.set(false),
     });
