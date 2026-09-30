@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: gestion-acceso-vehicular
+  datasource:
+    url: jdbc:h2:mem:acceso;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  port: 8080
+
+acceso:
+  zona-horaria: America/Mexico_City
+  tarifas:
+    residente: 0.05
+    no-residente: 0.50
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

@@ -1,13 +1,10 @@
 package mx.neology.acceso;
 
+import mx.neology.acceso.soporte.IntegracionBase;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class BackendApplicationTests {
+class BackendApplicationTests extends IntegracionBase {
 
-	@Test
-	void contextLoads() {
-	}
-
+  @Test
+  void contextLoads() {}
 }
