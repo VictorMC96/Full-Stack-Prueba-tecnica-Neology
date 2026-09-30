@@ -1,0 +1,17 @@
+<mat-card appearance="outlined" class="app-card">
+  <mat-card-header>
+    <mat-card-title><h2>Iniciar nuevo mes</h2></mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p class="descripcion">
+      Cierra el periodo actual, archiva sus estancias y pone a cero los acumulados de residentes. Se
+      pedirá confirmación.
+    </p>
+  </mat-card-content>
+  <div class="acciones">
+    <button matButton="outlined" type="button" [disabled]="enviando()" (click)="confirmar()">
+      <mat-icon aria-hidden="true">event_repeat</mat-icon>
+      Iniciar nuevo mes
+    </button>
+  </div>
+</mat-card>

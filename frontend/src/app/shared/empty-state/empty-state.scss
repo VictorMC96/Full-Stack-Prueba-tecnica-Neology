@@ -1,0 +1,21 @@
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--app-space-2);
+  padding: var(--app-space-6) var(--app-space-4);
+  text-align: center;
+  color: var(--app-color-fg-muted);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--app-color-fg);
+}

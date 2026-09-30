@@ -1,0 +1,27 @@
+# Backend (Maven)
+backend/target/
+
+# Frontend (Angular)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+
+# Logs
+*.log
+
+# IDE y sistema operativo
+.idea/
+.vscode/*
+!.vscode/extensions.json
+Thumbs.db
+.DS_Store
+
+# Configuracion local de Claude Code (la compartida, .claude/settings.json, si se versiona)
+.claude/settings.local.json
+
+# Duplicado del README de upstream: el archivo se conserva en disco pero no se versiona
+Requerimientos.txt
+
+# Descarga temporal del scaffold del backend
+backend.tgz

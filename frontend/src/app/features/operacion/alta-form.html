@@ -1,0 +1,55 @@
+<mat-card appearance="outlined" class="app-card">
+  <mat-card-header>
+    <mat-card-title><h2>Alta de vehículo</h2></mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    <mat-card-content>
+      <p class="descripcion">
+        El tipo define el modelo de cobro; se administran en «Tipos de vehículo».
+      </p>
+      <mat-form-field appearance="outline" class="campo">
+        <mat-label>Placa</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="placa"
+          appPlacaMayusculas
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="14"
+        />
+        <mat-hint>3 a 10 letras o dígitos</mat-hint>
+        @if (form.controls.placa.hasError('required')) {
+          <mat-error>La placa es obligatoria</mat-error>
+        } @else if (form.controls.placa.hasError('placa')) {
+          <mat-error>Usa de 3 a 10 letras o dígitos, sin símbolos</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="campo">
+        <mat-label>Tipo de vehículo</mat-label>
+        <mat-select formControlName="tipo">
+          @for (tipo of tipos(); track tipo.codigo) {
+            <mat-option [value]="tipo.codigo">{{ tipo.nombre }}</mat-option>
+          }
+        </mat-select>
+        @if (cargandoTipos()) {
+          <mat-hint>Cargando tipos…</mat-hint>
+        }
+      </mat-form-field>
+      @if (errorTipos()) {
+        <p class="aviso" role="alert">
+          No se pudieron cargar los tipos.
+          <button matButton type="button" (click)="cargarTipos()">Reintentar</button>
+        </p>
+      }
+      <mat-slide-toggle formControlName="registrarEntrada" class="opcion">
+        Registrar entrada ahora
+      </mat-slide-toggle>
+    </mat-card-content>
+    <div class="acciones">
+      <button matButton="filled" type="submit" [disabled]="form.invalid || enviando()">
+        Dar de alta
+      </button>
+    </div>
+  </form>
+</mat-card>

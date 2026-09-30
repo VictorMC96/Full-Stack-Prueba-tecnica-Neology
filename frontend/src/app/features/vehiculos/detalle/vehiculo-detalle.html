@@ -1,0 +1,148 @@
+<a class="volver" routerLink="/vehiculos">
+  <mat-icon aria-hidden="true">arrow_back</mat-icon>
+  Volver al listado
+</a>
+
+<header class="cabecera">
+  <h1>
+    Vehículo <span class="placa">{{ placa() }}</span>
+  </h1>
+  @if (vehiculo(); as v) {
+    <div class="chips">
+      <app-estado-chip [estado]="v.tipo" [nombre]="v.tipoNombre" />
+      <app-estado-chip [estado]="v.dentro ? 'DENTRO' : 'FUERA'" />
+    </div>
+  }
+</header>
+
+@if (cargando()) {
+  <app-loading />
+}
+
+@if (noEncontrado()) {
+  <app-empty-state icono="search_off" titulo="Vehículo no encontrado">
+    <a matButton="filled" routerLink="/vehiculos">Ir al listado</a>
+  </app-empty-state>
+} @else if (error()) {
+  <div class="estado-error" role="alert">
+    <p>No se pudo cargar el vehículo</p>
+    <button matButton="outlined" type="button" (click)="cargar()">Reintentar</button>
+  </div>
+} @else if (vehiculo(); as v) {
+  <div class="tarjetas">
+    <mat-card appearance="outlined" class="app-card">
+      <mat-card-header>
+        <mat-card-title><h2>Datos</h2></mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <dl class="datos">
+          <dt>Tipo</dt>
+          <dd><app-estado-chip [estado]="v.tipo" [nombre]="v.tipoNombre" /></dd>
+          <dt>Estado</dt>
+          <dd><app-estado-chip [estado]="v.dentro ? 'DENTRO' : 'FUERA'" /></dd>
+          <dt>Alta</dt>
+          <dd>{{ v.createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+        </dl>
+      </mat-card-content>
+    </mat-card>
+
+    @if (v.acumuladoPeriodo; as acumulado) {
+      <mat-card appearance="outlined" class="app-card">
+        <mat-card-header>
+          <mat-card-title><h2>Acumulado del periodo</h2></mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <dl class="datos">
+            <dt>Minutos</dt>
+            <dd>{{ acumulado.minutos }}</dd>
+            <dt>Importe</dt>
+            <dd class="importe">{{ acumulado.importe | currency: 'MXN' : 'symbol-narrow' }}</dd>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (v.estanciaAbierta; as abierta) {
+      <mat-card appearance="outlined" class="app-card">
+        <mat-card-header>
+          <mat-card-title><h2>Estancia abierta</h2></mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <dl class="datos">
+            <dt>Entrada</dt>
+            <dd>{{ abierta.entrada | date: 'dd/MM/yyyy HH:mm' }}</dd>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+
+  <section class="historial" aria-labelledby="titulo-estancias">
+    <h2 id="titulo-estancias">Estancias</h2>
+    @if (cargandoEstancias()) {
+      <app-loading />
+    }
+    @if (estancias(); as pagina) {
+      @if (pagina.content.length === 0) {
+        <app-empty-state icono="history" titulo="Este vehículo aún no tiene estancias" />
+      } @else {
+        <div class="tabla-contenedor">
+          <table mat-table [dataSource]="pagina.content" aria-label="Historial de estancias">
+            <ng-container matColumnDef="entrada">
+              <th mat-header-cell *matHeaderCellDef>Entrada</th>
+              <td mat-cell *matCellDef="let e">{{ e.entrada | date: 'dd/MM/yyyy HH:mm' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="salida">
+              <th mat-header-cell *matHeaderCellDef>Salida</th>
+              <td mat-cell *matCellDef="let e">
+                @if (e.salida) {
+                  {{ e.salida | date: 'dd/MM/yyyy HH:mm' }}
+                } @else {
+                  —
+                }
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="duracion">
+              <th mat-header-cell *matHeaderCellDef class="num" matTooltip="Duración real (mm:ss)">
+                Duración
+              </th>
+              <td mat-cell *matCellDef="let e" class="num">{{ e.duracionSegundos | duracion }}</td>
+            </ng-container>
+            <ng-container matColumnDef="minutos">
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="num"
+                matTooltip="Todo minuto iniciado se cobra completo"
+              >
+                Min. cobrados
+              </th>
+              <td mat-cell *matCellDef="let e" class="num">{{ e.minutos ?? '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="importe">
+              <th mat-header-cell *matHeaderCellDef class="num">Importe</th>
+              <td mat-cell *matCellDef="let e" class="num">
+                @if (e.importe !== null) {
+                  {{ e.importe | currency: 'MXN' : 'symbol-narrow' }}
+                } @else {
+                  —
+                }
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+            <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
+          </table>
+        </div>
+        <mat-paginator
+          [length]="pagina.totalElements"
+          [pageIndex]="pagina.page"
+          [pageSize]="tamano"
+          [hidePageSize]="true"
+          [showFirstLastButtons]="true"
+          aria-label="Seleccionar página de estancias"
+          (page)="cambiarPagina($event)"
+        />
+      }
+    }
+  </section>
+}

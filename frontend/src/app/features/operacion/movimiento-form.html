@@ -1,0 +1,67 @@
+<mat-card appearance="outlined" class="app-card">
+  <mat-card-header>
+    <mat-card-title><h2>Registrar movimiento</h2></mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="registrar('entrada')" novalidate>
+    <mat-card-content>
+      <p class="descripcion">
+        Escribe la placa y elige el movimiento. Una placa sin alta se registra como no residente al
+        entrar.
+      </p>
+      <mat-form-field appearance="outline" class="campo">
+        <mat-label>Placa</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="placa"
+          appPlacaMayusculas
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="14"
+        />
+        <mat-hint>3 a 10 letras o dígitos</mat-hint>
+        @if (form.controls.placa.hasError('required')) {
+          <mat-error>La placa es obligatoria</mat-error>
+        } @else if (form.controls.placa.hasError('placa')) {
+          <mat-error>Usa de 3 a 10 letras o dígitos, sin símbolos</mat-error>
+        }
+      </mat-form-field>
+
+      @if (resultado(); as r) {
+        <div class="resultado" role="status" aria-live="polite">
+          <dl>
+            <dt>Placa</dt>
+            <dd>
+              <span class="placa">{{ r.placa }}</span>
+            </dd>
+            <dt>Tipo</dt>
+            <dd><app-estado-chip [estado]="r.tipo" [nombre]="r.tipoNombre" /></dd>
+            <dt>Duración</dt>
+            <dd>{{ r.duracionSegundos | duracion }}</dd>
+            <dt>Minutos cobrados</dt>
+            <dd>{{ r.minutos ?? 0 }}</dd>
+            <dt>Importe</dt>
+            <dd>{{ r.importe ?? 0 | currency: 'MXN' : 'symbol-narrow' }}</dd>
+            <dt>Cobro</dt>
+            <dd>{{ etiquetas[r.momentoCobro] }}</dd>
+          </dl>
+        </div>
+      }
+    </mat-card-content>
+    <div class="acciones acciones--dobles">
+      <button
+        matButton="outlined"
+        type="button"
+        [disabled]="form.invalid || enviando() !== null"
+        (click)="registrar('salida')"
+      >
+        <mat-icon aria-hidden="true">logout</mat-icon>
+        Registrar salida
+      </button>
+      <button matButton="filled" type="submit" [disabled]="form.invalid || enviando() !== null">
+        <mat-icon aria-hidden="true">login</mat-icon>
+        Registrar entrada
+      </button>
+    </div>
+  </form>
+</mat-card>
