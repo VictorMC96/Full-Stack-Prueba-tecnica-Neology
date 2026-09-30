@@ -18,7 +18,9 @@ CREATE TABLE vehiculos (
     updated_at          TIMESTAMP WITH TIME ZONE NOT NULL,
     CONSTRAINT uq_vehiculos_placa UNIQUE (placa),
     CONSTRAINT uq_vehiculos_estancia_abierta UNIQUE (estancia_abierta_id),
-    CONSTRAINT ck_vehiculos_tipo CHECK (tipo IN ('OFICIAL', 'RESIDENTE', 'NO_RESIDENTE'))
+    -- Cadena de OR en lugar de IN (...): H2 evalua IN con la sesion que creo la tabla y falla
+    -- ("The database has been closed") cuando el pool retira esa conexion (maxLifetime).
+    CONSTRAINT ck_vehiculos_tipo CHECK (tipo = 'OFICIAL' OR tipo = 'RESIDENTE' OR tipo = 'NO_RESIDENTE')
 );
 
 CREATE TABLE estancias (

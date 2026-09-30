@@ -11,8 +11,9 @@ import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatPaginatorHarness } from '@angular/material/paginator/testing';
 import { MatSortHarness } from '@angular/material/sort/testing';
 import { MatTableHarness } from '@angular/material/table/testing';
-import { provideRouter } from '@angular/router';
-import { PageResponse, VehiculoResumen } from '../../../core/modelos/modelos';
+import { MatSnackBarHarness } from '@angular/material/snack-bar/testing';
+import { Router, provideRouter } from '@angular/router';
+import { EstanciaResponse, PageResponse, VehiculoResumen } from '../../../core/modelos/modelos';
 import { VehiculosLista } from './vehiculos-lista';
 
 const VEHICULOS: VehiculoResumen[] = [
@@ -168,5 +169,104 @@ describe('VehiculosLista', () => {
     await fixture.whenStable();
     expect(elemento.textContent).not.toContain('No se pudo cargar el listado');
     expect(elemento.querySelectorAll('tr[mat-row]').length).toBe(2);
+  });
+
+  describe('acción de estado', () => {
+    let elemento: HTMLElement;
+    let navegar: jasmine.Spy;
+
+    const ESTANCIA: EstanciaResponse = {
+      id: 9,
+      placa: 'RES001',
+      tipo: 'RESIDENTE',
+      entrada: '2026-09-30T10:00:00Z',
+      salida: '2026-09-30T10:12:00Z',
+      minutos: 12,
+      importe: 6,
+      momentoCobro: 'AL_SALIR',
+      periodoId: null,
+    };
+
+    beforeEach(async () => {
+      peticion().flush(pagina(VEHICULOS));
+      await fixture.whenStable();
+      elemento = fixture.nativeElement;
+      navegar = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    });
+
+    const boton = (aria: string): HTMLButtonElement =>
+      elemento.querySelector(`[aria-label="${aria}"]`) as HTMLButtonElement;
+
+    it('el chip Fuera registra la entrada, recarga la página y no navega', async () => {
+      const chip = boton('Registrar entrada de OFI001');
+      expect(chip.tagName).toBe('BUTTON');
+      expect(chip.textContent).toContain('Fuera');
+      chip.click();
+      await fixture.whenStable();
+      expect(chip.disabled).toBeTrue();
+
+      const entrada = httpTesting.expectOne('/neo/estancias/entrada');
+      expect(entrada.request.method).toBe('POST');
+      expect(entrada.request.body).toEqual({ placa: 'OFI001' });
+      entrada.flush(
+        { ...ESTANCIA, placa: 'OFI001', salida: null },
+        { status: 201, statusText: 'Created' },
+      );
+
+      const recarga = peticion();
+      expect(recarga.request.params.get('page')).toBe('0');
+      expect(recarga.request.params.get('size')).toBe('10');
+      recarga.flush(pagina([{ ...VEHICULOS[0], dentro: true }, VEHICULOS[1]]));
+      await fixture.whenStable();
+
+      expect(navegar).not.toHaveBeenCalled();
+      expect(boton('Registrar salida de OFI001')).not.toBeNull();
+      const snackbar =
+        await TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(MatSnackBarHarness);
+      expect(await snackbar.getMessage()).toBe('Entrada registrada: OFI001');
+    });
+
+    it('el chip Dentro registra la salida y resume minutos, importe y cobro', async () => {
+      const chip = boton('Registrar salida de RES001');
+      expect(chip.textContent).toContain('Dentro');
+      chip.click();
+      await fixture.whenStable();
+
+      const salida = httpTesting.expectOne('/neo/estancias/salida');
+      expect(salida.request.method).toBe('POST');
+      expect(salida.request.body).toEqual({ placa: 'RES001' });
+      salida.flush(ESTANCIA);
+      peticion().flush(pagina([VEHICULOS[0], { ...VEHICULOS[1], dentro: false }]));
+      await fixture.whenStable();
+
+      expect(navegar).not.toHaveBeenCalled();
+      const snackbar =
+        await TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(MatSnackBarHarness);
+      expect(await snackbar.getMessage()).toBe(
+        'Salida registrada: RES001 · 12 min · $6.00 · Cobrar al salir',
+      );
+    });
+
+    it('si la petición falla rehabilita el chip y no recarga', async () => {
+      const chip = boton('Registrar entrada de OFI001');
+      chip.click();
+      await fixture.whenStable();
+      httpTesting
+        .expectOne('/neo/estancias/entrada')
+        .flush(
+          { status: 409, detail: 'Ya está dentro', code: 'VEHICULO_YA_DENTRO' },
+          { status: 409, statusText: 'Conflict' },
+        );
+      await fixture.whenStable();
+      expect(chip.disabled).toBeFalse();
+      httpTesting.expectNone((r) => r.url === '/neo/vehiculos');
+      expect(navegar).not.toHaveBeenCalled();
+    });
+
+    it('el clic en la fila sigue llevando al detalle', async () => {
+      (elemento.querySelector('tr[mat-row]') as HTMLElement).click();
+      await fixture.whenStable();
+      expect(navegar).toHaveBeenCalledWith(['/vehiculos', 'OFI001']);
+    });
   });
 });

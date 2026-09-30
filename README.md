@@ -44,8 +44,9 @@ npm ci
 npm start                       # ng serve con proxy: /neo y /actuator → http://localhost:8080
 ```
 
-Abrir <http://localhost:4200>. Páginas: **Vehículos** (listado con filtro, paginación y ordenamiento,
-detalle por placa), **Operación** (entrada, salida, alta de vehículo, iniciar mes) y **Reporte**
+Abrir <http://localhost:4200>. Páginas: **Vehículos** (listado con filtro, paginación y ordenamiento;
+el chip de estado registra la entrada o la salida con un clic; detalle por placa), **Operación**
+(entrada, salida, alta de vehículo con entrada inmediata opcional, iniciar mes) y **Reporte**
 (informe de pagos de residentes con descarga en Excel).
 
 ## Cómo ejecutar las pruebas
@@ -122,9 +123,9 @@ blueprints/, .specify/, CLAUDE.md   Metodología: blueprint de arquitectura y Sp
 
 | Pantalla | Captura |
 |----------|---------|
-| Listado de vehículos (filtro, paginación, orden) | [01-listado-vehiculos.png](docs/capturas/01-listado-vehiculos.png) |
+| Listado de vehículos (filtro, paginación, orden, entrada/salida con un clic) | [01-listado-vehiculos.png](docs/capturas/01-listado-vehiculos.png) |
 | Detalle de vehículo con acumulado y estancias | [02-detalle-vehiculo.png](docs/capturas/02-detalle-vehiculo.png) |
-| Operación: registrar entrada | [03-operacion-entrada.png](docs/capturas/03-operacion-entrada.png) |
+| Operación: alta con entrada inmediata | [03-operacion-entrada.png](docs/capturas/03-operacion-entrada.png) |
 | Operación: registrar salida con cobro | [04-registrar-salida.png](docs/capturas/04-registrar-salida.png) |
 | Iniciar nuevo mes (confirmación) | [05-iniciar-mes-confirmacion.png](docs/capturas/05-iniciar-mes-confirmacion.png) |
 | Reporte de residentes con descarga en Excel | [06-reporte-residentes.png](docs/capturas/06-reporte-residentes.png) |

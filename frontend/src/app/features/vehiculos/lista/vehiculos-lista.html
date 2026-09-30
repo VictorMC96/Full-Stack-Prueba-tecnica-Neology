@@ -74,7 +74,28 @@
         <ng-container matColumnDef="estado">
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let vehiculo">
-            <app-estado-chip [estado]="vehiculo.dentro ? 'DENTRO' : 'FUERA'" />
+            <button
+              type="button"
+              class="chip-boton"
+              [attr.aria-label]="
+                (vehiculo.dentro ? 'Registrar salida de ' : 'Registrar entrada de ') +
+                vehiculo.placa
+              "
+              [matTooltip]="vehiculo.dentro ? 'Registrar salida' : 'Registrar entrada'"
+              [disabled]="placaEnCurso() === vehiculo.placa"
+              (click)="alternarEstado(vehiculo, $event)"
+            >
+              <app-estado-chip [estado]="vehiculo.dentro ? 'DENTRO' : 'FUERA'" />
+              <mat-icon class="icono-accion" aria-hidden="true">
+                {{
+                  placaEnCurso() === vehiculo.placa
+                    ? 'progress_activity'
+                    : vehiculo.dentro
+                      ? 'logout'
+                      : 'login'
+                }}
+              </mat-icon>
+            </button>
           </td>
         </ng-container>
 

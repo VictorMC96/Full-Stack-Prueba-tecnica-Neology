@@ -25,6 +25,39 @@ table {
   cursor: pointer;
 }
 
+.chip-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--app-space-1);
+  padding: 2px;
+  border: 0;
+  border-radius: var(--app-radius-chip);
+  background: none;
+  font: inherit;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--app-color-primary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.6;
+  }
+}
+
+.icono-accion {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--app-color-fg-muted);
+}
+
 .col-acciones {
   width: 56px;
   text-align: right;

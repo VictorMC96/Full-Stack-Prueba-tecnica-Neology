@@ -31,6 +31,9 @@
           }
         </mat-select>
       </mat-form-field>
+      <mat-slide-toggle formControlName="registrarEntrada" class="opcion">
+        Registrar entrada ahora
+      </mat-slide-toggle>
     </mat-card-content>
     <div class="acciones">
       <button matButton="filled" type="submit" [disabled]="form.invalid || enviando()">

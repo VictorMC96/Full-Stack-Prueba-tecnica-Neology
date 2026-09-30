@@ -11,9 +11,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, catchError, map, of, switchMap } from 'rxjs';
+import { EstanciasApi } from '../../core/api/estancias-api';
 import { VehiculosApi } from '../../core/api/vehiculos-api';
-import { TipoAlta } from '../../core/modelos/modelos';
+import { TipoAlta, VehiculoResponse } from '../../core/modelos/modelos';
 import { PlacaMayusculas } from '../../shared/placa/placa-mayusculas.directive';
 import { normalizarPlaca, placaValidator } from '../../shared/placa/placa.validator';
 
@@ -21,6 +24,12 @@ export const OPCIONES_TIPO: { valor: TipoAlta; etiqueta: string }[] = [
   { valor: 'OFICIAL', etiqueta: 'Oficial' },
   { valor: 'RESIDENTE', etiqueta: 'Residente' },
 ];
+
+interface ResultadoAlta {
+  vehiculo: VehiculoResponse;
+  /** `true` si se registró la entrada; `null` si la entrada se pidió pero falló. */
+  entrada: boolean | null;
+}
 
 @Component({
   selector: 'app-alta-form',
@@ -31,6 +40,7 @@ export const OPCIONES_TIPO: { valor: TipoAlta; etiqueta: string }[] = [
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatSlideToggleModule,
     PlacaMayusculas,
   ],
   templateUrl: './alta-form.html',
@@ -38,6 +48,7 @@ export const OPCIONES_TIPO: { valor: TipoAlta; etiqueta: string }[] = [
 })
 export class AltaForm {
   private readonly api = inject(VehiculosApi);
+  private readonly estancias = inject(EstanciasApi);
   private readonly snackBar = inject(MatSnackBar);
   private readonly formDir = viewChild(FormGroupDirective);
 
@@ -51,6 +62,7 @@ export class AltaForm {
       nonNullable: true,
       validators: [Validators.required],
     }),
+    registrarEntrada: new FormControl(true, { nonNullable: true }),
   });
   readonly enviando = signal(false);
 
@@ -61,17 +73,38 @@ export class AltaForm {
     }
     const placa = normalizarPlaca(this.form.controls.placa.value);
     const tipo = this.form.controls.tipo.value;
+    const registrarEntrada = this.form.controls.registrarEntrada.value;
     const etiqueta = this.opciones.find((o) => o.valor === tipo)?.etiqueta ?? tipo;
     this.enviando.set(true);
-    this.api.alta(tipo, placa).subscribe({
-      next: (vehiculo) => {
-        this.enviando.set(false);
-        this.snackBar.open(`Vehículo ${vehiculo.placa} registrado como ${etiqueta}`, 'Cerrar', {
-          duration: 4000,
-        });
-        this.formDir()?.resetForm({ placa: '', tipo });
-      },
-      error: () => this.enviando.set(false),
-    });
+    this.api
+      .alta(tipo, placa)
+      .pipe(
+        switchMap((vehiculo): Observable<ResultadoAlta> => {
+          if (!registrarEntrada) {
+            return of({ vehiculo, entrada: false });
+          }
+          return this.estancias.entrada(vehiculo.placa).pipe(
+            map(() => ({ vehiculo, entrada: true })),
+            // El interceptor ya avisó del fallo de la entrada; el alta sí se completó.
+            catchError(() => of({ vehiculo, entrada: null })),
+          );
+        }),
+      )
+      .subscribe({
+        next: ({ vehiculo, entrada }) => {
+          this.enviando.set(false);
+          this.formDir()?.resetForm({ placa: '', tipo, registrarEntrada });
+          if (entrada === null) {
+            return;
+          }
+          const sufijo = entrada ? ' y entrada registrada' : '';
+          this.snackBar.open(
+            `Vehículo ${vehiculo.placa} registrado como ${etiqueta}${sufijo}`,
+            'Cerrar',
+            { duration: 4000 },
+          );
+        },
+        error: () => this.enviando.set(false),
+      });
   }
 }

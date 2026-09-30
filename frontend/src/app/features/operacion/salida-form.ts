@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { Component, LOCALE_ID, inject, signal, viewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -13,15 +13,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EstanciasApi } from '../../core/api/estancias-api';
-import { EstanciaResponse, MomentoCobro } from '../../core/modelos/modelos';
+import { EstanciaResponse } from '../../core/modelos/modelos';
+import { ETIQUETA_COBRO, resumenSalida } from '../../shared/cobro/resumen-salida';
 import { PlacaMayusculas } from '../../shared/placa/placa-mayusculas.directive';
 import { normalizarPlaca, placaValidator } from '../../shared/placa/placa.validator';
-
-export const ETIQUETA_COBRO: Record<MomentoCobro, string> = {
-  AL_SALIR: 'Cobrar al salir',
-  INFORME_MENSUAL: 'Se acumula al informe mensual',
-  NINGUNO: 'Sin cobro',
-};
 
 @Component({
   selector: 'app-salida-form',
@@ -40,6 +35,7 @@ export const ETIQUETA_COBRO: Record<MomentoCobro, string> = {
 export class SalidaForm {
   private readonly api = inject(EstanciasApi);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly locale = inject(LOCALE_ID);
   private readonly formDir = viewChild(FormGroupDirective);
 
   readonly form = new FormGroup({
@@ -63,11 +59,7 @@ export class SalidaForm {
       next: (estancia) => {
         this.enviando.set(false);
         this.resultado.set(estancia);
-        this.snackBar.open(
-          `Salida registrada: ${placa} · ${estancia.minutos ?? 0} min · ${this.etiquetas[estancia.momentoCobro]}`,
-          'Cerrar',
-          { duration: 6000 },
-        );
+        this.snackBar.open(resumenSalida(estancia, this.locale), 'Cerrar', { duration: 6000 });
         this.formDir()?.resetForm();
       },
       error: () => this.enviando.set(false),
