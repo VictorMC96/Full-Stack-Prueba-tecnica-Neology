@@ -1,0 +1,476 @@
+[
+  {
+    "id": "E1-T1",
+    "title": "Crear README base y registro de decisiones",
+    "epic": "01-base",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `git rev-parse --abbrev-ref HEAD` runs THE SYSTEM SHALL print `feature/xochitlgr`.",
+      "WHEN `git remote get-url upstream` runs THE SYSTEM SHALL print `https://github.com/VictorMC96/Full-Stack-Prueba-tecnica-Neology.git`.",
+      "WHEN `git check-attr eol -- backend/mvnw` runs THE SYSTEM SHALL report `eol: lf`.",
+      "WHEN `git check-ignore -q backend/target/x.class` runs THE SYSTEM SHALL exit 0, because build output is ignored.",
+      "WHEN `git check-ignore -q .claude/settings.json` runs THE SYSTEM SHALL exit 1, because the agent workspace is committed.",
+      "WHEN `README.md` and `docs/decisiones.md` are read THE SYSTEM SHALL find the headings `## Cómo levantar` and `## Pruebas` in the first and the text `Spring Boot 4` in the second."
+    ],
+    "verify": [
+      "test \"$(git rev-parse --abbrev-ref HEAD)\" = \"feature/xochitlgr\"",
+      "test \"$(git remote get-url upstream)\" = \"https://github.com/VictorMC96/Full-Stack-Prueba-tecnica-Neology.git\"",
+      "git check-attr eol -- backend/mvnw | grep -q \"eol: lf\"",
+      "git check-ignore -q backend/target/x.class",
+      "git check-ignore -q .claude/settings.json; test $? -eq 1",
+      "grep -q \"## Cómo levantar\" README.md && grep -q \"## Pruebas\" README.md",
+      "grep -q \"Spring Boot 4\" docs/decisiones.md"
+    ],
+    "checkpoint": "step-01-repo-base",
+    "files": [
+      "README.md",
+      "docs/decisiones.md"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T1",
+    "title": "Configurar base del backend, esquema y datos",
+    "epic": "02-backend",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN the application context starts THE SYSTEM SHALL apply the Flyway migrations `V1__esquema.sql` and `V2__datos_iniciales.sql` and start with `spring.jpa.hibernate.ddl-auto` set to `validate`.",
+      "WHEN `BaseDatosMigradaTest` counts rows after startup THE SYSTEM SHALL report 6 rows in `vehiculos`, 7 in `estancias`, 1 in `periodos` and 3 in `acumulados_residentes`, with the `importe` column of `acumulados_residentes` summing 15.00.",
+      "WHEN `GET /actuator/health` is requested against the application started on a random port THE SYSTEM SHALL return 200 with `status` equal to `UP`.",
+      "WHEN `GET /v3/api-docs` is requested against the application started on a random port THE SYSTEM SHALL return 200 with a JSON body containing the key `openapi`.",
+      "WHEN the configuration properties are bound THE SYSTEM SHALL expose `acceso.tarifas.residente` as 0.05 and `acceso.tarifas.no-residente` as 0.50 through `TarifasProperties`.",
+      "WHEN `./mvnw -q -B -ntp verify` runs in `backend/` THE SYSTEM SHALL exit 0 with `spotless:check` bound to the `verify` phase and reporting no unformatted file."
+    ],
+    "verify": [
+      "(cd backend && ./mvnw -q -B -ntp verify)",
+      "grep -q \"spotless-maven-plugin\" backend/pom.xml",
+      "grep -q \"springdoc-openapi-starter-webmvc-ui\" backend/pom.xml && grep -q \"poi-ooxml\" backend/pom.xml",
+      "test -f backend/src/main/resources/application.yml && test ! -f backend/src/main/resources/application.properties",
+      "test -f backend/src/main/resources/db/migration/V1__esquema.sql && test -f backend/src/main/resources/db/migration/V2__datos_iniciales.sql"
+    ],
+    "checkpoint": "step-02-backend-base",
+    "files": [
+      "backend/pom.xml",
+      "backend/src/main/resources/application.yml",
+      "backend/src/main/resources/db/migration/*.sql",
+      "backend/src/main/java/mx/neology/acceso/**",
+      "backend/src/test/java/mx/neology/acceso/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T2",
+    "title": "Modelar dominio y estrategias de cobro",
+    "epic": "02-backend",
+    "dependencies": [
+      "E2-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `Placa.de(\"abc-123 d\")` is called THE SYSTEM SHALL return a placa whose value is `ABC123D`.",
+      "WHEN `Placa.de` receives `AB`, an 11-character value, an empty string or a value containing `<` THE SYSTEM SHALL throw `PlacaInvalidaException`.",
+      "WHEN the time between entrada and salida is 0 seconds, 59 seconds or 10 minutes 5 seconds THE SYSTEM SHALL compute 0, 0 and 10 whole minutes respectively.",
+      "WHEN `CalculadoraCobro` computes 11 minutes THE SYSTEM SHALL return 0.00 for `OFICIAL`, 0.55 for `RESIDENTE` and 5.50 for `NO_RESIDENTE`, each as a `BigDecimal` with scale 2.",
+      "WHEN `CalculadoraCobro` is constructed without a strategy for some `TipoVehiculo` constant THE SYSTEM SHALL throw `IllegalStateException` naming the missing type.",
+      "WHEN the sources under `backend/src/main/java/mx/neology/acceso/domain` are searched for `org.springframework` or `jakarta.persistence` THE SYSTEM SHALL find no match."
+    ],
+    "verify": [
+      "(cd backend && ./mvnw -q -B -ntp test -Dtest=PlacaTest,CalculadoraCobroTest,EstanciaTest)",
+      "grep -rlE \"org\\.springframework|jakarta\\.persistence\" backend/src/main/java/mx/neology/acceso/domain; test $? -eq 1",
+      "(cd backend && ./mvnw -q -B -ntp verify)"
+    ],
+    "checkpoint": "step-03-dominio",
+    "files": [
+      "backend/src/main/java/mx/neology/acceso/domain/**",
+      "backend/src/test/java/mx/neology/acceso/domain/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T3",
+    "title": "Implementar altas de vehículo y manejo de errores",
+    "epic": "02-backend",
+    "dependencies": [
+      "E2-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `POST /neo/vehiculos/oficiales` receives `{\"placa\":\"abc-123\"}` for an unknown placa THE SYSTEM SHALL return 201 with the header `Location: /neo/vehiculos/ABC123` and a body with `placa` `ABC123`, `tipo` `OFICIAL` and `dentro` `false`.",
+      "WHEN `POST /neo/vehiculos/residentes` receives a placa already registered as `OFICIAL` or `RESIDENTE` THE SYSTEM SHALL return 409 with `code` `VEHICULO_YA_REGISTRADO` and leave the row count of `vehiculos` unchanged.",
+      "WHEN `POST /neo/vehiculos/residentes` receives the placa of an existing `NO_RESIDENTE` vehicle THE SYSTEM SHALL return 201, change the `tipo` of that row to `RESIDENTE` and keep its `id`.",
+      "WHEN `POST /neo/vehiculos/no-residentes` receives a placa that already exists with any tipo THE SYSTEM SHALL return 409 with `code` `VEHICULO_YA_REGISTRADO`.",
+      "WHEN any of the three alta endpoints receives a placa that is blank, shorter than 3 characters after normalization or contains a character other than letters, digits, spaces and hyphens THE SYSTEM SHALL return 400 with content type `application/problem+json`, `code` `VALIDACION` and `errors[0].field` equal to `placa`.",
+      "WHEN the sources under `domain` and `application` are searched for `org.springframework` or `jakarta.persistence` THE SYSTEM SHALL find no match."
+    ],
+    "verify": [
+      "(cd backend && ./mvnw -q -B -ntp test -Dtest=RegistrarVehiculoTest,VehiculosControllerTest,VehiculoRepositorioJpaTest,AltasIntegracionTest)",
+      "grep -rlE \"org\\.springframework|jakarta\\.persistence\" backend/src/main/java/mx/neology/acceso/domain backend/src/main/java/mx/neology/acceso/application; test $? -eq 1",
+      "(cd backend && ./mvnw -q -B -ntp verify)"
+    ],
+    "checkpoint": "step-04-altas-vehiculo",
+    "files": [
+      "backend/src/main/java/mx/neology/acceso/application/**",
+      "backend/src/main/java/mx/neology/acceso/infrastructure/persistencia/**",
+      "backend/src/main/java/mx/neology/acceso/infrastructure/config/CasosDeUsoConfig.java",
+      "backend/src/main/java/mx/neology/acceso/web/**",
+      "backend/src/test/java/mx/neology/acceso/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T4",
+    "title": "Registrar entradas y salidas con cálculo de cobro",
+    "epic": "02-backend",
+    "dependencies": [
+      "E2-T3"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `POST /neo/estancias/entrada` receives a placa that does not exist THE SYSTEM SHALL return 201, create the vehicle with `tipo` `NO_RESIDENTE` and return an estancia whose `salida`, `minutos` and `importe` are `null`.",
+      "WHEN `POST /neo/estancias/entrada` receives a placa that already has an open estancia THE SYSTEM SHALL return 409 with `code` `VEHICULO_YA_DENTRO` and insert no row into `estancias`.",
+      "WHEN `POST /neo/estancias/salida` is received 10 minutes and 5 seconds after the entrada of a `NO_RESIDENTE` vehicle THE SYSTEM SHALL return 200 with `minutos` 10, `importe` 5.00 and `momentoCobro` `AL_SALIR`, and set `estancia_abierta_id` of the vehicle to null.",
+      "WHEN `POST /neo/estancias/salida` closes an 11-minute estancia of a `RESIDENTE` vehicle THE SYSTEM SHALL return `importe` 0.55 and `momentoCobro` `INFORME_MENSUAL` and add 11 minutes and 0.55 to the row of that vehicle in `acumulados_residentes` for the active period.",
+      "WHEN `POST /neo/estancias/salida` receives a placa that has no open estancia THE SYSTEM SHALL return 409 with `code` `VEHICULO_NO_DENTRO`.",
+      "WHEN `POST /neo/estancias/salida` receives a placa that does not exist THE SYSTEM SHALL return 404 with `code` `VEHICULO_NO_ENCONTRADO`."
+    ],
+    "verify": [
+      "(cd backend && ./mvnw -q -B -ntp test -Dtest=RegistrarEntradaTest,RegistrarSalidaTest,EstanciasIntegracionTest)",
+      "grep -rlE \"org\\.springframework|jakarta\\.persistence\" backend/src/main/java/mx/neology/acceso/domain backend/src/main/java/mx/neology/acceso/application; test $? -eq 1",
+      "(cd backend && ./mvnw -q -B -ntp verify)"
+    ],
+    "checkpoint": "step-05-entrada-salida",
+    "files": [
+      "backend/src/main/java/mx/neology/acceso/application/**",
+      "backend/src/main/java/mx/neology/acceso/infrastructure/persistencia/**",
+      "backend/src/main/java/mx/neology/acceso/infrastructure/config/**",
+      "backend/src/main/java/mx/neology/acceso/web/**",
+      "backend/src/test/java/mx/neology/acceso/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T5",
+    "title": "Implementar inicio de mes y archivo de periodos",
+    "epic": "02-backend",
+    "dependencies": [
+      "E2-T4"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `POST /neo/mes/iniciar` is called THE SYSTEM SHALL return 200 with `periodoAnterior.fin` set to the current server time and `periodoActual.fin` equal to `null`, and leave exactly 1 row of `periodos` with `activo` true.",
+      "WHEN a month is started THE SYSTEM SHALL keep the `periodo_id` of every closed estancia unchanged and delete no row from `estancias` or `acumulados_residentes`.",
+      "WHEN a `RESIDENTE` vehicle with accumulated minutes in the previous period closes an estancia after the month is started THE SYSTEM SHALL create a new `acumulados_residentes` row for the new period holding only the minutes and importe of that estancia.",
+      "WHEN a vehicle whose estancia was opened before the month was started registers its salida afterwards THE SYSTEM SHALL set the `periodo_id` of that estancia to the new active period.",
+      "WHEN a second row with `activo` true is inserted directly into `periodos` THE SYSTEM SHALL reject it with a violation of the unique constraint `uq_periodos_activo`."
+    ],
+    "verify": [
+      "(cd backend && ./mvnw -q -B -ntp test -Dtest=IniciarMesTest,MesIntegracionTest)",
+      "grep -rlE \"org\\.springframework|jakarta\\.persistence\" backend/src/main/java/mx/neology/acceso/domain backend/src/main/java/mx/neology/acceso/application; test $? -eq 1",
+      "(cd backend && ./mvnw -q -B -ntp verify)"
+    ],
+    "checkpoint": "step-06-iniciar-mes",
+    "files": [
+      "backend/src/main/java/mx/neology/acceso/application/**",
+      "backend/src/main/java/mx/neology/acceso/infrastructure/**",
+      "backend/src/main/java/mx/neology/acceso/web/**",
+      "backend/src/test/java/mx/neology/acceso/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T6",
+    "title": "Generar informe de pagos en JSON y Excel",
+    "epic": "02-backend",
+    "dependencies": [
+      "E2-T4"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `GET /neo/residentes/pagos` is requested with `Accept: application/json` against the preloaded database THE SYSTEM SHALL return 200 with 3 `filas` ordered `RES001`, `RES002`, `RES003`, `totalMinutos` 300 and `totalImporte` 15.00.",
+      "WHEN `GET /neo/residentes/pagos` is requested with `Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` THE SYSTEM SHALL return 200 with that content type and the header `Content-Disposition: attachment; filename=\"informe-pagos-2026-09.xlsx\"`.",
+      "WHEN the returned `.xlsx` is opened with Apache POI THE SYSTEM SHALL contain a sheet named `Pagos` whose first row is `Placa`, `Minutos`, `Importe`, followed by one row per resident and a last row `TOTAL` with 300 and 15.00 as numeric cells.",
+      "WHEN a `RESIDENTE` vehicle has no `acumulados_residentes` row in the active period THE SYSTEM SHALL list it with `minutos` 0 and `importe` 0.00.",
+      "WHEN vehicles of tipo `OFICIAL` or `NO_RESIDENTE` exist THE SYSTEM SHALL exclude them from `filas`."
+    ],
+    "verify": [
+      "(cd backend && ./mvnw -q -B -ntp test -Dtest=GenerarInformePagosTest,InformeExcelWriterTest,InformeIntegracionTest)",
+      "grep -rlE \"org\\.springframework|jakarta\\.persistence|org\\.apache\\.poi\" backend/src/main/java/mx/neology/acceso/domain backend/src/main/java/mx/neology/acceso/application; test $? -eq 1",
+      "(cd backend && ./mvnw -q -B -ntp verify)"
+    ],
+    "checkpoint": "step-07-informe-pagos",
+    "files": [
+      "backend/src/main/java/mx/neology/acceso/application/**",
+      "backend/src/main/java/mx/neology/acceso/infrastructure/**",
+      "backend/src/main/java/mx/neology/acceso/web/**",
+      "backend/src/test/java/mx/neology/acceso/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T7",
+    "title": "Exponer listado y detalle y fijar calidad backend",
+    "epic": "02-backend",
+    "dependencies": [
+      "E2-T5",
+      "E2-T6"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `GET /neo/vehiculos?page=0&size=2&sort=placa,asc` is requested against the preloaded database THE SYSTEM SHALL return 200 with `content` holding `NOR001` and `OFI001` in that order, `totalElements` 6 and `totalPages` 3.",
+      "WHEN `GET /neo/vehiculos?placa=res` is requested against the preloaded database THE SYSTEM SHALL return exactly the vehicles `RES001`, `RES002` and `RES003`, filtered by the database query.",
+      "WHEN `GET /neo/vehiculos` receives `size=500` THE SYSTEM SHALL answer with `size` 100, and when it receives `sort=color,asc`, `page=-1` or `size=0` THE SYSTEM SHALL return 400 with `code` `PARAMETRO_INVALIDO`.",
+      "WHEN `GET /neo/vehiculos/RES001` is requested against the preloaded database THE SYSTEM SHALL return `tipo` `RESIDENTE`, `dentro` `false` and `acumuladoPeriodo` with `minutos` 210 and `importe` 10.50, and for the unknown placa `ZZZ999` THE SYSTEM SHALL return 404 with `code` `VEHICULO_NO_ENCONTRADO`.",
+      "WHEN `GET /neo/vehiculos/RES001/estancias` is requested against the preloaded database THE SYSTEM SHALL return its 2 estancias with the one entered on 2026-09-03 before the one entered on 2026-09-02.",
+      "WHEN `./mvnw -q -B -ntp verify` runs in `backend/` THE SYSTEM SHALL exit 0 with the JaCoCo `check` rule requiring a line-coverage ratio of at least 0.80 over `mx.neology.acceso.domain` and `mx.neology.acceso.application`, and with `OpenApiDocsTest` finding each of the 10 `/neo` routes in `/v3/api-docs`."
+    ],
+    "verify": [
+      "(cd backend && ./mvnw -q -B -ntp test -Dtest=ConsultarVehiculosTest,ConsultasIntegracionTest,OpenApiDocsTest)",
+      "grep -rlE \"org\\.springframework|jakarta\\.persistence|org\\.apache\\.poi\" backend/src/main/java/mx/neology/acceso/domain backend/src/main/java/mx/neology/acceso/application; test $? -eq 1",
+      "grep -q \"jacoco-maven-plugin\" backend/pom.xml",
+      "(cd backend && ./mvnw -q -B -ntp verify)",
+      "test -f backend/target/site/jacoco/index.html"
+    ],
+    "checkpoint": "step-08-consultas-calidad",
+    "files": [
+      "backend/src/main/java/mx/neology/acceso/application/**",
+      "backend/src/main/java/mx/neology/acceso/infrastructure/**",
+      "backend/src/main/java/mx/neology/acceso/web/**",
+      "backend/pom.xml",
+      "backend/src/test/java/mx/neology/acceso/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T1",
+    "title": "Montar base del frontend con Material y rutas",
+    "epic": "03-frontend",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `npm run build` runs in `frontend/` THE SYSTEM SHALL exit 0 with `@angular/material` and `@angular/cdk` listed in `package.json` and the theme compiled from `src/styles.scss` through `mat.theme`.",
+      "WHEN the router navigates to `/` THE SYSTEM SHALL redirect to `/vehiculos`, and the paths `/vehiculos`, `/vehiculos/:placa`, `/operacion`, `/reporte` and `**` SHALL each resolve to a lazily loaded standalone component.",
+      "WHEN `placaValidator` validates `abc-123 d`, `AB` and `ABC<1>` THE SYSTEM SHALL accept the first and reject the other two with the error key `placa`.",
+      "WHEN an HTTP call fails with a `ProblemDetail` body THE SYSTEM SHALL open a `MatSnackBar` showing its `detail` and rethrow the error to the caller.",
+      "WHEN `VehiculosApi.listar` is called with page 1, size 25, sort `tipo,desc` and filter `res` THE SYSTEM SHALL issue a GET to `/neo/vehiculos` with the query parameters `page=1`, `size=25`, `sort=tipo,desc` and `placa=res`.",
+      "WHEN `npm run format:check` and `npm run test:ci` run in `frontend/` THE SYSTEM SHALL exit 0 on both."
+    ],
+    "verify": [
+      "(cd frontend && npm run format:check)",
+      "(cd frontend && npm run test:ci)",
+      "(cd frontend && npm run build)",
+      "grep -q '\"/neo\"' frontend/proxy.conf.json && grep -q \"proxy.conf.json\" frontend/angular.json",
+      "grep -q \"mat.theme\" frontend/src/styles.scss && grep -q \"prefers-reduced-motion\" frontend/src/styles.scss",
+      "grep -q '\"test:ci\"' frontend/package.json && grep -q '\"format:check\"' frontend/package.json"
+    ],
+    "checkpoint": "step-09-frontend-base",
+    "files": [
+      "frontend/package.json",
+      "frontend/{angular.json,proxy.conf.json,.prettierrc,.prettierignore}",
+      "frontend/src/{index.html,styles.scss,styles/**}",
+      "frontend/src/app/{app.ts,app.html,app.scss,app.spec.ts,app.config.ts,app.routes.ts,app.routes.spec.ts,layout/**,features/**}",
+      "frontend/src/app/{core,shared}/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T2",
+    "title": "Construir listado de vehículos paginado",
+    "epic": "03-frontend",
+    "dependencies": [
+      "E3-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `/vehiculos` loads THE SYSTEM SHALL request `GET /neo/vehiculos` with `page=0`, `size=10` and `sort=placa,asc` and render one table row per element of `content`, showing the placa with the CSS class `placa` and one chip for `tipo` and one for dentro or fuera.",
+      "WHEN the user changes the page or the page size in the paginator or clicks a sortable column header THE SYSTEM SHALL issue a new request carrying the new `page`, `size` and `sort` values instead of reordering rows in the browser.",
+      "WHEN the user types in the placa filter THE SYSTEM SHALL wait 300 ms after the last keystroke and then issue one request with the `placa` parameter and `page=0`.",
+      "WHEN the response has an empty `content` THE SYSTEM SHALL render the empty state with the text `No hay vehículos`, and with an active filter the text `Ningún vehículo coincide` plus a `Limpiar filtro` button.",
+      "WHEN the request fails THE SYSTEM SHALL hide the loading indicator and render `No se pudo cargar el listado` with a `Reintentar` button that repeats the request.",
+      "WHEN the page renders THE SYSTEM SHALL expose exactly one `h1` and a `mat-label` associated with the filter input."
+    ],
+    "verify": [
+      "test -f frontend/src/app/features/vehiculos/lista/vehiculos-lista.spec.ts",
+      "test \"$(grep -c \"<h1\" frontend/src/app/features/vehiculos/lista/vehiculos-lista.html)\" = \"1\"",
+      "(cd frontend && npm run format:check)",
+      "(cd frontend && npm run test:ci)",
+      "(cd frontend && npm run build)"
+    ],
+    "checkpoint": "step-10-listado-vehiculos",
+    "files": [
+      "frontend/src/app/features/vehiculos/lista/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T3",
+    "title": "Construir formularios de operación",
+    "epic": "03-frontend",
+    "dependencies": [
+      "E3-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN the entrada form is submitted with a valid placa THE SYSTEM SHALL send `POST /neo/estancias/entrada` with the normalized placa and show a snackbar containing the placa and the text `Entrada registrada`.",
+      "WHEN the salida form receives a successful response THE SYSTEM SHALL display the returned `minutos` and the `importe` formatted as currency, together with the label `Cobrar al salir`, `Se acumula al informe mensual` or `Sin cobro` according to `momentoCobro`.",
+      "WHEN a placa field holds a value that does not match `^[A-Z0-9]{3,10}$` after normalization THE SYSTEM SHALL keep the submit button disabled and, once the field is touched, show a `mat-error` referenced by the `aria-describedby` of the input.",
+      "WHEN the alta form is submitted with tipo `OFICIAL` or `RESIDENTE` THE SYSTEM SHALL send the request to `/neo/vehiculos/oficiales` or `/neo/vehiculos/residentes` respectively.",
+      "WHEN the user clicks `Iniciar nuevo mes` THE SYSTEM SHALL open a `MatDialog` asking for confirmation and send `POST /neo/mes/iniciar` only after the user confirms, sending no request when the user cancels.",
+      "WHEN a request fails with a `ProblemDetail` THE SYSTEM SHALL keep the typed value in the form and enable the submit button again."
+    ],
+    "verify": [
+      "test -f frontend/src/app/features/operacion/operacion.spec.ts && test -f frontend/src/app/features/operacion/iniciar-mes.spec.ts",
+      "test \"$(grep -c \"<h1\" frontend/src/app/features/operacion/operacion.html)\" = \"1\"",
+      "(cd frontend && npm run format:check)",
+      "(cd frontend && npm run test:ci)",
+      "(cd frontend && npm run build)"
+    ],
+    "checkpoint": "step-11-operacion",
+    "files": [
+      "frontend/src/app/features/operacion/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T4",
+    "title": "Construir vista de detalle de vehículo",
+    "epic": "03-frontend",
+    "dependencies": [
+      "E3-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `/vehiculos/RES001` loads THE SYSTEM SHALL request `GET /neo/vehiculos/RES001` and `GET /neo/vehiculos/RES001/estancias` with `page=0` and `size=10` and render the placa, the tipo chip and the dentro or fuera chip.",
+      "WHEN the vehicle is `RESIDENTE` THE SYSTEM SHALL show the card `Acumulado del periodo` with `minutos` and `importe`, and for any other tipo THE SYSTEM SHALL not render that card.",
+      "WHEN `estanciaAbierta` is not null THE SYSTEM SHALL show the card `Estancia abierta` with its entrada date.",
+      "WHEN the estancias paginator changes page THE SYSTEM SHALL request the new `page` from the server.",
+      "WHEN the detail request returns 404 THE SYSTEM SHALL render `Vehículo no encontrado` with a link to `/vehiculos` instead of the detail cards.",
+      "WHEN the estancias list is empty THE SYSTEM SHALL render `Este vehículo aún no tiene estancias`."
+    ],
+    "verify": [
+      "test -f frontend/src/app/features/vehiculos/detalle/vehiculo-detalle.spec.ts",
+      "test \"$(grep -c \"<h1\" frontend/src/app/features/vehiculos/detalle/vehiculo-detalle.html)\" = \"1\"",
+      "(cd frontend && npm run format:check)",
+      "(cd frontend && npm run test:ci)",
+      "(cd frontend && npm run build)"
+    ],
+    "checkpoint": "step-12-detalle-vehiculo",
+    "files": [
+      "frontend/src/app/features/vehiculos/detalle/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T5",
+    "title": "Construir reporte de residentes con descarga",
+    "epic": "03-frontend",
+    "dependencies": [
+      "E3-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `/reporte` loads THE SYSTEM SHALL request `GET /neo/residentes/pagos` with `Accept: application/json` and render one row per element of `filas` plus a total row showing `totalMinutos` and `totalImporte`.",
+      "WHEN the user clicks `Descargar Excel` THE SYSTEM SHALL request `GET /neo/residentes/pagos` with `Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` and response type `blob`, and trigger a download named after the `Content-Disposition` header, falling back to `informe-pagos.xlsx`.",
+      "WHEN `filas` is empty THE SYSTEM SHALL render `No hay residentes registrados` and disable the download button.",
+      "WHEN the request fails THE SYSTEM SHALL render `No se pudo cargar el informe` with a `Reintentar` button.",
+      "WHEN the page renders THE SYSTEM SHALL show the start date of the period taken from `periodo.inicio` and exactly one `h1`."
+    ],
+    "verify": [
+      "test -f frontend/src/app/features/reporte/reporte.spec.ts",
+      "test \"$(grep -c \"<h1\" frontend/src/app/features/reporte/reporte.html)\" = \"1\"",
+      "(cd frontend && npm run format:check)",
+      "(cd frontend && npm run test:ci)",
+      "(cd frontend && npm run build)"
+    ],
+    "checkpoint": "step-13-reporte-residentes",
+    "files": [
+      "frontend/src/app/features/reporte/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E4-T1",
+    "title": "Añadir CI y verificación de accesibilidad",
+    "epic": "04-calidad-entrega",
+    "dependencies": [
+      "E2-T7",
+      "E3-T2",
+      "E3-T3",
+      "E3-T4",
+      "E3-T5"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN `.github/workflows/ci.yml` is read THE SYSTEM SHALL define a job `backend` that runs `./mvnw -B -ntp verify` in `backend/` on Java 21 and a job `frontend` that runs `npm ci`, `npm run format:check`, `npm run test:ci` and `npm run build` in `frontend/` on Node 24.",
+      "WHEN the `backend` job runs on Linux THE SYSTEM SHALL mark the wrapper executable with `chmod +x mvnw` before invoking it.",
+      "WHEN `accesibilidad.spec.ts` renders each of the 5 page components THE SYSTEM SHALL find exactly one `h1` per page, a label for every `input` and an accessible name for every `button`.",
+      "WHEN the sources under `frontend/src/app` are searched THE SYSTEM SHALL find no occurrence of `innerHTML` and no hexadecimal color in any `.scss` file.",
+      "WHEN `npm run test:cov` runs in `frontend/` THE SYSTEM SHALL exit 0 and write a coverage report under `frontend/coverage/`."
+    ],
+    "verify": [
+      "test -f .github/workflows/ci.yml",
+      "grep -q \"^  backend:\" .github/workflows/ci.yml && grep -q \"^  frontend:\" .github/workflows/ci.yml",
+      "grep -q \"mvnw -B -ntp verify\" .github/workflows/ci.yml && grep -q \"chmod +x mvnw\" .github/workflows/ci.yml",
+      "grep -q \"npm ci\" .github/workflows/ci.yml && grep -q \"npm run format:check\" .github/workflows/ci.yml && grep -q \"npm run test:ci\" .github/workflows/ci.yml && grep -q \"npm run build\" .github/workflows/ci.yml",
+      "grep -rl \"innerHTML\" frontend/src/app; test $? -eq 1",
+      "grep -rlE --include=\"*.scss\" \"#[0-9a-fA-F]{3,8}\" frontend/src/app; test $? -eq 1",
+      "test -f frontend/src/app/accesibilidad.spec.ts",
+      "(cd frontend && npm run format:check)",
+      "(cd frontend && npm run test:cov)",
+      "test -d frontend/coverage",
+      "(cd frontend && npm run build)",
+      "(cd backend && ./mvnw -q -B -ntp verify)"
+    ],
+    "checkpoint": "step-14-ci-accesibilidad",
+    "files": [
+      ".github/workflows/ci.yml",
+      "frontend/package.json",
+      "frontend/src/app/accesibilidad.spec.ts",
+      "frontend/src/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E4-T2",
+    "title": "Completar README, capturas y texto del PR",
+    "epic": "04-calidad-entrega",
+    "dependencies": [
+      "E1-T1",
+      "E4-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `README.md` is read THE SYSTEM SHALL contain the headings `## Cómo levantar`, `## Pruebas`, `## Base de datos precargada`, `## API y Swagger`, `## Decisiones técnicas` and `## Capturas`.",
+      "WHEN the commands in the README are inspected THE SYSTEM SHALL state `./mvnw spring-boot:run` for `backend/`, `npm ci` followed by `npm start` for `frontend/`, and the URLs `http://localhost:8080/swagger-ui.html` and `http://localhost:4200`.",
+      "WHEN `docs/capturas/` is listed THE SYSTEM SHALL contain the 6 files `lista.png`, `detalle.png`, `operacion-entrada.png`, `operacion-salida.png`, `iniciar-mes.png` and `reporte.png`, each referenced from `README.md`.",
+      "WHEN `docs/PR.md` is read THE SYSTEM SHALL contain the pull-request title `Prueba técnica Full Stack – Xochitl (feature/xochitlgr)`, the target `VictorMC96:main` and the manual fork, push and pull-request steps, none of which the builder executes.",
+      "WHEN the full gates run THE SYSTEM SHALL exit 0 on `./mvnw -q -B -ntp verify` in `backend/` and on `npm run format:check`, `npm run test:ci` and `npm run build` in `frontend/`."
+    ],
+    "verify": [
+      "grep -q \"## Cómo levantar\" README.md && grep -q \"## Pruebas\" README.md && grep -q \"## Base de datos precargada\" README.md",
+      "grep -q \"## API y Swagger\" README.md && grep -q \"## Decisiones técnicas\" README.md && grep -q \"## Capturas\" README.md",
+      "grep -q \"mvnw spring-boot:run\" README.md && grep -q \"npm ci\" README.md && grep -q \"npm start\" README.md",
+      "grep -q \"http://localhost:8080/swagger-ui.html\" README.md && grep -q \"http://localhost:4200\" README.md",
+      "test -f docs/capturas/lista.png && grep -q \"docs/capturas/lista.png\" README.md",
+      "test -f docs/capturas/detalle.png && grep -q \"docs/capturas/detalle.png\" README.md",
+      "test -f docs/capturas/operacion-entrada.png && grep -q \"docs/capturas/operacion-entrada.png\" README.md",
+      "test -f docs/capturas/operacion-salida.png && grep -q \"docs/capturas/operacion-salida.png\" README.md",
+      "test -f docs/capturas/iniciar-mes.png && grep -q \"docs/capturas/iniciar-mes.png\" README.md",
+      "test -f docs/capturas/reporte.png && grep -q \"docs/capturas/reporte.png\" README.md",
+      "grep -q \"feature/xochitlgr\" docs/PR.md && grep -q \"VictorMC96:main\" docs/PR.md",
+      "(cd backend && ./mvnw -q -B -ntp verify)",
+      "(cd frontend && npm run format:check)",
+      "(cd frontend && npm run test:ci)",
+      "(cd frontend && npm run build)"
+    ],
+    "checkpoint": "step-15-readme-entrega",
+    "files": [
+      "README.md",
+      "docs/capturas/*.png",
+      "docs/PR.md",
+      "docs/decisiones.md"
+    ],
+    "status": "pending"
+  }
+]
