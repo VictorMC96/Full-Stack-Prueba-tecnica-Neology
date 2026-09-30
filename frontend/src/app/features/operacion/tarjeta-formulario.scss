@@ -16,7 +16,9 @@ h2 {
 
 .acciones {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  gap: var(--app-space-2);
   padding: 0 var(--app-space-4) var(--app-space-4);
 }
 

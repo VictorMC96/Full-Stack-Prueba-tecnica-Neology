@@ -1,10 +1,13 @@
 <mat-card appearance="outlined" class="app-card">
   <mat-card-header>
-    <mat-card-title><h2>Registrar salida</h2></mat-card-title>
+    <mat-card-title><h2>Registrar movimiento</h2></mat-card-title>
   </mat-card-header>
-  <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+  <form [formGroup]="form" (ngSubmit)="registrar('entrada')" novalidate>
     <mat-card-content>
-      <p class="descripcion">Cierra la estancia abierta y calcula el cobro según el tipo.</p>
+      <p class="descripcion">
+        Escribe la placa y elige el movimiento. Una placa sin alta se registra como no residente al
+        entrar.
+      </p>
       <mat-form-field appearance="outline" class="campo">
         <mat-label>Placa</mat-label>
         <input
@@ -41,9 +44,19 @@
         </div>
       }
     </mat-card-content>
-    <div class="acciones">
-      <button matButton="filled" type="submit" [disabled]="form.invalid || enviando()">
+    <div class="acciones acciones--dobles">
+      <button
+        matButton="outlined"
+        type="button"
+        [disabled]="form.invalid || enviando() !== null"
+        (click)="registrar('salida')"
+      >
+        <mat-icon aria-hidden="true">logout</mat-icon>
         Registrar salida
+      </button>
+      <button matButton="filled" type="submit" [disabled]="form.invalid || enviando() !== null">
+        <mat-icon aria-hidden="true">login</mat-icon>
+        Registrar entrada
       </button>
     </div>
   </form>
