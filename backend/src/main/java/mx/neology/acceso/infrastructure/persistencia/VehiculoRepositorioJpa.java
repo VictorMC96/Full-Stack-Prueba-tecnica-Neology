@@ -46,7 +46,7 @@ public class VehiculoRepositorioJpa implements VehiculoRepositorio {
   @Override
   public Pagina<Vehiculo> listar(String filtroPlaca, ConsultaPagina consulta) {
     return Paginas.aPagina(
-        repositorio.findByPlacaContaining(filtroPlaca, Paginas.aPageable(consulta)),
+        repositorio.findByPlacaContaining(filtroPlaca, Paginas.aPageable(consulta, "placa")),
         VehiculoRepositorioJpa::aDominio);
   }
 

@@ -23,7 +23,8 @@ import { Loading } from '../../../shared/loading/loading';
 import { PlacaMayusculas } from '../../../shared/placa/placa-mayusculas.directive';
 import { normalizarPlaca } from '../../../shared/placa/placa.validator';
 
-export const ORDEN_INICIAL = 'placa,asc';
+/** Dentro primero y, en cada grupo, placa ascendente (el backend desempata por placa). */
+export const ORDEN_INICIAL = 'dentro,desc';
 
 @Component({
   selector: 'app-vehiculos-lista',
@@ -54,7 +55,7 @@ export class VehiculosLista {
   private readonly locale = inject(LOCALE_ID);
 
   readonly filtroControl = new FormControl('', { nonNullable: true });
-  readonly columnas = ['placa', 'tipo', 'estado', 'createdAt', 'acciones'];
+  readonly columnas = ['placa', 'tipo', 'dentro', 'createdAt', 'acciones'];
   readonly tamanos = [5, 10, 25];
 
   readonly pagina = signal(0);

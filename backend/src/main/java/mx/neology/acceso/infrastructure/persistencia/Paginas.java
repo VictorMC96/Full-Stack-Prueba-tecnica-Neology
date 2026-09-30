@@ -14,11 +14,22 @@ final class Paginas {
   private Paginas() {}
 
   static Pageable aPageable(ConsultaPagina consulta) {
-    Sort orden =
-        consulta.ascendente()
-            ? Sort.by(consulta.campoOrden()).ascending()
-            : Sort.by(consulta.campoOrden()).descending();
+    return PageRequest.of(consulta.pagina(), consulta.tamano(), orden(consulta));
+  }
+
+  /** Igual que {@link #aPageable(ConsultaPagina)} pero desempata por {@code campoDesempate} asc. */
+  static Pageable aPageable(ConsultaPagina consulta, String campoDesempate) {
+    Sort orden = orden(consulta);
+    if (!campoDesempate.equals(consulta.campoOrden())) {
+      orden = orden.and(Sort.by(campoDesempate).ascending());
+    }
     return PageRequest.of(consulta.pagina(), consulta.tamano(), orden);
+  }
+
+  private static Sort orden(ConsultaPagina consulta) {
+    return consulta.ascendente()
+        ? Sort.by(consulta.campoOrden()).ascending()
+        : Sort.by(consulta.campoOrden()).descending();
   }
 
   static <E, D> Pagina<D> aPagina(Page<E> page, Function<E, D> conversion) {

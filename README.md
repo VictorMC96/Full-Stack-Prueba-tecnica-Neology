@@ -44,8 +44,9 @@ npm ci
 npm start                       # ng serve con proxy: /neo y /actuator → http://localhost:8080
 ```
 
-Abrir <http://localhost:4200>. Páginas: **Vehículos** (listado con filtro, paginación y ordenamiento;
-el chip de estado registra la entrada o la salida con un clic; detalle por placa), **Operación**
+Abrir <http://localhost:4200>. Páginas: **Vehículos** (listado con filtro, paginación y ordenamiento,
+ordenado por defecto con los vehículos que están dentro primero y luego por placa; el chip de estado
+registra la entrada o la salida con un clic; detalle por placa), **Operación**
 (registrar movimiento de entrada o salida por placa, alta de vehículo con entrada inmediata opcional, iniciar mes) y **Reporte**
 (informe de pagos de residentes con descarga en Excel).
 
@@ -87,7 +88,7 @@ abierta, de modo que el listado, el detalle y el reporte muestran datos desde el
 | POST | `/neo/estancias/salida` | Registrar salida; devuelve duración real (`duracionSegundos`), minutos cobrados e importe |
 | GET | `/neo/residentes/pagos` | Informe de pagos del periodo activo. `Accept: application/json` → JSON; `Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` → `.xlsx` |
 | POST | `/neo/mes/iniciar` | Cierra el periodo activo y abre uno nuevo |
-| GET | `/neo/vehiculos?placa=&page=&size=&sort=` | Listado paginado con filtro y ordenamiento |
+| GET | `/neo/vehiculos?placa=&page=&size=&sort=` | Listado paginado con filtro y ordenamiento (`sort` admite `dentro`, `placa`, `tipo`, `createdAt`; por defecto `dentro,desc`: vehículos dentro primero y luego por placa) |
 | GET | `/neo/vehiculos/{placa}` | Detalle: tipo, estado, acumulado del periodo |
 | GET | `/neo/vehiculos/{placa}/estancias` | Estancias del vehículo, paginadas |
 

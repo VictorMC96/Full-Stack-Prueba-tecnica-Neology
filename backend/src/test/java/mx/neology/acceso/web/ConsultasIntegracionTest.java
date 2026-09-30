@@ -26,6 +26,12 @@ class ConsultasIntegracionTest extends IntegracionBase {
         .andExpect(jsonPath("$.size").value(2))
         .andExpect(jsonPath("$.totalElements").value(6))
         .andExpect(jsonPath("$.totalPages").value(3));
+    mvc.perform(get("/neo/vehiculos"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content[0].placa").value("OFI002")) // el unico dentro, primero
+        .andExpect(jsonPath("$.content[0].dentro").value(true))
+        .andExpect(jsonPath("$.content[1].placa").value("NOR001")) // resto por placa
+        .andExpect(jsonPath("$.content[5].placa").value("RES003"));
     mvc.perform(get("/neo/vehiculos").param("sort", "placa,desc"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content[0].placa").value("RES003"));

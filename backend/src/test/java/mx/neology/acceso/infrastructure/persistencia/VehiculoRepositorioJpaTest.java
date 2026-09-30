@@ -67,6 +67,14 @@ class VehiculoRepositorioJpaTest {
   }
 
   @Test
+  void ordenaDentroPrimeroYDesempataPorPlaca() {
+    Pagina<Vehiculo> pagina = repositorio.listar("", new ConsultaPagina(0, 10, "dentro", false));
+    assertThat(pagina.contenido())
+        .extracting(v -> v.placa().valor())
+        .containsExactly("OFI002", "NOR001", "OFI001", "RES001", "RES002", "RES003");
+  }
+
+  @Test
   void acumuladosPorTipoTraeCerosParaResidentesSinFila() {
     OffsetDateTime ahora = OffsetDateTime.parse("2026-09-15T12:00:00-06:00");
     repositorio.guardar(Vehiculo.nuevo(Placa.de("RES010"), TipoVehiculo.RESIDENTE, ahora));

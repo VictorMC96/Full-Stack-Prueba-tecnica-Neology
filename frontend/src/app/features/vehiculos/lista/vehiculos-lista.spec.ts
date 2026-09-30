@@ -51,7 +51,7 @@ describe('VehiculosLista', () => {
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('page')).toBe('0');
     expect(req.request.params.get('size')).toBe('10');
-    expect(req.request.params.get('sort')).toBe('placa,asc');
+    expect(req.request.params.get('sort')).toBe('dentro,desc');
     expect(req.request.params.has('placa')).toBeFalse();
     req.flush(pagina(VEHICULOS, 42));
     await fixture.whenStable();
@@ -97,6 +97,23 @@ describe('VehiculosLista', () => {
     await cabeceras[0].click();
     const req = peticion();
     expect(req.request.params.get('sort')).toBe('tipo,asc');
+    expect(req.request.params.get('page')).toBe('0');
+    req.flush(pagina(VEHICULOS));
+    await fixture.whenStable();
+  });
+
+  it('arranca ordenado por Estado (dentro primero) y al pulsar la cabecera alterna a dentro,asc', async () => {
+    peticion().flush(pagina(VEHICULOS));
+    await fixture.whenStable();
+
+    const sort = await loader.getHarness(MatSortHarness);
+    const activa = await sort.getActiveHeader();
+    expect(await activa?.getLabel()).toBe('Estado');
+    expect(await activa?.getSortDirection()).toBe('desc');
+
+    await activa?.click();
+    const req = peticion();
+    expect(req.request.params.get('sort')).toBe('dentro,asc');
     expect(req.request.params.get('page')).toBe('0');
     req.flush(pagina(VEHICULOS));
     await fixture.whenStable();

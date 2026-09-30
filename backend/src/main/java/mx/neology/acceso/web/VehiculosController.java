@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Vehículos", description = "Altas, listado, detalle e historial de vehículos")
 public class VehiculosController {
 
-  private static final Set<String> CAMPOS_ORDEN = Set.of("placa", "tipo", "createdAt");
+  private static final Set<String> CAMPOS_ORDEN = Set.of("dentro", "placa", "tipo", "createdAt");
 
   private final RegistrarVehiculo registrarVehiculo;
   private final ConsultarVehiculos consultarVehiculos;
@@ -59,7 +59,7 @@ public class VehiculosController {
       @RequestParam(required = false) String placa,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "placa,asc") String sort) {
+      @RequestParam(defaultValue = "dentro,desc") String sort) {
     ConsultaPagina consulta = ParametrosPagina.de(page, size, sort, CAMPOS_ORDEN);
     return PageResponse.de(consultarVehiculos.listar(placa, consulta), Respuestas::resumen);
   }

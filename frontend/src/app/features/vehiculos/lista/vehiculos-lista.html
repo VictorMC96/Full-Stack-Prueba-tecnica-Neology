@@ -51,8 +51,8 @@
         mat-table
         [dataSource]="pagina.content"
         matSort
-        matSortActive="placa"
-        matSortDirection="asc"
+        matSortActive="dentro"
+        matSortDirection="desc"
         matSortDisableClear
         (matSortChange)="cambiarOrden($event)"
         aria-label="Listado de vehículos"
@@ -71,8 +71,15 @@
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="estado">
-          <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <ng-container matColumnDef="dentro">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            matTooltip="Por defecto: dentro primero, luego placa"
+          >
+            Estado
+          </th>
           <td mat-cell *matCellDef="let vehiculo">
             <button
               type="button"

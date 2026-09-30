@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import mx.neology.acceso.domain.TipoVehiculo;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name = "vehiculos")
@@ -25,6 +26,10 @@ public class VehiculoEntity {
 
   @Column(name = "estancia_abierta_id")
   private UUID estanciaAbiertaId;
+
+  /** Derivado de solo lectura: permite ordenar el listado por "vehículos dentro primero". */
+  @Formula("estancia_abierta_id is not null")
+  private Boolean dentro;
 
   @Column(name = "created_at", nullable = false)
   private OffsetDateTime createdAt;
