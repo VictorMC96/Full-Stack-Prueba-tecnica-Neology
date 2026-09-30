@@ -306,7 +306,7 @@ Cuatro tablas. Nombres en plural y `snake_case`, ids `UUID` generados en Java co
 | `vehiculo_id` | UUID | not null, FK → `vehiculos.id` | |
 | `entrada` | TIMESTAMP WITH TIME ZONE | not null | Asignada por el servidor |
 | `salida` | TIMESTAMP WITH TIME ZONE | null | Asignada por el servidor al registrar la salida |
-| `minutos` | INT | null | Minutos completos: `Duration.between(entrada, salida).toMinutes()`; segundos truncados |
+| `minutos` | INT | null | Minutos a cobrar: todo minuto iniciado cuenta completo (redondeo hacia arriba de `Duration.between(entrada, salida)`) |
 | `importe` | DECIMAL(12,2) | null | Importe generado por la estancia con la tarifa del tipo vigente al salir |
 | `periodo_id` | UUID | null, FK → `periodos.id` | Se fija al cerrar: periodo activo en el momento de la salida. `null` en estancias abiertas |
 | `created_at`, `updated_at` | TIMESTAMP WITH TIME ZONE | not null | |
@@ -677,7 +677,7 @@ periodo activo es `{ "minutos": 0, "importe": 0.00 }`.
 - **Request:** `PlacaRequest`. **200:** `EstanciaResponse` completa.
 - **Flujo, en una transacción:** normalizar placa → buscar el vehículo con bloqueo pesimista → si no
   existe, 404 `VEHICULO_NO_ENCONTRADO` → si `estancia_abierta_id` es `null`, 409 `VEHICULO_NO_DENTRO` →
-  `minutos = Duration.between(entrada, ahora).toMinutes()` → `importe =
+  `minutos = ceil(Duration.between(entrada, ahora))` (todo minuto iniciado cuenta) → `importe =
   calculadoraCobro.calcular(tipo, minutos)` → cerrar la estancia con `salida`, `minutos`, `importe` y
   `periodo_id` = periodo activo → `vehiculos.estancia_abierta_id = null` → si la estrategia del tipo
   declara `MomentoCobro.INFORME_MENSUAL`, sumar `minutos` e `importe` a la fila
@@ -690,7 +690,7 @@ periodo activo es `{ "minutos": 0, "importe": 0.00 }`.
   | `RESIDENTE` | `minutos × 0.05` | `INFORME_MENSUAL` |
   | `NO_RESIDENTE` | `minutos × 0.50` | `AL_SALIR` |
 
-  Casos de referencia: 0 s → 0 min → 0.00 · 59 s → 0 min → 0.00 · 10 min 5 s → 10 min · residente 11
+  Casos de referencia: 0 s → 0 min → 0.00 · 59 s → 1 min · 10 min 5 s → 11 min · residente 11
   min → 0.55 · no residente 11 min → 5.50 · oficial cualquier duración → 0.00.
 - **Errores:** 400 `VALIDACION` · 404 `VEHICULO_NO_ENCONTRADO` · 409 `VEHICULO_NO_DENTRO`.
 - **Efectos:** 1 estancia actualizada, 1 vehículo actualizado, 0 o 1 acumulado insertado o
@@ -1057,7 +1057,7 @@ dos o tres líneas cada una). Debe incluir, como mínimo, estas quince:
 2. **Patrón Strategy para el cobro** — una estrategia por tipo, sin `if`/`switch` por tipo en servicios.
 3. **Importes en `BigDecimal` / `DECIMAL(12,2)`** — decisión de `Requerimientos.md`; es una desviación
    consciente de la regla general "dinero como entero en unidades mínimas".
-4. **Minutos completos** — se truncan los segundos (`Duration.toMinutes()`).
+4. **Todo minuto iniciado se cobra completo** — redondeo hacia arriba (10 min 5 s → 11).
 5. **Placa no registrada = no residente** — alta automática en la primera entrada y reclasificación posterior.
 6. **Reinicio de mes por periodos** — las estancias se archivan con su periodo; nada se borra.
 7. **Informe en JSON y Excel** — negociación por la cabecera `Accept` sobre la misma ruta.
@@ -1317,7 +1317,7 @@ Clases a crear:
   constante del enum, una clase de estrategia y una tarifa en `application.yml`.
 - `Vehiculo`, `Estancia`, `Periodo`, `Acumulado` — modelos del dominio (records con `UUID id` y los
   campos del modelo de datos). `Estancia` expone `static long minutosCompletos(OffsetDateTime entrada,
-  OffsetDateTime salida)` = `Duration.between(entrada, salida).toMinutes()` y `boolean abierta()`.
+  OffsetDateTime salida)` = minutos de `Duration.between(entrada, salida)` redondeados hacia arriba (todo minuto iniciado cuenta) y `boolean abierta()`.
 - `excepcion/ExcepcionDominio` — `abstract`, extiende `RuntimeException` y lleva un `String codigo()`.
   Subclases con su código: `PlacaInvalidaException` → `VALIDACION`, `VehiculoYaRegistradoException` →
   `VEHICULO_YA_REGISTRADO`, `VehiculoYaDentroException` → `VEHICULO_YA_DENTRO`,
@@ -1328,7 +1328,7 @@ Pruebas (JUnit Jupiter + AssertJ, parametrizadas donde haya tabla de casos):
 
 - `PlacaTest` — `abc-123 d` → `ABC123D`; `AB`, un valor de 11 caracteres, cadena vacía, `null` y
   `ABC<1>` → `PlacaInvalidaException`.
-- `EstanciaTest` — 0 s → 0 min; 59 s → 0 min; 10 min 5 s → 10 min.
+- `EstanciaTest` — 0 s → 0 min; 59 s → 1 min; 10 min 5 s → 11 min.
 - `CalculadoraCobroTest` — con tarifas 0.05 y 0.50: 11 min → `0.00` / `0.55` / `5.50` con escala 2;
   0 min → `0.00` para los tres; construir la calculadora sin la estrategia de un tipo lanza
   `IllegalStateException`.
@@ -1344,7 +1344,7 @@ Archivos que toca este paso:
 
 - [ ] WHEN `Placa.de("abc-123 d")` is called THE SYSTEM SHALL return a placa whose value is `ABC123D`.
 - [ ] WHEN `Placa.de` receives `AB`, an 11-character value, an empty string or a value containing `<` THE SYSTEM SHALL throw `PlacaInvalidaException`.
-- [ ] WHEN the time between entrada and salida is 0 seconds, 59 seconds or 10 minutes 5 seconds THE SYSTEM SHALL compute 0, 0 and 10 whole minutes respectively.
+- [ ] WHEN the time between entrada and salida is 0 seconds, 59 seconds or 10 minutes 5 seconds THE SYSTEM SHALL compute 0, 1 and 11 billable minutes respectively (every started minute counts).
 - [ ] WHEN `CalculadoraCobro` computes 11 minutes THE SYSTEM SHALL return 0.00 for `OFICIAL`, 0.55 for `RESIDENTE` and 5.50 for `NO_RESIDENTE`, each as a `BigDecimal` with scale 2.
 - [ ] WHEN `CalculadoraCobro` is constructed without a strategy for some `TipoVehiculo` constant THE SYSTEM SHALL throw `IllegalStateException` naming the missing type.
 - [ ] WHEN the sources under `backend/src/main/java/mx/neology/acceso/domain` are searched for `org.springframework` or `jakarta.persistence` THE SYSTEM SHALL find no match.
@@ -1474,7 +1474,7 @@ git ls-files --error-unmatch backend/src/main/java/mx/neology/acceso/web/ApiExce
 
 **Tarea:** `E2-T4` · **Épica:** `02-backend` · **Prioridad:** p0 · **Depends on:** paso 4 (`E2-T3`)
 
-**Goal** — Entrada y salida funcionan de extremo a extremo con bloqueo pesimista, alta automática de no residentes, minutos truncados, importe por estrategia y acumulado de residentes.
+**Goal** — Entrada y salida funcionan de extremo a extremo con bloqueo pesimista, alta automática de no residentes, todo minuto iniciado cobrado completo, importe por estrategia y acumulado de residentes.
 
 **Do**
 
@@ -3220,7 +3220,7 @@ ruta relativa `/neo/...`) → proxy de `ng serve` → `backend/.../web/*Controll
    cobro se piden a `CalculadoraCobro`.
 2. **Sin Lombok.** `record` para DTOs y value objects.
 3. **Dinero:** `BigDecimal` con `setScale(2, RoundingMode.HALF_UP)`; columnas `DECIMAL(12,2)`.
-   Minutos: `Duration.toMinutes()` (trunca segundos).
+   Minutos: todo minuto iniciado cuenta completo (`Estancia.minutosCompletos`, redondeo hacia arriba).
 4. **Tiempo:** toda fecha sale de `OffsetDateTime.now(clock)` con el `Clock` inyectado. Prohibido
    `now()` sin reloj y prohibido aceptar fechas del cliente.
 5. **Placa:** siempre normalizada (mayúsculas, sin espacios ni guiones) y validada con

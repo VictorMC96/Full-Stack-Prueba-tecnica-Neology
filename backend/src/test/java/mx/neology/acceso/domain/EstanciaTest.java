@@ -14,7 +14,7 @@ class EstanciaTest {
   private static final OffsetDateTime ENTRADA = OffsetDateTime.parse("2026-09-15T10:00:00-06:00");
 
   @ParameterizedTest
-  @CsvSource({"0,0", "59,0", "605,10", "60,1", "3600,60"})
+  @CsvSource({"0,0", "1,1", "59,1", "60,1", "61,2", "605,11", "3600,60"})
   void cuentaSoloMinutosCompletos(long segundos, long esperados) {
     assertThat(Estancia.minutosCompletos(ENTRADA, ENTRADA.plusSeconds(segundos)))
         .isEqualTo(esperados);

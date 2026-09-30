@@ -21,7 +21,7 @@ Dominio y casos de uso se desarrollan con TDD (JUnit 5 + Mockito + AssertJ). Con
 `domain` + `application`. Frontend: Jasmine + Karma en cada componente y servicio.
 
 ### IV. Dinero y tiempo exactos
-`BigDecimal` con 2 decimales (`HALF_UP`); minutos completos, segundos truncados; toda fecha/hora la
+`BigDecimal` con 2 decimales (`HALF_UP`); todo minuto iniciado se cobra completo; toda fecha/hora la
 asigna el servidor con un `Clock` inyectado (`America/Mexico_City`).
 
 ### V. Validar en ambos extremos, errores estándar

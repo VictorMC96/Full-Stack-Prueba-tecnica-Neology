@@ -71,7 +71,7 @@
     "acceptance": [
       "WHEN `Placa.de(\"abc-123 d\")` is called THE SYSTEM SHALL return a placa whose value is `ABC123D`.",
       "WHEN `Placa.de` receives `AB`, an 11-character value, an empty string or a value containing `<` THE SYSTEM SHALL throw `PlacaInvalidaException`.",
-      "WHEN the time between entrada and salida is 0 seconds, 59 seconds or 10 minutes 5 seconds THE SYSTEM SHALL compute 0, 0 and 10 whole minutes respectively.",
+      "WHEN the time between entrada and salida is 0 seconds, 59 seconds or 10 minutes 5 seconds THE SYSTEM SHALL compute 0, 1 and 11 billable minutes respectively (every started minute counts).",
       "WHEN `CalculadoraCobro` computes 11 minutes THE SYSTEM SHALL return 0.00 for `OFICIAL`, 0.55 for `RESIDENTE` and 5.50 for `NO_RESIDENTE`, each as a `BigDecimal` with scale 2.",
       "WHEN `CalculadoraCobro` is constructed without a strategy for some `TipoVehiculo` constant THE SYSTEM SHALL throw `IllegalStateException` naming the missing type.",
       "WHEN the sources under `backend/src/main/java/mx/neology/acceso/domain` are searched for `org.springframework` or `jakarta.persistence` THE SYSTEM SHALL find no match."

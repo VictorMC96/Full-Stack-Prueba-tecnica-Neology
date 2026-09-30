@@ -11,6 +11,6 @@ public interface EstrategiaCobro {
 
   MomentoCobro momento();
 
-  /** Importe con escala 2 para los minutos completos indicados. */
+  /** Importe con escala 2 para los minutos a cobrar indicados (todo minuto iniciado cuenta). */
   BigDecimal calcular(long minutos);
 }

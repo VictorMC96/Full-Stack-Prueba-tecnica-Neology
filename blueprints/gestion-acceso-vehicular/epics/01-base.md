@@ -137,7 +137,7 @@ dos o tres líneas cada una). Debe incluir, como mínimo, estas quince:
 2. **Patrón Strategy para el cobro** — una estrategia por tipo, sin `if`/`switch` por tipo en servicios.
 3. **Importes en `BigDecimal` / `DECIMAL(12,2)`** — decisión de `Requerimientos.md`; es una desviación
    consciente de la regla general "dinero como entero en unidades mínimas".
-4. **Minutos completos** — se truncan los segundos (`Duration.toMinutes()`).
+4. **Todo minuto iniciado se cobra completo** — redondeo hacia arriba (10 min 5 s → 11).
 5. **Placa no registrada = no residente** — alta automática en la primera entrada y reclasificación posterior.
 6. **Reinicio de mes por periodos** — las estancias se archivan con su periodo; nada se borra.
 7. **Informe en JSON y Excel** — negociación por la cabecera `Accept` sobre la misma ruta.

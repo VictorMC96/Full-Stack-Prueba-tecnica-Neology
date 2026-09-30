@@ -103,7 +103,7 @@ Los errores siguen RFC 7807 (`application/problem+json`) con un campo `code`
 | Residente | $0.05 / minuto | Acumulado por periodo; se liquida con el informe |
 | No residente | $0.50 / minuto | Al registrar la salida |
 
-- Se cobran minutos completos; los segundos sobrantes se descartan. Importes con dos decimales.
+- Todo minuto iniciado se cobra completo (10 min 5 s → 11 minutos; 59 s → 1 minuto). Importes con dos decimales.
 - Una placa desconocida que registra entrada se da de alta como no residente; puede reclasificarse después.
 - Iniciar mes cierra el periodo activo y abre otro: las estancias quedan archivadas en su periodo y los
   acumulados de residentes vuelven a cero. Las estancias abiertas cuentan en el periodo en que salen.

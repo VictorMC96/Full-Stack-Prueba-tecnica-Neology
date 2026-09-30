@@ -266,7 +266,7 @@ Fechas ISO-8601 con desplazamiento en zona `America/Mexico_City`; importes con 2
 - Frontera transaccional = puerto `Transaccion` (`TransactionTemplate`); nada de `@Transactional` en
   casos de uso.
 - Ningún `if`/`switch` sobre `TipoVehiculo` fuera de `CalculadoraCobro` y las estrategias.
-- Tiempo: `OffsetDateTime.now(clock)`; nunca `now()` sin reloj. Minutos: `Duration.toMinutes()`.
+- Tiempo: `OffsetDateTime.now(clock)`; nunca `now()` sin reloj. Minutos: todo minuto iniciado cuenta completo (redondeo hacia arriba).
   Importes: `setScale(2, RoundingMode.HALF_UP)`.
 - Spring Boot 4: `@MockitoBean` (nunca `@MockBean`); JSON con `jsonPath`, sin `ObjectMapper`;
   las anotaciones de prueba por capas cambiaron de paquete — deja que el compilador resuelva el import.
@@ -490,7 +490,7 @@ Clases a crear:
   constante del enum, una clase de estrategia y una tarifa en `application.yml`.
 - `Vehiculo`, `Estancia`, `Periodo`, `Acumulado` — modelos del dominio (records con `UUID id` y los
   campos del modelo de datos). `Estancia` expone `static long minutosCompletos(OffsetDateTime entrada,
-  OffsetDateTime salida)` = `Duration.between(entrada, salida).toMinutes()` y `boolean abierta()`.
+  OffsetDateTime salida)` = minutos de `Duration.between(entrada, salida)` redondeados hacia arriba (todo minuto iniciado cuenta) y `boolean abierta()`.
 - `excepcion/ExcepcionDominio` — `abstract`, extiende `RuntimeException` y lleva un `String codigo()`.
   Subclases con su código: `PlacaInvalidaException` → `VALIDACION`, `VehiculoYaRegistradoException` →
   `VEHICULO_YA_REGISTRADO`, `VehiculoYaDentroException` → `VEHICULO_YA_DENTRO`,
@@ -501,7 +501,7 @@ Pruebas (JUnit Jupiter + AssertJ, parametrizadas donde haya tabla de casos):
 
 - `PlacaTest` — `abc-123 d` → `ABC123D`; `AB`, un valor de 11 caracteres, cadena vacía, `null` y
   `ABC<1>` → `PlacaInvalidaException`.
-- `EstanciaTest` — 0 s → 0 min; 59 s → 0 min; 10 min 5 s → 10 min.
+- `EstanciaTest` — 0 s → 0 min; 59 s → 1 min; 10 min 5 s → 11 min.
 - `CalculadoraCobroTest` — con tarifas 0.05 y 0.50: 11 min → `0.00` / `0.55` / `5.50` con escala 2;
   0 min → `0.00` para los tres; construir la calculadora sin la estrategia de un tipo lanza
   `IllegalStateException`.
@@ -519,7 +519,7 @@ Copiados literalmente del arreglo `acceptance` de esta tarea en `tasks.json`. Ca
 
 1. **WHEN** `Placa.de("abc-123 d")` is called **THE SYSTEM SHALL** return a placa whose value is `ABC123D`.
 2. **WHEN** `Placa.de` receives `AB`, an 11-character value, an empty string or a value containing `<` **THE SYSTEM SHALL** throw `PlacaInvalidaException`.
-3. **WHEN** the time between entrada and salida is 0 seconds, 59 seconds or 10 minutes 5 seconds **THE SYSTEM SHALL** compute 0, 0 and 10 whole minutes respectively.
+3. **WHEN** the time between entrada and salida is 0 seconds, 59 seconds or 10 minutes 5 seconds **THE SYSTEM SHALL** compute 0, 1 and 11 billable minutes respectively (every started minute counts).
 4. **WHEN** `CalculadoraCobro` computes 11 minutes **THE SYSTEM SHALL** return 0.00 for `OFICIAL`, 0.55 for `RESIDENTE` and 5.50 for `NO_RESIDENTE`, each as a `BigDecimal` with scale 2.
 5. **WHEN** `CalculadoraCobro` is constructed without a strategy for some `TipoVehiculo` constant **THE SYSTEM SHALL** throw `IllegalStateException` naming the missing type.
 6. **WHEN** the sources under `backend/src/main/java/mx/neology/acceso/domain` are searched for `org.springframework` or `jakarta.persistence` **THE SYSTEM SHALL** find no match.
@@ -653,7 +653,7 @@ Ejecuta el bloque después de que el último comando de Verify salga con 0 y ant
 
 **Depends on:** `E2-T3` · **Priority:** p0 — metadato para recortes de alcance, no un orden de ejecución · **Paso global:** 5
 
-**Objetivo:** Entrada y salida funcionan de extremo a extremo con bloqueo pesimista, alta automática de no residentes, minutos truncados, importe por estrategia y acumulado de residentes.
+**Objetivo:** Entrada y salida funcionan de extremo a extremo con bloqueo pesimista, alta automática de no residentes, todo minuto iniciado cobrado completo, importe por estrategia y acumulado de residentes.
 
 El núcleo del negocio. Entrada y salida corren cada una en una transacción que bloquea la fila del
 vehículo, de modo que dos peticiones simultáneas no pueden abrir dos estancias para la misma placa.

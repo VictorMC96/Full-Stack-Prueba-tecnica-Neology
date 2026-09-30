@@ -17,9 +17,14 @@ public record Estancia(
     OffsetDateTime createdAt,
     OffsetDateTime updatedAt) {
 
-  /** Minutos completos entre entrada y salida; los segundos sobrantes se descartan. */
+  /**
+   * Minutos a cobrar entre entrada y salida: todo minuto iniciado cuenta completo (un segundo de
+   * exceso ya suma un minuto). Ej.: 10 min 5 s -> 11; 59 s -> 1; 0 s -> 0.
+   */
   public static long minutosCompletos(OffsetDateTime entrada, OffsetDateTime salida) {
-    return Duration.between(entrada, salida).toMinutes();
+    Duration duracion = Duration.between(entrada, salida);
+    long minutos = duracion.toMinutes();
+    return duracion.equals(Duration.ofMinutes(minutos)) ? minutos : minutos + 1;
   }
 
   public static Estancia abrir(UUID vehiculoId, OffsetDateTime ahora) {

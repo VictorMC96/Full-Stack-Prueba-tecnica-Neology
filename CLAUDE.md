@@ -74,7 +74,7 @@ ruta relativa `/neo/...`) → proxy de `ng serve` → `backend/.../web/*Controll
    cobro se piden a `CalculadoraCobro`.
 2. **Sin Lombok.** `record` para DTOs y value objects.
 3. **Dinero:** `BigDecimal` con `setScale(2, RoundingMode.HALF_UP)`; columnas `DECIMAL(12,2)`.
-   Minutos: `Duration.toMinutes()` (trunca segundos).
+   Minutos: todo minuto iniciado cuenta completo (`Estancia.minutosCompletos`, redondeo hacia arriba).
 4. **Tiempo:** toda fecha sale de `OffsetDateTime.now(clock)` con el `Clock` inyectado. Prohibido
    `now()` sin reloj y prohibido aceptar fechas del cliente.
 5. **Placa:** siempre normalizada (mayúsculas, sin espacios ni guiones) y validada con

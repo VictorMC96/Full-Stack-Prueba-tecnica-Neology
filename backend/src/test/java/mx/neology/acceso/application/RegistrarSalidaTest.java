@@ -67,13 +67,13 @@ class RegistrarSalidaTest {
   }
 
   @Test
-  void noResidenteCobraAlSalirConMinutosTruncados() {
+  void noResidenteCobraAlSalirTodoMinutoIniciado() {
     dentroDesdeHace("NOR001", TipoVehiculo.NO_RESIDENTE, 10 * 60 + 5);
 
     EstanciaDeVehiculo resultado = casoDeUso.ejecutar("nor001");
 
-    assertThat(resultado.estancia().minutos()).isEqualTo(10);
-    assertThat(resultado.estancia().importe()).isEqualByComparingTo("5.00");
+    assertThat(resultado.estancia().minutos()).isEqualTo(11);
+    assertThat(resultado.estancia().importe()).isEqualByComparingTo("5.50");
     assertThat(resultado.estancia().salida()).isEqualTo(Fixtures.AHORA);
     assertThat(resultado.estancia().periodoId()).isEqualTo(periodo.id());
     assertThat(resultado.momentoCobro()).isEqualTo(MomentoCobro.AL_SALIR);

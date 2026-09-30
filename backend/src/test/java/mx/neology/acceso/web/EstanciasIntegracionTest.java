@@ -76,7 +76,7 @@ class EstanciasIntegracionTest extends IntegracionBase {
   }
 
   @Test
-  void salidaDeNoResidenteCobraMinutosCompletosAlSalir() throws Exception {
+  void salidaDeNoResidenteCobraTodoMinutoIniciadoAlSalir() throws Exception {
     entrada("NOR001");
     reloj.avanzar(Duration.ofMinutes(10).plusSeconds(5));
 
@@ -86,8 +86,8 @@ class EstanciasIntegracionTest extends IntegracionBase {
                 .content(cuerpo("nor001")))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.placa").value("NOR001"))
-        .andExpect(jsonPath("$.minutos").value(10))
-        .andExpect(jsonPath("$.importe").value(5.00))
+        .andExpect(jsonPath("$.minutos").value(11))
+        .andExpect(jsonPath("$.importe").value(5.50))
         .andExpect(jsonPath("$.momentoCobro").value("AL_SALIR"))
         .andExpect(jsonPath("$.periodoId").value("00000000-0000-0000-0000-000000000001"));
     sincronizar();
