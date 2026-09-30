@@ -2,16 +2,16 @@
 
 Pasos manuales (no los ejecuta ningún agente):
 
-1. Crear el fork de `VictorMC96/Full-Stack-Prueba-tecnica-Neology` en la cuenta `xochitlgr` (botón
+1. Crear el fork de `VictorMC96/Full-Stack-Prueba-tecnica-Neology` en la cuenta `mxgrfreelancer` (botón
    *Fork* en GitHub).
 2. Conectar el fork y subir la rama:
 
    ```bash
-   git remote add origin https://github.com/xochitlgr/Full-Stack-Prueba-tecnica-Neology.git
+   git remote add origin https://github.com/mxgrfreelancer/Full-Stack-Prueba-tecnica-Neology.git
    git push -u origin feature/xochitlgr
    ```
 
-3. Abrir el pull request `xochitlgr:feature/xochitlgr` → `VictorMC96:main` con el texto de abajo.
+3. Abrir el pull request `mxgrfreelancer:feature/xochitlgr` → `VictorMC96:main` con el texto de abajo.
 4. Enviar el enlace del PR al correo de la consultora con copia a `vmiranda@neology.mx` y
    `lluna@neopartners.mx`.
 
