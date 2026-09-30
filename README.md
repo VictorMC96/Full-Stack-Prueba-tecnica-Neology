@@ -84,7 +84,7 @@ abierta, de modo que el listado, el detalle y el reporte muestran datos desde el
 | POST | `/neo/vehiculos/residentes` | Alta de vehículo residente |
 | POST | `/neo/vehiculos/no-residentes` | Alta de vehículo no residente (opcional) |
 | POST | `/neo/estancias/entrada` | Registrar entrada `{ "placa": "ABC123" }` |
-| POST | `/neo/estancias/salida` | Registrar salida; devuelve minutos e importe |
+| POST | `/neo/estancias/salida` | Registrar salida; devuelve duración real (`duracionSegundos`), minutos cobrados e importe |
 | GET | `/neo/residentes/pagos` | Informe de pagos del periodo activo. `Accept: application/json` → JSON; `Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` → `.xlsx` |
 | POST | `/neo/mes/iniciar` | Cierra el periodo activo y abre uno nuevo |
 | GET | `/neo/vehiculos?placa=&page=&size=&sort=` | Listado paginado con filtro y ordenamiento |
@@ -104,6 +104,8 @@ Los errores siguen RFC 7807 (`application/problem+json`) con un campo `code`
 | No residente | $0.50 / minuto | Al registrar la salida |
 
 - Todo minuto iniciado se cobra completo (10 min 5 s → 11 minutos; 59 s → 1 minuto). Importes con dos decimales.
+  La interfaz muestra la duración real de cada estancia en `mm:ss` junto a los minutos cobrados; la API
+  devuelve ambos (`duracionSegundos` y `minutos`).
 - Una placa desconocida que registra entrada se da de alta como no residente; puede reclasificarse después.
 - Iniciar mes cierra el periodo activo y abre otro: las estancias quedan archivadas en su periodo y los
   acumulados de residentes vuelven a cero. Las estancias abiertas cuentan en el periodo en que salen.

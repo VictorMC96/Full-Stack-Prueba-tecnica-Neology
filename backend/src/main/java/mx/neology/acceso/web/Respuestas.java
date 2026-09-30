@@ -1,5 +1,6 @@
 package mx.neology.acceso.web;
 
+import java.time.Duration;
 import mx.neology.acceso.application.modelo.DetalleVehiculo;
 import mx.neology.acceso.application.modelo.EstanciaDeVehiculo;
 import mx.neology.acceso.application.modelo.InformePagos;
@@ -27,6 +28,9 @@ final class Respuestas {
         e.tipo(),
         e.estancia().entrada(),
         e.estancia().salida(),
+        e.estancia().salida() == null
+            ? null
+            : Duration.between(e.estancia().entrada(), e.estancia().salida()).getSeconds(),
         e.estancia().minutos(),
         e.estancia().importe(),
         e.momentoCobro(),

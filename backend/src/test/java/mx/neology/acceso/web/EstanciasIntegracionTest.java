@@ -48,6 +48,7 @@ class EstanciasIntegracionTest extends IntegracionBase {
         .andExpect(jsonPath("$.dentro").value(true))
         .andExpect(jsonPath("$.estanciaAbierta.salida").value(nullValue()))
         .andExpect(jsonPath("$.estanciaAbierta.minutos").value(nullValue()))
+        .andExpect(jsonPath("$.estanciaAbierta.duracionSegundos").value(nullValue()))
         .andExpect(jsonPath("$.estanciaAbierta.importe").value(nullValue()))
         .andExpect(jsonPath("$.estanciaAbierta.momentoCobro").value("AL_SALIR"))
         .andExpect(jsonPath("$.acumuladoPeriodo").value(nullValue()));
@@ -86,6 +87,7 @@ class EstanciasIntegracionTest extends IntegracionBase {
                 .content(cuerpo("nor001")))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.placa").value("NOR001"))
+        .andExpect(jsonPath("$.duracionSegundos").value(605))
         .andExpect(jsonPath("$.minutos").value(11))
         .andExpect(jsonPath("$.importe").value(5.50))
         .andExpect(jsonPath("$.momentoCobro").value("AL_SALIR"))

@@ -23,6 +23,9 @@ export interface EstanciaResponse {
   tipo: TipoVehiculo;
   entrada: string;
   salida: string | null;
+  /** Segundos reales entre entrada y salida; null si la estancia sigue abierta. */
+  duracionSegundos: number | null;
+  /** Minutos cobrados: todo minuto iniciado cuenta completo. */
   minutos: number | null;
   importe: number | null;
   momentoCobro: MomentoCobro;

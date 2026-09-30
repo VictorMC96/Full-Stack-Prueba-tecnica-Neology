@@ -34,7 +34,9 @@
             <dd>
               <span class="placa">{{ r.placa }}</span>
             </dd>
-            <dt>Minutos</dt>
+            <dt>Duración</dt>
+            <dd>{{ r.duracionSegundos | duracion }}</dd>
+            <dt>Minutos cobrados</dt>
             <dd>{{ r.minutos ?? 0 }}</dd>
             <dt>Importe</dt>
             <dd>{{ r.importe ?? 0 | currency: 'MXN' : 'symbol-narrow' }}</dd>

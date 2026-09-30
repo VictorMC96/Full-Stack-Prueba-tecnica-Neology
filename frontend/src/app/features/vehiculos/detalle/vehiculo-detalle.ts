@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { VehiculosApi } from '../../../core/api/vehiculos-api';
 import {
@@ -13,6 +14,7 @@ import {
   PageResponse,
   VehiculoDetalleResponse,
 } from '../../../core/modelos/modelos';
+import { DuracionPipe } from '../../../shared/duracion.pipe';
 import { EmptyState } from '../../../shared/empty-state/empty-state';
 import { EstadoChip } from '../../../shared/estado-chip/estado-chip';
 import { Loading } from '../../../shared/loading/loading';
@@ -28,6 +30,8 @@ import { Loading } from '../../../shared/loading/loading';
     MatIconModule,
     MatPaginatorModule,
     MatTableModule,
+    MatTooltipModule,
+    DuracionPipe,
     EmptyState,
     EstadoChip,
     Loading,
@@ -40,7 +44,7 @@ export class VehiculoDetalle {
 
   readonly placa = input.required<string>();
 
-  readonly columnas = ['entrada', 'salida', 'minutos', 'importe'];
+  readonly columnas = ['entrada', 'salida', 'duracion', 'minutos', 'importe'];
   readonly tamano = 10;
 
   readonly vehiculo = signal<VehiculoDetalleResponse | null>(null);

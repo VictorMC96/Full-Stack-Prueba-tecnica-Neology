@@ -181,8 +181,9 @@ describe('VehiculosLista', () => {
       tipo: 'RESIDENTE',
       entrada: '2026-09-30T10:00:00Z',
       salida: '2026-09-30T10:12:00Z',
-      minutos: 12,
-      importe: 6,
+      duracionSegundos: 605,
+      minutos: 11,
+      importe: 5.5,
       momentoCobro: 'AL_SALIR',
       periodoId: null,
     };
@@ -243,7 +244,7 @@ describe('VehiculosLista', () => {
       const snackbar =
         await TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(MatSnackBarHarness);
       expect(await snackbar.getMessage()).toBe(
-        'Salida registrada: RES001 · 12 min · $6.00 · Cobrar al salir',
+        'Salida registrada: RES001 · 10:05 · 11 min cobrados · $5.50 · Cobrar al salir',
       );
     });
 

@@ -16,6 +16,7 @@ function estancia(momentoCobro: MomentoCobro, importe: number | null): EstanciaR
     tipo: 'NO_RESIDENTE',
     entrada: '2026-09-30T10:00:00Z',
     salida: momentoCobro === 'NINGUNO' ? null : '2026-09-30T11:30:00Z',
+    duracionSegundos: momentoCobro === 'NINGUNO' ? null : 5345,
     minutos: 90,
     importe,
     momentoCobro,
@@ -92,12 +93,14 @@ describe('MovimientoForm', () => {
 
     const resultado = (fixture.nativeElement as HTMLElement).querySelector('.resultado');
     expect(resultado?.querySelector('.placa')?.textContent).toBe('NR0001');
+    expect(resultado?.textContent).toContain('89:05');
+    expect(resultado?.textContent).toContain('Minutos cobrados');
     expect(resultado?.textContent).toContain('90');
     expect(resultado?.textContent).toContain('$45.00');
     expect(resultado?.textContent).toContain('Cobrar al salir');
     const snackbar = await rootLoader.getHarness(MatSnackBarHarness);
     expect(await snackbar.getMessage()).toBe(
-      'Salida registrada: NR0001 · 90 min · $45.00 · Cobrar al salir',
+      'Salida registrada: NR0001 · 89:05 · 90 min cobrados · $45.00 · Cobrar al salir',
     );
     expect(await input.getValue()).toBe('');
   });

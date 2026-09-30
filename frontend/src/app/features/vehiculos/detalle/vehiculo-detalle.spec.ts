@@ -22,6 +22,7 @@ const ESTANCIA: EstanciaResponse = {
   tipo: 'RESIDENTE',
   entrada: '2026-09-10T08:00:00Z',
   salida: '2026-09-10T09:00:00Z',
+  duracionSegundos: 3545,
   minutos: 60,
   importe: 3,
   momentoCobro: 'INFORME_MENSUAL',
@@ -33,7 +34,14 @@ const RESIDENTE: VehiculoDetalleResponse = {
   placa: 'RES001',
   tipo: 'RESIDENTE',
   dentro: true,
-  estanciaAbierta: { ...ESTANCIA, id: 2, salida: null, minutos: null, importe: null },
+  estanciaAbierta: {
+    ...ESTANCIA,
+    id: 2,
+    salida: null,
+    duracionSegundos: null,
+    minutos: null,
+    importe: null,
+  },
   acumuladoPeriodo: { minutos: 120, importe: 6 },
   createdAt: '2026-09-01T10:00:00Z',
 };
@@ -88,6 +96,26 @@ describe('VehiculoDetalle', () => {
     expect(elemento.textContent).toContain('$6.00');
     expect(elemento.textContent).toContain('Estancia abierta');
     expect(elemento.querySelectorAll('tr[mat-row]').length).toBe(1);
+    const cabeceras = Array.from(elemento.querySelectorAll('th')).map((th) =>
+      th.textContent?.trim(),
+    );
+    expect(cabeceras).toEqual(['Entrada', 'Salida', 'Duración', 'Min. cobrados', 'Importe']);
+    const celdas = Array.from(elemento.querySelectorAll('tr[mat-row] td')).map((td) =>
+      td.textContent?.trim(),
+    );
+    expect(celdas[2]).toBe('59:05');
+    expect(celdas[3]).toBe('60');
+    expect(celdas[4]).toBe('$3.00');
+  });
+
+  it('muestra guiones en duración y minutos de una estancia abierta', async () => {
+    detalle().flush(RESIDENTE);
+    estancias().flush(pagina([RESIDENTE.estanciaAbierta as EstanciaResponse]));
+    await fixture.whenStable();
+    const celdas = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('tr[mat-row] td'),
+    ).map((td) => td.textContent?.trim());
+    expect(celdas.slice(1)).toEqual(['—', '—', '—', '—']);
   });
 
   it('no muestra el acumulado ni la estancia abierta cuando llegan en null', async () => {

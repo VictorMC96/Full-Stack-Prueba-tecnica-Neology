@@ -102,8 +102,21 @@
                 }
               </td>
             </ng-container>
+            <ng-container matColumnDef="duracion">
+              <th mat-header-cell *matHeaderCellDef class="num" matTooltip="Duración real (mm:ss)">
+                Duración
+              </th>
+              <td mat-cell *matCellDef="let e" class="num">{{ e.duracionSegundos | duracion }}</td>
+            </ng-container>
             <ng-container matColumnDef="minutos">
-              <th mat-header-cell *matHeaderCellDef class="num">Minutos</th>
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                class="num"
+                matTooltip="Todo minuto iniciado se cobra completo"
+              >
+                Min. cobrados
+              </th>
               <td mat-cell *matCellDef="let e" class="num">{{ e.minutos ?? '—' }}</td>
             </ng-container>
             <ng-container matColumnDef="importe">
