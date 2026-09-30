@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.app-card {
+  height: 100%;
+}
+
+h2 {
+  margin: 0;
+}
+
+.campo {
+  width: 100%;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 var(--app-space-4) var(--app-space-4);
+}
+
+.resultado {
+  margin-top: var(--app-space-3);
+  padding: var(--app-space-3) var(--app-space-4);
+  border-radius: var(--app-radius-card);
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--app-space-1) var(--app-space-4);
+    margin: 0;
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.descripcion {
+  margin: 0 0 var(--app-space-3);
+  color: var(--app-color-fg-muted);
+}

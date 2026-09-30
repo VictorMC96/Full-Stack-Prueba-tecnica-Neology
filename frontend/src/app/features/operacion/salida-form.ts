@@ -1,0 +1,69 @@
+import { CurrencyPipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { EstanciasApi } from '../../core/api/estancias-api';
+import { EstanciaResponse, MomentoCobro } from '../../core/modelos/modelos';
+import { PlacaMayusculas } from '../../shared/placa/placa-mayusculas.directive';
+import { normalizarPlaca, placaValidator } from '../../shared/placa/placa.validator';
+
+export const ETIQUETA_COBRO: Record<MomentoCobro, string> = {
+  AL_SALIR: 'Cobrar al salir',
+  INFORME_MENSUAL: 'Se acumula al informe mensual',
+  NINGUNO: 'Sin cobro',
+};
+
+@Component({
+  selector: 'app-salida-form',
+  imports: [
+    CurrencyPipe,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    PlacaMayusculas,
+  ],
+  templateUrl: './salida-form.html',
+  styleUrl: './tarjeta-formulario.scss',
+})
+export class SalidaForm {
+  private readonly api = inject(EstanciasApi);
+  private readonly snackBar = inject(MatSnackBar);
+
+  readonly form = new FormGroup({
+    placa: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, placaValidator],
+    }),
+  });
+  readonly enviando = signal(false);
+  readonly resultado = signal<EstanciaResponse | null>(null);
+  readonly etiquetas = ETIQUETA_COBRO;
+
+  enviar(): void {
+    if (this.form.invalid || this.enviando()) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    const placa = normalizarPlaca(this.form.controls.placa.value);
+    this.enviando.set(true);
+    this.api.salida(placa).subscribe({
+      next: (estancia) => {
+        this.enviando.set(false);
+        this.resultado.set(estancia);
+        this.snackBar.open(
+          `Salida registrada: ${placa} · ${estancia.minutos ?? 0} min · ${this.etiquetas[estancia.momentoCobro]}`,
+          'Cerrar',
+          { duration: 6000 },
+        );
+        this.form.reset();
+      },
+      error: () => this.enviando.set(false),
+    });
+  }
+}

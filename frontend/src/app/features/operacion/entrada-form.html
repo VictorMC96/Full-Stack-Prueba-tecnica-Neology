@@ -1,0 +1,33 @@
+<mat-card appearance="outlined" class="app-card">
+  <mat-card-header>
+    <mat-card-title><h2>Registrar entrada</h2></mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    <mat-card-content>
+      <p class="descripcion">Una placa sin alta se registra como no residente.</p>
+      <mat-form-field appearance="outline" class="campo">
+        <mat-label>Placa</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="placa"
+          appPlacaMayusculas
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="14"
+        />
+        <mat-hint>3 a 10 letras o dígitos</mat-hint>
+        @if (form.controls.placa.hasError('required')) {
+          <mat-error>La placa es obligatoria</mat-error>
+        } @else if (form.controls.placa.hasError('placa')) {
+          <mat-error>Usa de 3 a 10 letras o dígitos, sin símbolos</mat-error>
+        }
+      </mat-form-field>
+    </mat-card-content>
+    <div class="acciones">
+      <button matButton="filled" type="submit" [disabled]="form.invalid || enviando()">
+        Registrar entrada
+      </button>
+    </div>
+  </form>
+</mat-card>
