@@ -7,6 +7,7 @@ import mx.neology.acceso.application.modelo.EstanciaDeVehiculo;
 import mx.neology.acceso.application.puerto.AcumuladoRepositorio;
 import mx.neology.acceso.application.puerto.EstanciaRepositorio;
 import mx.neology.acceso.application.puerto.PeriodoRepositorio;
+import mx.neology.acceso.application.puerto.TipoVehiculoRepositorio;
 import mx.neology.acceso.application.puerto.Transaccion;
 import mx.neology.acceso.application.puerto.VehiculoRepositorio;
 import mx.neology.acceso.domain.Acumulado;
@@ -14,6 +15,7 @@ import mx.neology.acceso.domain.Estancia;
 import mx.neology.acceso.domain.MomentoCobro;
 import mx.neology.acceso.domain.Periodo;
 import mx.neology.acceso.domain.Placa;
+import mx.neology.acceso.domain.TipoVehiculo;
 import mx.neology.acceso.domain.Vehiculo;
 import mx.neology.acceso.domain.cobro.CalculadoraCobro;
 import mx.neology.acceso.domain.excepcion.VehiculoNoDentroException;
@@ -30,6 +32,7 @@ public final class RegistrarSalida {
   private final EstanciaRepositorio estancias;
   private final PeriodoRepositorio periodos;
   private final AcumuladoRepositorio acumulados;
+  private final TipoVehiculoRepositorio tipos;
   private final CalculadoraCobro calculadora;
   private final Transaccion transaccion;
   private final Clock clock;
@@ -39,6 +42,7 @@ public final class RegistrarSalida {
       EstanciaRepositorio estancias,
       PeriodoRepositorio periodos,
       AcumuladoRepositorio acumulados,
+      TipoVehiculoRepositorio tipos,
       CalculadoraCobro calculadora,
       Transaccion transaccion,
       Clock clock) {
@@ -46,6 +50,7 @@ public final class RegistrarSalida {
     this.estancias = estancias;
     this.periodos = periodos;
     this.acumulados = acumulados;
+    this.tipos = tipos;
     this.calculadora = calculadora;
     this.transaccion = transaccion;
     this.clock = clock;
@@ -67,13 +72,14 @@ public final class RegistrarSalida {
               estancias
                   .buscarPorId(vehiculo.estanciaAbiertaId())
                   .orElseThrow(() -> new VehiculoNoDentroException(placa.valor()));
+          TipoVehiculo tipo = Tipos.de(tipos, vehiculo);
           long minutos = Estancia.minutosCompletos(abierta.entrada(), ahora);
-          BigDecimal importe = calculadora.calcular(vehiculo.tipo(), minutos);
+          BigDecimal importe = calculadora.calcular(tipo, minutos);
           Periodo periodo = periodos.activo();
           Estancia cerrada =
               estancias.guardar(abierta.cerrar(ahora, minutos, importe, periodo.id()));
           vehiculos.guardar(vehiculo.sinEstanciaAbierta(ahora));
-          MomentoCobro momento = calculadora.momento(vehiculo.tipo());
+          MomentoCobro momento = calculadora.momento(tipo);
           if (momento == MomentoCobro.INFORME_MENSUAL) {
             Acumulado acumulado =
                 acumulados
@@ -84,11 +90,11 @@ public final class RegistrarSalida {
           log.info(
               "evento=salida placa={} tipo={} minutos={} importe={} momento={}",
               placa,
-              vehiculo.tipo(),
+              tipo.codigo(),
               minutos,
               importe,
               momento);
-          return new EstanciaDeVehiculo(cerrada, vehiculo.placa(), vehiculo.tipo(), momento);
+          return new EstanciaDeVehiculo(cerrada, vehiculo.placa(), tipo, momento);
         });
   }
 }

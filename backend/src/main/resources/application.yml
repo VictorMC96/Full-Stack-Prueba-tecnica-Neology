@@ -22,9 +22,6 @@ server:
 
 acceso:
   zona-horaria: America/Mexico_City
-  tarifas:
-    residente: 0.05
-    no-residente: 0.50
 
 management:
   endpoints:

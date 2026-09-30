@@ -22,7 +22,9 @@ class OpenApiDocsTest extends IntegracionBase {
         "/neo/mes/iniciar",
         "/neo/vehiculos",
         "/neo/vehiculos/{placa}",
-        "/neo/vehiculos/{placa}/estancias"
+        "/neo/vehiculos/{placa}/estancias",
+        "/neo/tipos-vehiculo",
+        "/neo/tipos-vehiculo/{codigo}"
       })
   void documentaCadaRuta(String ruta) throws Exception {
     mvc.perform(get("/v3/api-docs"))

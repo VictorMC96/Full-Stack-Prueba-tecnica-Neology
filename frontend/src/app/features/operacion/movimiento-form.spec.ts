@@ -14,6 +14,7 @@ function estancia(momentoCobro: MomentoCobro, importe: number | null): EstanciaR
     id: 7,
     placa: 'NR0001',
     tipo: 'NO_RESIDENTE',
+    tipoNombre: 'No residente',
     entrada: '2026-09-30T10:00:00Z',
     salida: momentoCobro === 'NINGUNO' ? null : '2026-09-30T11:30:00Z',
     duracionSegundos: momentoCobro === 'NINGUNO' ? null : 5345,

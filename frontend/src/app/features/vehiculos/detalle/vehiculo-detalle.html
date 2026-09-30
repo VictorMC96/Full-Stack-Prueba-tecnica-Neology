@@ -9,7 +9,7 @@
   </h1>
   @if (vehiculo(); as v) {
     <div class="chips">
-      <app-estado-chip [estado]="v.tipo" />
+      <app-estado-chip [estado]="v.tipo" [nombre]="v.tipoNombre" />
       <app-estado-chip [estado]="v.dentro ? 'DENTRO' : 'FUERA'" />
     </div>
   }
@@ -37,7 +37,7 @@
       <mat-card-content>
         <dl class="datos">
           <dt>Tipo</dt>
-          <dd><app-estado-chip [estado]="v.tipo" /></dd>
+          <dd><app-estado-chip [estado]="v.tipo" [nombre]="v.tipoNombre" /></dd>
           <dt>Estado</dt>
           <dd><app-estado-chip [estado]="v.dentro ? 'DENTRO' : 'FUERA'" /></dd>
           <dt>Alta</dt>

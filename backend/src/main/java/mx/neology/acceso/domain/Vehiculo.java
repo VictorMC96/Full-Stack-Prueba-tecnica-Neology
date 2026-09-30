@@ -7,12 +7,12 @@ import java.util.UUID;
 public record Vehiculo(
     UUID id,
     Placa placa,
-    TipoVehiculo tipo,
+    CodigoTipo tipo,
     UUID estanciaAbiertaId,
     OffsetDateTime createdAt,
     OffsetDateTime updatedAt) {
 
-  public static Vehiculo nuevo(Placa placa, TipoVehiculo tipo, OffsetDateTime ahora) {
+  public static Vehiculo nuevo(Placa placa, CodigoTipo tipo, OffsetDateTime ahora) {
     return new Vehiculo(UUID.randomUUID(), placa, tipo, null, ahora, ahora);
   }
 
@@ -20,12 +20,7 @@ public record Vehiculo(
     return estanciaAbiertaId != null;
   }
 
-  /** Solo un vehículo con tipo provisional puede reclasificarse a un tipo definitivo. */
-  public boolean puedeReclasificarseA(TipoVehiculo nuevoTipo) {
-    return tipo.esProvisional() && !nuevoTipo.esProvisional();
-  }
-
-  public Vehiculo reclasificar(TipoVehiculo nuevoTipo, OffsetDateTime ahora) {
+  public Vehiculo reclasificar(CodigoTipo nuevoTipo, OffsetDateTime ahora) {
     return new Vehiculo(id, placa, nuevoTipo, estanciaAbiertaId, createdAt, ahora);
   }
 

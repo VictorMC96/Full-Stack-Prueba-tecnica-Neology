@@ -12,8 +12,9 @@ desviación (p. ej. Spring Boot 4.1.1 en lugar de "3.x") se documenta en `docs/d
 
 ### II. Clean Architecture pragmática
 Backend en `mx.neology.acceso.{domain,application,infrastructure,web}`. `domain` y `application` no
-importan Spring ni JPA. Tarifas por tipo de vehículo mediante Strategy (`EstrategiaCobro`) y
-configuración en `application.yml`; agregar un tipo = una clase + una constante + una entrada yml.
+importan Spring ni JPA. Los tipos de vehículo son un catálogo administrable (tabla `tipos_vehiculo`) y
+el cobro usa Strategy por modelo (`EstrategiaCobro`: sin cobro, por minuto al salir, por minuto
+acumulado); agregar un tipo = una fila desde la interfaz; agregar un modelo = una clase + una constante.
 
 ### III. Tests primero donde vive la lógica (NO NEGOCIABLE)
 Dominio y casos de uso se desarrollan con TDD (JUnit 5 + Mockito + AssertJ). Controladores con

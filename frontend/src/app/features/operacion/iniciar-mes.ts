@@ -6,7 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter } from 'rxjs';
 import { MesApi } from '../../core/api/mes-api';
-import { ConfirmarDialog, ConfirmarDialogDatos } from './confirmar-dialog';
+import {
+  ConfirmarDialog,
+  ConfirmarDialogDatos,
+} from '../../shared/confirmar-dialog/confirmar-dialog';
 
 @Component({
   selector: 'app-iniciar-mes',

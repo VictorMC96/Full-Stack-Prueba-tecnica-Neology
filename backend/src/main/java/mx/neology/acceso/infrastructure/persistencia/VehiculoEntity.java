@@ -2,13 +2,10 @@ package mx.neology.acceso.infrastructure.persistencia;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import mx.neology.acceso.domain.TipoVehiculo;
 import org.hibernate.annotations.Formula;
 
 @Entity
@@ -20,9 +17,9 @@ public class VehiculoEntity {
   @Column(nullable = false, length = 10)
   private String placa;
 
-  @Enumerated(EnumType.STRING)
+  /** Código del tipo; clave foránea a {@code tipos_vehiculo.codigo}. */
   @Column(nullable = false, length = 20)
-  private TipoVehiculo tipo;
+  private String tipo;
 
   @Column(name = "estancia_abierta_id")
   private UUID estanciaAbiertaId;
@@ -42,7 +39,7 @@ public class VehiculoEntity {
   public VehiculoEntity(
       UUID id,
       String placa,
-      TipoVehiculo tipo,
+      String tipo,
       UUID estanciaAbiertaId,
       OffsetDateTime createdAt,
       OffsetDateTime updatedAt) {
@@ -62,12 +59,16 @@ public class VehiculoEntity {
     return placa;
   }
 
-  public TipoVehiculo getTipo() {
+  public String getTipo() {
     return tipo;
   }
 
   public UUID getEstanciaAbiertaId() {
     return estanciaAbiertaId;
+  }
+
+  public Boolean getDentro() {
+    return dentro;
   }
 
   public OffsetDateTime getCreatedAt() {

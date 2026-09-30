@@ -15,15 +15,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, catchError, map, of, switchMap } from 'rxjs';
 import { EstanciasApi } from '../../core/api/estancias-api';
+import { TiposVehiculoApi } from '../../core/api/tipos-vehiculo-api';
 import { VehiculosApi } from '../../core/api/vehiculos-api';
-import { TipoAlta, VehiculoResponse } from '../../core/modelos/modelos';
+import { TipoVehiculoResponse, VehiculoResponse } from '../../core/modelos/modelos';
 import { PlacaMayusculas } from '../../shared/placa/placa-mayusculas.directive';
 import { normalizarPlaca, placaValidator } from '../../shared/placa/placa.validator';
-
-export const OPCIONES_TIPO: { valor: TipoAlta; etiqueta: string }[] = [
-  { valor: 'OFICIAL', etiqueta: 'Oficial' },
-  { valor: 'RESIDENTE', etiqueta: 'Residente' },
-];
 
 interface ResultadoAlta {
   vehiculo: VehiculoResponse;
@@ -48,23 +44,48 @@ interface ResultadoAlta {
 })
 export class AltaForm {
   private readonly api = inject(VehiculosApi);
+  private readonly tiposApi = inject(TiposVehiculoApi);
   private readonly estancias = inject(EstanciasApi);
   private readonly snackBar = inject(MatSnackBar);
   private readonly formDir = viewChild(FormGroupDirective);
 
-  readonly opciones = OPCIONES_TIPO;
+  readonly tipos = signal<TipoVehiculoResponse[]>([]);
+  readonly cargandoTipos = signal(false);
+  readonly errorTipos = signal(false);
+
   readonly form = new FormGroup({
     placa: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, placaValidator],
     }),
-    tipo: new FormControl<TipoAlta>('OFICIAL', {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
+    tipo: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     registrarEntrada: new FormControl(true, { nonNullable: true }),
   });
   readonly enviando = signal(false);
+
+  constructor() {
+    this.cargarTipos();
+  }
+
+  cargarTipos(): void {
+    this.cargandoTipos.set(true);
+    this.errorTipos.set(false);
+    this.tiposApi.listar().subscribe({
+      next: (tipos) => {
+        this.tipos.set(tipos);
+        this.cargandoTipos.set(false);
+        const actual = this.form.controls.tipo.value;
+        if (!tipos.some((t) => t.codigo === actual)) {
+          const preferido = tipos.find((t) => !t.provisional) ?? tipos[0];
+          this.form.controls.tipo.setValue(preferido?.codigo ?? '');
+        }
+      },
+      error: () => {
+        this.cargandoTipos.set(false);
+        this.errorTipos.set(true);
+      },
+    });
+  }
 
   enviar(): void {
     if (this.form.invalid || this.enviando()) {
@@ -74,7 +95,6 @@ export class AltaForm {
     const placa = normalizarPlaca(this.form.controls.placa.value);
     const tipo = this.form.controls.tipo.value;
     const registrarEntrada = this.form.controls.registrarEntrada.value;
-    const etiqueta = this.opciones.find((o) => o.valor === tipo)?.etiqueta ?? tipo;
     this.enviando.set(true);
     this.api
       .alta(tipo, placa)
@@ -97,9 +117,11 @@ export class AltaForm {
           if (entrada === null) {
             return;
           }
+          const nombre =
+            vehiculo.tipoNombre || this.tipos().find((t) => t.codigo === tipo)?.nombre || tipo;
           const sufijo = entrada ? ' y entrada registrada' : '';
           this.snackBar.open(
-            `Vehículo ${vehiculo.placa} registrado como ${etiqueta}${sufijo}`,
+            `Vehículo ${vehiculo.placa} registrado como ${nombre}${sufijo}`,
             'Cerrar',
             { duration: 4000 },
           );

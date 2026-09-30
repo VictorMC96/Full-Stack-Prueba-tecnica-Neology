@@ -8,8 +8,7 @@ import java.util.Set;
 import mx.neology.acceso.application.ConsultarVehiculos;
 import mx.neology.acceso.application.RegistrarVehiculo;
 import mx.neology.acceso.application.modelo.ConsultaPagina;
-import mx.neology.acceso.domain.TipoVehiculo;
-import mx.neology.acceso.domain.Vehiculo;
+import mx.neology.acceso.application.modelo.VehiculoConTipo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,22 +34,28 @@ public class VehiculosController {
     this.consultarVehiculos = consultarVehiculos;
   }
 
+  @PostMapping
+  @Operation(summary = "Alta de vehículo con cualquier tipo del catálogo")
+  public ResponseEntity<VehiculoResponse> alta(@Valid @RequestBody VehiculoRequest cuerpo) {
+    return alta(cuerpo.placa(), cuerpo.tipo());
+  }
+
   @PostMapping("/oficiales")
   @Operation(summary = "Alta de vehículo oficial")
   public ResponseEntity<VehiculoResponse> altaOficial(@Valid @RequestBody PlacaRequest cuerpo) {
-    return alta(cuerpo, TipoVehiculo.OFICIAL);
+    return alta(cuerpo.placa(), "OFICIAL");
   }
 
   @PostMapping("/residentes")
   @Operation(summary = "Alta de vehículo residente")
   public ResponseEntity<VehiculoResponse> altaResidente(@Valid @RequestBody PlacaRequest cuerpo) {
-    return alta(cuerpo, TipoVehiculo.RESIDENTE);
+    return alta(cuerpo.placa(), "RESIDENTE");
   }
 
   @PostMapping("/no-residentes")
   @Operation(summary = "Alta de vehículo no residente")
   public ResponseEntity<VehiculoResponse> altaNoResidente(@Valid @RequestBody PlacaRequest cuerpo) {
-    return alta(cuerpo, TipoVehiculo.NO_RESIDENTE);
+    return alta(cuerpo.placa(), "NO_RESIDENTE");
   }
 
   @GetMapping
@@ -80,9 +85,10 @@ public class VehiculosController {
     return PageResponse.de(consultarVehiculos.estancias(placa, consulta), Respuestas::estancia);
   }
 
-  private ResponseEntity<VehiculoResponse> alta(PlacaRequest cuerpo, TipoVehiculo tipo) {
-    Vehiculo vehiculo = registrarVehiculo.ejecutar(cuerpo.placa(), tipo);
-    return ResponseEntity.created(URI.create("/neo/vehiculos/" + vehiculo.placa().valor()))
+  private ResponseEntity<VehiculoResponse> alta(String placa, String tipo) {
+    VehiculoConTipo vehiculo = registrarVehiculo.ejecutar(placa, tipo);
+    return ResponseEntity.created(
+            URI.create("/neo/vehiculos/" + vehiculo.vehiculo().placa().valor()))
         .body(Respuestas.vehiculo(vehiculo));
   }
 }

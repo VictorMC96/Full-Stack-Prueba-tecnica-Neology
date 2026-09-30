@@ -7,44 +7,63 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
+import mx.neology.acceso.domain.ModeloCobro;
 import mx.neology.acceso.domain.MomentoCobro;
 import mx.neology.acceso.domain.TipoVehiculo;
 
 /**
- * Registro de estrategias indexado por tipo. Añadir un tipo de vehículo es añadir una constante al
- * enum y una estrategia; aquí no hay {@code if} ni {@code switch} sobre el tipo.
+ * Registro de estrategias indexado por modelo de cobro. Los tipos de vehículo son datos (tabla
+ * {@code tipos_vehiculo}) que eligen un modelo; aquí no hay {@code if} ni {@code switch} por tipo
+ * ni por modelo.
  */
 public final class CalculadoraCobro {
 
-  private final Map<TipoVehiculo, EstrategiaCobro> estrategias;
+  private final Map<ModeloCobro, EstrategiaCobro> estrategias;
 
   public CalculadoraCobro(Collection<EstrategiaCobro> lista) {
-    EnumMap<TipoVehiculo, EstrategiaCobro> mapa = new EnumMap<>(TipoVehiculo.class);
+    EnumMap<ModeloCobro, EstrategiaCobro> mapa = new EnumMap<>(ModeloCobro.class);
     for (EstrategiaCobro estrategia : lista) {
-      mapa.put(estrategia.tipo(), estrategia);
+      mapa.put(estrategia.modelo(), estrategia);
     }
-    for (TipoVehiculo tipo : TipoVehiculo.values()) {
-      if (!mapa.containsKey(tipo)) {
-        throw new IllegalStateException("Falta la estrategia de cobro para el tipo " + tipo);
+    for (ModeloCobro modelo : ModeloCobro.values()) {
+      if (!mapa.containsKey(modelo)) {
+        throw new IllegalStateException("Falta la estrategia de cobro para el modelo " + modelo);
       }
     }
     this.estrategias = Collections.unmodifiableMap(mapa);
   }
 
   public BigDecimal calcular(TipoVehiculo tipo, long minutos) {
-    return estrategias.get(tipo).calcular(minutos);
+    return estrategia(tipo.modeloCobro()).calcular(tipo.tarifaPorMinuto(), minutos);
   }
 
   public MomentoCobro momento(TipoVehiculo tipo) {
-    return estrategias.get(tipo).momento();
+    return momento(tipo.modeloCobro());
   }
 
-  /** Tipos cuya estrategia cobra en el momento indicado (p. ej. los del informe mensual). */
-  public Set<TipoVehiculo> tiposConMomento(MomentoCobro momento) {
-    EnumSet<TipoVehiculo> tipos = EnumSet.noneOf(TipoVehiculo.class);
+  public MomentoCobro momento(ModeloCobro modelo) {
+    return estrategia(modelo).momento();
+  }
+
+  /** Valida la tarifa de un tipo según lo que admite su modelo de cobro. */
+  public void validarTarifa(ModeloCobro modelo, BigDecimal tarifaPorMinuto) {
+    estrategia(modelo).validarTarifa(tarifaPorMinuto);
+  }
+
+  /** Modelos cuya estrategia cobra en el momento indicado (p. ej. los del informe mensual). */
+  public Set<ModeloCobro> modelosConMomento(MomentoCobro momento) {
+    EnumSet<ModeloCobro> modelos = EnumSet.noneOf(ModeloCobro.class);
     estrategias.values().stream()
         .filter(e -> e.momento() == momento)
-        .forEach(e -> tipos.add(e.tipo()));
-    return tipos;
+        .forEach(e -> modelos.add(e.modelo()));
+    return modelos;
+  }
+
+  private EstrategiaCobro estrategia(ModeloCobro modelo) {
+    EstrategiaCobro estrategia = modelo == null ? null : estrategias.get(modelo);
+    if (estrategia == null) {
+      throw new IllegalStateException("No hay estrategia de cobro para el modelo " + modelo);
+    }
+    return estrategia;
   }
 }

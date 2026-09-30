@@ -34,6 +34,8 @@
             <dd>
               <span class="placa">{{ r.placa }}</span>
             </dd>
+            <dt>Tipo</dt>
+            <dd><app-estado-chip [estado]="r.tipo" [nombre]="r.tipoNombre" /></dd>
             <dt>Duración</dt>
             <dd>{{ r.duracionSegundos | duracion }}</dd>
             <dt>Minutos cobrados</dt>

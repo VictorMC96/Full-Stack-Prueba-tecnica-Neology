@@ -2,7 +2,11 @@ package mx.neology.acceso.web;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import mx.neology.acceso.domain.TipoVehiculo;
 
 public record VehiculoResponse(
-    UUID id, String placa, TipoVehiculo tipo, boolean dentro, OffsetDateTime createdAt) {}
+    UUID id,
+    String placa,
+    String tipo,
+    String tipoNombre,
+    boolean dentro,
+    OffsetDateTime createdAt) {}

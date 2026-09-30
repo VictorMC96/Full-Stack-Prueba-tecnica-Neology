@@ -17,8 +17,20 @@ import { EstanciaResponse, PageResponse, VehiculoResumen } from '../../../core/m
 import { VehiculosLista } from './vehiculos-lista';
 
 const VEHICULOS: VehiculoResumen[] = [
-  { placa: 'OFI001', tipo: 'OFICIAL', dentro: false, createdAt: '2026-09-01T10:00:00Z' },
-  { placa: 'RES001', tipo: 'RESIDENTE', dentro: true, createdAt: '2026-09-02T10:00:00Z' },
+  {
+    placa: 'OFI001',
+    tipo: 'OFICIAL',
+    tipoNombre: 'Oficial',
+    dentro: false,
+    createdAt: '2026-09-01T10:00:00Z',
+  },
+  {
+    placa: 'RES001',
+    tipo: 'RESIDENTE',
+    tipoNombre: 'Residente',
+    dentro: true,
+    createdAt: '2026-09-02T10:00:00Z',
+  },
 ];
 
 function pagina(content: VehiculoResumen[], total = content.length): PageResponse<VehiculoResumen> {
@@ -196,6 +208,7 @@ describe('VehiculosLista', () => {
       id: 9,
       placa: 'RES001',
       tipo: 'RESIDENTE',
+      tipoNombre: 'Residente',
       entrada: '2026-09-30T10:00:00Z',
       salida: '2026-09-30T10:12:00Z',
       duracionSegundos: 605,

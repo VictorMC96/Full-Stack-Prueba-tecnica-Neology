@@ -38,3 +38,8 @@
   border-color: var(--mat-sys-outline);
   color: var(--mat-sys-on-surface-variant);
 }
+
+.chip--neutro {
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface);
+}

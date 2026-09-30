@@ -10,14 +10,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import mx.neology.acceso.application.ConsultarVehiculos;
 import mx.neology.acceso.application.RegistrarVehiculo;
+import mx.neology.acceso.application.modelo.VehiculoConTipo;
+import mx.neology.acceso.domain.CodigoTipo;
+import mx.neology.acceso.domain.ModeloCobro;
 import mx.neology.acceso.domain.Placa;
 import mx.neology.acceso.domain.TipoVehiculo;
 import mx.neology.acceso.domain.Vehiculo;
 import mx.neology.acceso.domain.excepcion.PlacaInvalidaException;
+import mx.neology.acceso.domain.excepcion.TipoNoEncontradoException;
 import mx.neology.acceso.domain.excepcion.VehiculoYaRegistradoException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +34,31 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(VehiculosController.class)
 class VehiculosControllerTest {
 
+  private static final OffsetDateTime AHORA = OffsetDateTime.parse("2026-09-15T12:00:00-06:00");
+
   @Autowired MockMvc mvc;
   @MockitoBean RegistrarVehiculo registrarVehiculo;
   @MockitoBean ConsultarVehiculos consultarVehiculos;
 
+  private static VehiculoConTipo creado(String placa, String codigo, String nombre) {
+    TipoVehiculo tipo =
+        new TipoVehiculo(
+            new CodigoTipo(codigo),
+            nombre,
+            ModeloCobro.SIN_COBRO,
+            BigDecimal.ZERO,
+            false,
+            true,
+            AHORA,
+            AHORA);
+    return new VehiculoConTipo(
+        new Vehiculo(UUID.randomUUID(), Placa.de(placa), tipo.codigo(), null, AHORA, AHORA), tipo);
+  }
+
   @Test
   void altaDevuelve201ConLocationYCuerpo() throws Exception {
-    OffsetDateTime ahora = OffsetDateTime.parse("2026-09-15T12:00:00-06:00");
-    Vehiculo creado =
-        new Vehiculo(
-            UUID.randomUUID(), Placa.de("ABC123"), TipoVehiculo.OFICIAL, null, ahora, ahora);
-    when(registrarVehiculo.ejecutar("abc-123", TipoVehiculo.OFICIAL)).thenReturn(creado);
+    VehiculoConTipo creado = creado("ABC123", "OFICIAL", "Oficial");
+    when(registrarVehiculo.ejecutar("abc-123", "OFICIAL")).thenReturn(creado);
 
     mvc.perform(
             post("/neo/vehiculos/oficiales")
@@ -49,13 +68,46 @@ class VehiculosControllerTest {
         .andExpect(header().string("Location", "/neo/vehiculos/ABC123"))
         .andExpect(jsonPath("$.placa").value("ABC123"))
         .andExpect(jsonPath("$.tipo").value("OFICIAL"))
+        .andExpect(jsonPath("$.tipoNombre").value("Oficial"))
         .andExpect(jsonPath("$.dentro").value(false))
-        .andExpect(jsonPath("$.id").value(creado.id().toString()));
+        .andExpect(jsonPath("$.id").value(creado.vehiculo().id().toString()));
+  }
+
+  @Test
+  void altaGenericaUsaElTipoDelCuerpo() throws Exception {
+    when(registrarVehiculo.ejecutar("VIS001", "visitante"))
+        .thenReturn(creado("VIS001", "VISITANTE", "Visitante"));
+
+    mvc.perform(
+            post("/neo/vehiculos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"placa\":\"VIS001\",\"tipo\":\"visitante\"}"))
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location", "/neo/vehiculos/VIS001"))
+        .andExpect(jsonPath("$.tipo").value("VISITANTE"))
+        .andExpect(jsonPath("$.tipoNombre").value("Visitante"));
+
+    when(registrarVehiculo.ejecutar("VIS002", "ZZZ"))
+        .thenThrow(new TipoNoEncontradoException("ZZZ"));
+    mvc.perform(
+            post("/neo/vehiculos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"placa\":\"VIS002\",\"tipo\":\"ZZZ\"}"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("TIPO_NO_ENCONTRADO"));
+
+    mvc.perform(
+            post("/neo/vehiculos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"placa\":\"VIS002\"}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("VALIDACION"))
+        .andExpect(jsonPath("$.errors[0].field").value("tipo"));
   }
 
   @Test
   void conflictoDeNegocioSaleComoProblemDetail409() throws Exception {
-    when(registrarVehiculo.ejecutar(any(), eq(TipoVehiculo.RESIDENTE)))
+    when(registrarVehiculo.ejecutar(any(), eq("RESIDENTE")))
         .thenThrow(new VehiculoYaRegistradoException("OFI001"));
 
     mvc.perform(

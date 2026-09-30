@@ -38,14 +38,13 @@ class EstanciaTest {
 
   @Test
   void modelosDeVehiculoPeriodoYAcumulado() {
-    Vehiculo v = Vehiculo.nuevo(Placa.de("abc123"), TipoVehiculo.porDefecto(), ENTRADA);
-    assertThat(v.tipo()).isEqualTo(TipoVehiculo.NO_RESIDENTE);
+    CodigoTipo noResidente = CodigoTipo.de("NO_RESIDENTE");
+    Vehiculo v = Vehiculo.nuevo(Placa.de("abc123"), noResidente, ENTRADA);
+    assertThat(v.tipo()).isEqualTo(noResidente);
     assertThat(v.dentro()).isFalse();
-    assertThat(v.puedeReclasificarseA(TipoVehiculo.RESIDENTE)).isTrue();
-    assertThat(v.puedeReclasificarseA(TipoVehiculo.NO_RESIDENTE)).isFalse();
-    Vehiculo residente = v.reclasificar(TipoVehiculo.RESIDENTE, ENTRADA);
+    Vehiculo residente = v.reclasificar(CodigoTipo.de("RESIDENTE"), ENTRADA);
     assertThat(residente.id()).isEqualTo(v.id());
-    assertThat(residente.puedeReclasificarseA(TipoVehiculo.OFICIAL)).isFalse();
+    assertThat(residente.tipo().valor()).isEqualTo("RESIDENTE");
     UUID estancia = UUID.randomUUID();
     assertThat(v.conEstanciaAbierta(estancia, ENTRADA).dentro()).isTrue();
     assertThat(v.conEstanciaAbierta(estancia, ENTRADA).sinEstanciaAbierta(ENTRADA).dentro())

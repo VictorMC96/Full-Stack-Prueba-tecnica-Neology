@@ -55,3 +55,11 @@ h2 {
 .campo + .campo {
   margin-top: var(--app-space-2);
 }
+
+.aviso {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-2);
+  margin: 0 0 var(--app-space-2);
+  color: var(--app-color-destructive);
+}

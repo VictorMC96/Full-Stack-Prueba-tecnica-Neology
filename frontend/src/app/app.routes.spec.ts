@@ -24,7 +24,14 @@ describe('routes', () => {
 
   it('carga un componente con un solo h1 en cada ruta del manifiesto', async () => {
     const harness = await RouterTestingHarness.create();
-    for (const url of ['/vehiculos', '/vehiculos/ABC123', '/operacion', '/reporte', '/no-existe']) {
+    for (const url of [
+      '/vehiculos',
+      '/vehiculos/ABC123',
+      '/operacion',
+      '/reporte',
+      '/tipos-vehiculo',
+      '/no-existe',
+    ]) {
       await harness.navigateByUrl(url);
       await harness.fixture.whenStable();
       const h1 = harness.routeNativeElement?.querySelectorAll('h1') ?? [];

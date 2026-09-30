@@ -25,6 +25,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/reporte/reporte').then((m) => m.Reporte),
   },
   {
+    path: 'tipos-vehiculo',
+    title: 'Tipos de vehículo · Gestión de Acceso Vehicular',
+    loadComponent: () =>
+      import('./features/tipos-vehiculo/tipos-vehiculo').then((m) => m.TiposVehiculo),
+  },
+  {
     path: '**',
     title: 'Página no encontrada · Gestión de Acceso Vehicular',
     loadComponent: () =>

@@ -17,6 +17,7 @@ import { EstanciasApi } from '../../core/api/estancias-api';
 import { EstanciaResponse } from '../../core/modelos/modelos';
 import { ETIQUETA_COBRO, resumenSalida } from '../../shared/cobro/resumen-salida';
 import { DuracionPipe } from '../../shared/duracion.pipe';
+import { EstadoChip } from '../../shared/estado-chip/estado-chip';
 import { PlacaMayusculas } from '../../shared/placa/placa-mayusculas.directive';
 import { normalizarPlaca, placaValidator } from '../../shared/placa/placa.validator';
 
@@ -27,6 +28,7 @@ export type Movimiento = 'entrada' | 'salida';
   imports: [
     CurrencyPipe,
     DuracionPipe,
+    EstadoChip,
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,

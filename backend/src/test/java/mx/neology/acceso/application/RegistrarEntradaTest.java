@@ -14,7 +14,6 @@ import mx.neology.acceso.application.puerto.EstanciaRepositorio;
 import mx.neology.acceso.application.puerto.VehiculoRepositorio;
 import mx.neology.acceso.domain.MomentoCobro;
 import mx.neology.acceso.domain.Placa;
-import mx.neology.acceso.domain.TipoVehiculo;
 import mx.neology.acceso.domain.Vehiculo;
 import mx.neology.acceso.domain.excepcion.VehiculoYaDentroException;
 import mx.neology.acceso.soporte.TransaccionDirecta;
@@ -36,12 +35,17 @@ class RegistrarEntradaTest {
   void setUp() {
     casoDeUso =
         new RegistrarEntrada(
-            vehiculos, estancias, Fixtures.calculadora(), new TransaccionDirecta(), Fixtures.RELOJ);
+            vehiculos,
+            estancias,
+            Fixtures.catalogo(),
+            Fixtures.calculadora(),
+            new TransaccionDirecta(),
+            Fixtures.RELOJ);
   }
 
   @Test
   void registraEntradaDeUnVehiculoConocido() {
-    Vehiculo residente = Fixtures.vehiculo("RES001", TipoVehiculo.RESIDENTE);
+    Vehiculo residente = Fixtures.vehiculo("RES001", Fixtures.RESIDENTE);
     when(vehiculos.buscarPorPlacaParaActualizar(residente.placa()))
         .thenReturn(Optional.of(residente));
     when(estancias.guardar(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -51,7 +55,7 @@ class RegistrarEntradaTest {
 
     assertThat(resultado.estancia().entrada()).isEqualTo(Fixtures.AHORA);
     assertThat(resultado.estancia().abierta()).isTrue();
-    assertThat(resultado.tipo()).isEqualTo(TipoVehiculo.RESIDENTE);
+    assertThat(resultado.tipo()).isEqualTo(Fixtures.RESIDENTE);
     assertThat(resultado.momentoCobro()).isEqualTo(MomentoCobro.INFORME_MENSUAL);
     ArgumentCaptor<Vehiculo> actualizado = ArgumentCaptor.forClass(Vehiculo.class);
     verify(vehiculos).guardar(actualizado.capture());
@@ -59,14 +63,14 @@ class RegistrarEntradaTest {
   }
 
   @Test
-  void daDeAltaComoNoResidenteUnaPlacaDesconocida() {
+  void daDeAltaConElTipoProvisionalUnaPlacaDesconocida() {
     when(vehiculos.buscarPorPlacaParaActualizar(Placa.de("NUEVA1"))).thenReturn(Optional.empty());
     when(estancias.guardar(any())).thenAnswer(inv -> inv.getArgument(0));
     when(vehiculos.guardar(any())).thenAnswer(inv -> inv.getArgument(0));
 
     EstanciaDeVehiculo resultado = casoDeUso.ejecutar("nueva-1");
 
-    assertThat(resultado.tipo()).isEqualTo(TipoVehiculo.NO_RESIDENTE);
+    assertThat(resultado.tipo()).isEqualTo(Fixtures.NO_RESIDENTE);
     assertThat(resultado.momentoCobro()).isEqualTo(MomentoCobro.AL_SALIR);
     assertThat(resultado.placa().valor()).isEqualTo("NUEVA1");
   }
@@ -74,7 +78,7 @@ class RegistrarEntradaTest {
   @Test
   void rechazaEntradaSiElVehiculoYaEstaDentro() {
     Vehiculo dentro =
-        Fixtures.vehiculo("OFI002", TipoVehiculo.OFICIAL)
+        Fixtures.vehiculo("OFI002", Fixtures.OFICIAL)
             .conEstanciaAbierta(UUID.randomUUID(), Fixtures.AYER);
     when(vehiculos.buscarPorPlacaParaActualizar(dentro.placa())).thenReturn(Optional.of(dentro));
 

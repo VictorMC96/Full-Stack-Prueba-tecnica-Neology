@@ -4,6 +4,7 @@ import java.time.Duration;
 import mx.neology.acceso.application.modelo.DetalleVehiculo;
 import mx.neology.acceso.application.modelo.EstanciaDeVehiculo;
 import mx.neology.acceso.application.modelo.InformePagos;
+import mx.neology.acceso.application.modelo.VehiculoConTipo;
 import mx.neology.acceso.domain.Acumulado;
 import mx.neology.acceso.domain.Periodo;
 import mx.neology.acceso.domain.Vehiculo;
@@ -13,19 +14,24 @@ final class Respuestas {
 
   private Respuestas() {}
 
-  static VehiculoResponse vehiculo(Vehiculo v) {
-    return new VehiculoResponse(v.id(), v.placa().valor(), v.tipo(), v.dentro(), v.createdAt());
+  static VehiculoResponse vehiculo(VehiculoConTipo vt) {
+    Vehiculo v = vt.vehiculo();
+    return new VehiculoResponse(
+        v.id(), v.placa().valor(), v.tipo().valor(), vt.tipo().nombre(), v.dentro(), v.createdAt());
   }
 
-  static VehiculoResumen resumen(Vehiculo v) {
-    return new VehiculoResumen(v.placa().valor(), v.tipo(), v.dentro(), v.createdAt());
+  static VehiculoResumen resumen(VehiculoConTipo vt) {
+    Vehiculo v = vt.vehiculo();
+    return new VehiculoResumen(
+        v.placa().valor(), v.tipo().valor(), vt.tipo().nombre(), v.dentro(), v.createdAt());
   }
 
   static EstanciaResponse estancia(EstanciaDeVehiculo e) {
     return new EstanciaResponse(
         e.estancia().id(),
         e.placa().valor(),
-        e.tipo(),
+        e.tipo().codigo().valor(),
+        e.tipo().nombre(),
         e.estancia().entrada(),
         e.estancia().salida(),
         e.estancia().salida() == null
@@ -42,11 +48,12 @@ final class Respuestas {
   }
 
   static VehiculoDetalleResponse detalle(DetalleVehiculo d) {
-    Vehiculo v = d.vehiculo();
+    Vehiculo v = d.vehiculo().vehiculo();
     return new VehiculoDetalleResponse(
         v.id(),
         v.placa().valor(),
-        v.tipo(),
+        v.tipo().valor(),
+        d.vehiculo().tipo().nombre(),
         v.dentro(),
         d.estanciaAbierta().map(Respuestas::estancia).orElse(null),
         d.acumuladoPeriodo().map(Respuestas::acumulado).orElse(null),

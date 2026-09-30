@@ -1,48 +1,65 @@
 ---
 name: agregar-tipo-vehiculo
-description: Procedimiento para añadir un nuevo tipo de vehículo con su tarifa (por ejemplo "visitante" o "proveedor") usando el patrón Strategy, sin tocar los casos de uso. Úsala cuando pidan "agrega un tipo de vehículo", "nueva tarifa", "nuevo tipo de cobro" o "soporta vehículos de X".
+description: Procedimiento para añadir un nuevo tipo de vehículo con su tarifa (por ejemplo "visitante" o "proveedor") o un nuevo modelo de cobro, usando el catálogo administrable y el patrón Strategy por modelo de cobro. Úsala cuando pidan "agrega un tipo de vehículo", "nueva tarifa", "nuevo tipo de cobro" o "soporta vehículos de X".
 ---
 
 # Agregar un tipo de vehículo
 
 ## When to use
 
-- Se necesita un tipo de vehículo nuevo con su propia tarifa o su propio momento de cobro.
+- Se necesita un tipo de vehículo nuevo con su propia tarifa (caso habitual: **no se toca código**).
+- Se necesita un **modelo de cobro** nuevo (cuánto/cuándo se cobra) que ninguna estrategia cubre.
 
-## Steps
+## Cómo está montado
 
-1. **Enum** — añade la constante a `backend/src/main/java/mx/neology/acceso/domain/TipoVehiculo.java`
-   (`provisional = false` salvo que sea el tipo que reciben las placas sin alta).
+- Los tipos son **filas** de `tipos_vehiculo` (`codigo`, `nombre`, `modelo_cobro`, `tarifa_por_minuto`,
+  `provisional`, `integrado`), creadas en `V3__tipos_vehiculo.sql` y administrables por la API
+  `/neo/tipos-vehiculo` (y desde la pantalla de tipos en Angular). `vehiculos.tipo` es clave foránea
+  al código del tipo.
+- El patrón Strategy vive por **modelo de cobro**: `domain/ModeloCobro` (enum) ↔ una clase
+  `domain/cobro/*` que implementa `EstrategiaCobro` (`SinCobro`, `PorMinutoAlSalir`,
+  `PorMinutoAcumulado`). `CalculadoraCobro` las indexa por modelo y falla al arrancar si falta una.
+- Los integrados (`OFICIAL`, `RESIDENTE`, `NO_RESIDENTE`) no se eliminan ni cambian de modelo; solo
+  `NO_RESIDENTE` es provisional (lo reciben las placas que entran sin alta).
+
+## Steps — tipo nuevo (sin código)
+
+1. **Crear el tipo** por HTTP (o desde la UI de tipos):
+   `POST /neo/tipos-vehiculo` `{"codigo":"VISITANTE","nombre":"Visitante","modeloCobro":"POR_MINUTO_AL_SALIR","tarifaPorMinuto":0.30}`
+   → 201. Códigos: `^[A-Z][A-Z0-9_]{2,19}$` (se normaliza a mayúsculas); `SIN_COBRO` exige tarifa 0.00.
+2. **Usarlo**: `POST /neo/vehiculos` `{"placa":"VIS001","tipo":"VISITANTE"}`; entrada y salida
+   cobran con la tarifa del tipo y el momento de su modelo. Si el modelo es `POR_MINUTO_ACUMULADO`,
+   el tipo aparece en `GET /neo/residentes/pagos`.
+3. **Ajustar o retirar**: `PUT /neo/tipos-vehiculo/{codigo}` (nombre, modelo, tarifa) y
+   `DELETE /neo/tipos-vehiculo/{codigo}` (409 `TIPO_EN_USO` si tiene vehículos; 409
+   `TIPO_INTEGRADO` para los del enunciado).
+4. Si el tipo debe existir desde el arranque (precarga), añade una migración `V<n+1>__...sql` con el
+   `INSERT` en `tipos_vehiculo`; nunca edites V1–V3.
+
+## Steps — modelo de cobro nuevo (código)
+
+1. **Constante** — añade el valor a `backend/src/main/java/mx/neology/acceso/domain/ModeloCobro.java`.
 2. **Estrategia** — crea en `domain/cobro/` una clase que implemente `EstrategiaCobro`: devuelve el
-   tipo nuevo en `tipo()`, el `MomentoCobro` que corresponda en `momento()` y el importe en
-   `calcular(long minutos)` (usa `Importes.porMinuto`).
-3. **Tarifa** — añade la clave bajo `acceso.tarifas` en `backend/src/main/resources/application.yml`
-   con el nombre del tipo en minúsculas y guiones (`VISITANTE` → `visitante`, `NO_RESIDENTE` →
-   `no-residente`). `TarifasProperties` la resuelve sola con `porMinuto(tipo)`; no hay que tocarla.
-4. **Bean** — registra la estrategia en `infrastructure/config/CobroConfig.java` junto a las demás
-   (`new CobroVisitante(tarifas.porMinuto(TipoVehiculo.VISITANTE))`); `CalculadoraCobro` la recoge
-   sola y, si falta, el arranque falla con `IllegalStateException` nombrando el tipo.
-5. **Alta (opcional)** — si el tipo debe darse de alta a mano, añade `POST /neo/vehiculos/<plural>` en
-   `VehiculosController`, delegando en `RegistrarVehiculo`. Si solo entra por la puerta (como los no
-   residentes), no hace falta.
-6. **Pruebas** — amplía `CalculadoraCobroTest` con los casos del tipo nuevo (y `AltasIntegracionTest`
-   si añadiste endpoint).
-7. **Frontend** — añade el valor a `TipoVehiculo` en `frontend/src/app/core/modelos/modelos.ts`, su
-   texto y color en `shared/estado-chip/estado-chip.ts` y, si debe poder darse de alta desde la
-   interfaz, la opción en `features/operacion/alta-form.ts`.
-
-No hace falta migración: la columna `vehiculos.tipo` no tiene `CHECK`; el valor lo garantiza el enum.
+   modelo en `modelo()`, el `MomentoCobro` en `momento()`, el importe en
+   `calcular(BigDecimal tarifaPorMinuto, long minutos)` (usa `Importes.porMinuto`) y, si el modelo
+   restringe la tarifa, sobrescribe `validarTarifa`.
+3. **Bean** — regístrala en `infrastructure/config/CobroConfig.java`; `CalculadoraCobro` la recoge
+   sola y, si falta, el arranque falla con `IllegalStateException` nombrando el modelo.
+4. **Pruebas** — amplía `CalculadoraCobroTest` con los casos del modelo nuevo.
+5. **Frontend** — añade el valor a `ModeloCobro` en `frontend/src/app/core/modelos/modelos.ts` y su
+   etiqueta en el formulario de tipos.
 
 ## Verify
 
 ```bash
-grep -rnE "switch ?\(.*[Tt]ipo|== ?TipoVehiculo\." backend/src/main/java/mx/neology/acceso/application backend/src/main/java/mx/neology/acceso/web; test $? -eq 1   # expect: código 1 = ningún if/switch por tipo → la línea sale con 0
+grep -rnE "switch ?\(.*([Tt]ipo|[Mm]odelo)|== ?ModeloCobro\." backend/src/main/java/mx/neology/acceso/application backend/src/main/java/mx/neology/acceso/web; test $? -eq 1   # expect: código 1 = ningún if/switch por tipo o modelo → la línea sale con 0
 (cd backend && ./mvnw -q -B -ntp verify)   # expect: exit 0
 (cd frontend && npm run test:ci)           # expect: exit 0
 ```
 
 ## Do not
 
-- No añadas `if`/`switch` sobre `TipoVehiculo` en casos de uso, controladores ni adaptadores.
-- No escribas la tarifa como literal en el código: vive en `application.yml`.
-- No edites una migración ya confirmada (y no añadas un `CHECK` de tipos: obligaría a migrar por cada tipo).
+- No añadas `if`/`switch` sobre el tipo ni sobre `ModeloCobro` en casos de uso, controladores ni
+  adaptadores: pregúntale a `CalculadoraCobro`.
+- No escribas tarifas en código ni en `application.yml`: viven en `tipos_vehiculo`.
+- No edites una migración ya confirmada ni añadas un `CHECK` de tipos: los tipos son datos.

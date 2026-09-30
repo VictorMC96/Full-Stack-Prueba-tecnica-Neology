@@ -133,7 +133,7 @@ Repositorio en GitHub con:
 
 | # | Tema | Decisión |
 |---|------|----------|
-| 1 | Extensibilidad de tipos de vehículo | Patrón **Strategy** para el cálculo de tarifas: una estrategia por tipo, sin `if`/`switch` por tipo en los servicios. |
+| 1 | Extensibilidad de tipos de vehículo | Tipos como **catálogo administrable** desde la interfaz (nombre, modelo de cobro, tarifa) y patrón **Strategy** por modelo de cobro, sin `if`/`switch` por tipo en los servicios. |
 | 5 | Informe de pagos (`GET neo/residentes/pagos`) | Se entrega como **archivo Excel descargable** (`.xlsx`). |
 | 6 | Manejo de montos | Uso de **`BigDecimal`** para tarifas y cobros, con **2 decimales** (`setScale(2, RoundingMode.HALF_UP)`). |
 | 6b | Minutos parciales | **Todo minuto iniciado se cobra completo** (redondeo hacia arriba): un segundo de exceso ya suma un minuto. Ej.: 10 min 5 s → 11 minutos; 59 s → 1 minuto; 0 s → 0. La interfaz muestra la duración real en formato `mm:ss` junto a los minutos cobrados. |

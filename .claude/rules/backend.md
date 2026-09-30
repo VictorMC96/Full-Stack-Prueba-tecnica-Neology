@@ -16,8 +16,10 @@ paths:
   `@Transactional` en casos de uso.
 - `web` solo habla con casos de uso. Una entidad JPA nunca sale de `infrastructure.persistencia`;
   una respuesta HTTP siempre es un `record` de `web`.
-- Añadir un tipo de vehículo = constante en `TipoVehiculo` + una clase `EstrategiaCobro` + su bean +
-  su tarifa en `application.yml` + una migración que amplíe `ck_vehiculos_tipo`. Nada más cambia.
+- Los tipos de vehículo son datos (`tipos_vehiculo`, casos de uso `*TipoVehiculo`); no existe un enum
+  de tipos. Añadir un **modelo de cobro** = constante en `ModeloCobro` + una clase `EstrategiaCobro` +
+  su bean en `CobroConfig`. Nada más cambia; nunca un `if`/`switch` por tipo o por modelo fuera del
+  registro de estrategias.
 
 ## Persistencia
 

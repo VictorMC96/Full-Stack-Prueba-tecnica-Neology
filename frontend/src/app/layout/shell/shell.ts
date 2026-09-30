@@ -37,6 +37,7 @@ export class Shell {
     { ruta: '/vehiculos', etiqueta: 'Vehículos', icono: 'directions_car' },
     { ruta: '/operacion', etiqueta: 'Operación', icono: 'swap_horiz' },
     { ruta: '/reporte', etiqueta: 'Reporte', icono: 'receipt_long' },
+    { ruta: '/tipos-vehiculo', etiqueta: 'Tipos de vehículo', icono: 'category' },
   ];
 
   readonly esMovil = toSignal(

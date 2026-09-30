@@ -20,6 +20,7 @@ const ESTANCIA: EstanciaResponse = {
   id: 1,
   placa: 'RES001',
   tipo: 'RESIDENTE',
+  tipoNombre: 'Residente',
   entrada: '2026-09-10T08:00:00Z',
   salida: '2026-09-10T09:00:00Z',
   duracionSegundos: 3545,
@@ -33,6 +34,7 @@ const RESIDENTE: VehiculoDetalleResponse = {
   id: 1,
   placa: 'RES001',
   tipo: 'RESIDENTE',
+  tipoNombre: 'Residente',
   dentro: true,
   estanciaAbierta: {
     ...ESTANCIA,
@@ -122,6 +124,7 @@ describe('VehiculoDetalle', () => {
     detalle().flush({
       ...RESIDENTE,
       tipo: 'OFICIAL',
+      tipoNombre: 'Oficial',
       dentro: false,
       estanciaAbierta: null,
       acumuladoPeriodo: null,

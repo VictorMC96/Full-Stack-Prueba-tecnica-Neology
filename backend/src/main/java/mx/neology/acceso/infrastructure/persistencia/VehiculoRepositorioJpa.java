@@ -2,15 +2,17 @@ package mx.neology.acceso.infrastructure.persistencia;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import mx.neology.acceso.application.modelo.ConsultaPagina;
 import mx.neology.acceso.application.modelo.FilaInforme;
 import mx.neology.acceso.application.modelo.Pagina;
 import mx.neology.acceso.application.puerto.VehiculoRepositorio;
+import mx.neology.acceso.domain.CodigoTipo;
 import mx.neology.acceso.domain.Placa;
-import mx.neology.acceso.domain.TipoVehiculo;
 import mx.neology.acceso.domain.Vehiculo;
 import org.springframework.stereotype.Repository;
 
@@ -44,6 +46,19 @@ public class VehiculoRepositorioJpa implements VehiculoRepositorio {
   }
 
   @Override
+  public long contarPorTipo(CodigoTipo tipo) {
+    return repositorio.countByTipo(tipo.valor());
+  }
+
+  @Override
+  public Map<CodigoTipo, Long> conteoPorTipo() {
+    return repositorio.conteoPorTipo().stream()
+        .collect(
+            Collectors.toMap(
+                fila -> new CodigoTipo((String) fila[0]), fila -> ((Number) fila[1]).longValue()));
+  }
+
+  @Override
   public Pagina<Vehiculo> listar(String filtroPlaca, ConsultaPagina consulta) {
     return Paginas.aPagina(
         repositorio.findByPlacaContaining(filtroPlaca, Paginas.aPageable(consulta, "placa")),
@@ -51,11 +66,12 @@ public class VehiculoRepositorioJpa implements VehiculoRepositorio {
   }
 
   @Override
-  public List<FilaInforme> acumuladosPorTipo(Set<TipoVehiculo> tipos, UUID periodoId) {
+  public List<FilaInforme> acumuladosPorTipo(Set<CodigoTipo> tipos, UUID periodoId) {
     if (tipos.isEmpty()) {
       return List.of();
     }
-    return repositorio.acumuladosPorTipo(tipos, periodoId).stream()
+    List<String> codigos = tipos.stream().map(CodigoTipo::valor).toList();
+    return repositorio.acumuladosPorTipo(codigos, periodoId).stream()
         .map(
             fila ->
                 new FilaInforme(
@@ -69,7 +85,7 @@ public class VehiculoRepositorioJpa implements VehiculoRepositorio {
     return new Vehiculo(
         e.getId(),
         new Placa(e.getPlaca()),
-        e.getTipo(),
+        new CodigoTipo(e.getTipo()),
         e.getEstanciaAbiertaId(),
         e.getCreatedAt(),
         e.getUpdatedAt());
@@ -77,6 +93,11 @@ public class VehiculoRepositorioJpa implements VehiculoRepositorio {
 
   static VehiculoEntity aEntidad(Vehiculo v) {
     return new VehiculoEntity(
-        v.id(), v.placa().valor(), v.tipo(), v.estanciaAbiertaId(), v.createdAt(), v.updatedAt());
+        v.id(),
+        v.placa().valor(),
+        v.tipo().valor(),
+        v.estanciaAbiertaId(),
+        v.createdAt(),
+        v.updatedAt());
   }
 }

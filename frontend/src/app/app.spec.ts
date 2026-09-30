@@ -19,11 +19,11 @@ describe('App', () => {
     expect(elemento.querySelector('mat-toolbar')?.textContent).toContain(
       'Gestión de Acceso Vehicular',
     );
-    expect(elemento.querySelectorAll('nav a').length).toBe(3);
+    expect(elemento.querySelectorAll('nav a').length).toBe(4);
     const enlaces = Array.from(elemento.querySelectorAll('nav a [matListItemTitle]')).map((a) =>
       a.textContent?.trim(),
     );
-    expect(enlaces).toEqual(['Vehículos', 'Operación', 'Reporte']);
+    expect(enlaces).toEqual(['Vehículos', 'Operación', 'Reporte', 'Tipos de vehículo']);
     expect(elemento.querySelector('main')).not.toBeNull();
   });
 });

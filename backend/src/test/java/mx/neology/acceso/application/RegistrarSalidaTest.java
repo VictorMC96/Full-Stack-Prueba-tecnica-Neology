@@ -49,6 +49,7 @@ class RegistrarSalidaTest {
             estancias,
             periodos,
             acumulados,
+            Fixtures.catalogo(),
             Fixtures.calculadora(),
             new TransaccionDirecta(),
             Fixtures.RELOJ);
@@ -68,7 +69,7 @@ class RegistrarSalidaTest {
 
   @Test
   void noResidenteCobraAlSalirTodoMinutoIniciado() {
-    dentroDesdeHace("NOR001", TipoVehiculo.NO_RESIDENTE, 10 * 60 + 5);
+    dentroDesdeHace("NOR001", Fixtures.NO_RESIDENTE, 10 * 60 + 5);
 
     EstanciaDeVehiculo resultado = casoDeUso.ejecutar("nor001");
 
@@ -84,8 +85,20 @@ class RegistrarSalidaTest {
   }
 
   @Test
+  void unTipoCreadoDesdeLaApiCobraConSuPropiaTarifa() {
+    dentroDesdeHace("VIS001", Fixtures.VISITANTE, 3 * 60);
+
+    EstanciaDeVehiculo resultado = casoDeUso.ejecutar("VIS001");
+
+    assertThat(resultado.estancia().minutos()).isEqualTo(3);
+    assertThat(resultado.estancia().importe()).isEqualByComparingTo("0.90");
+    assertThat(resultado.tipo().nombre()).isEqualTo("Visitante");
+    assertThat(resultado.momentoCobro()).isEqualTo(MomentoCobro.AL_SALIR);
+  }
+
+  @Test
   void residenteAcumulaEnElPeriodoActivo() {
-    Vehiculo residente = dentroDesdeHace("RES001", TipoVehiculo.RESIDENTE, 11 * 60);
+    Vehiculo residente = dentroDesdeHace("RES001", Fixtures.RESIDENTE, 11 * 60);
     Acumulado previo =
         Acumulado.nuevo(residente.id(), periodo.id(), Fixtures.AYER)
             .sumar(210, new BigDecimal("10.50"), Fixtures.AYER);
@@ -105,7 +118,7 @@ class RegistrarSalidaTest {
 
   @Test
   void residenteSinAcumuladoCreaLaFila() {
-    Vehiculo residente = dentroDesdeHace("RES002", TipoVehiculo.RESIDENTE, 20 * 60);
+    Vehiculo residente = dentroDesdeHace("RES002", Fixtures.RESIDENTE, 20 * 60);
     when(acumulados.buscar(residente.id(), periodo.id())).thenReturn(Optional.empty());
     when(acumulados.guardar(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -120,7 +133,7 @@ class RegistrarSalidaTest {
 
   @Test
   void oficialSaleSinCobroNiAcumulado() {
-    dentroDesdeHace("OFI002", TipoVehiculo.OFICIAL, 480 * 60);
+    dentroDesdeHace("OFI002", Fixtures.OFICIAL, 480 * 60);
 
     EstanciaDeVehiculo resultado = casoDeUso.ejecutar("OFI002");
 
@@ -133,7 +146,7 @@ class RegistrarSalidaTest {
 
   @Test
   void rechazaSalidaSinEntrada() {
-    Vehiculo fuera = Fixtures.vehiculo("RES003", TipoVehiculo.RESIDENTE);
+    Vehiculo fuera = Fixtures.vehiculo("RES003", Fixtures.RESIDENTE);
     when(vehiculos.buscarPorPlacaParaActualizar(fuera.placa())).thenReturn(Optional.of(fuera));
 
     assertThatThrownBy(() -> casoDeUso.ejecutar("RES003"))

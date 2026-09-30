@@ -47,8 +47,9 @@ npm start                       # ng serve con proxy: /neo y /actuator → http:
 Abrir <http://localhost:4200>. Páginas: **Vehículos** (listado con filtro, paginación y ordenamiento,
 ordenado por defecto con los vehículos que están dentro primero y luego por placa; el chip de estado
 registra la entrada o la salida con un clic; detalle por placa), **Operación**
-(registrar movimiento de entrada o salida por placa, alta de vehículo con entrada inmediata opcional, iniciar mes) y **Reporte**
-(informe de pagos de residentes con descarga en Excel).
+(registrar movimiento de entrada o salida por placa, alta de vehículo con entrada inmediata opcional, iniciar mes),
+**Reporte** (informe de pagos de residentes con descarga en Excel) y **Tipos de vehículo** (catálogo
+administrable: crear tipos, editar tarifas, eliminar los no integrados).
 
 ## Cómo ejecutar las pruebas
 
@@ -91,10 +92,16 @@ abierta, de modo que el listado, el detalle y el reporte muestran datos desde el
 | GET | `/neo/vehiculos?placa=&page=&size=&sort=` | Listado paginado con filtro y ordenamiento (`sort` admite `dentro`, `placa`, `tipo`, `createdAt`; por defecto `dentro,desc`: vehículos dentro primero y luego por placa) |
 | GET | `/neo/vehiculos/{placa}` | Detalle: tipo, estado, acumulado del periodo |
 | GET | `/neo/vehiculos/{placa}/estancias` | Estancias del vehículo, paginadas |
+| POST | `/neo/vehiculos` | Alta genérica `{ "placa": "ABC123", "tipo": "VISITANTE" }` para cualquier tipo del catálogo |
+| GET | `/neo/tipos-vehiculo` | Catálogo de tipos (código, nombre, modelo de cobro, tarifa, vehículos) |
+| POST | `/neo/tipos-vehiculo` | Crear tipo `{ "codigo", "nombre", "modeloCobro", "tarifaPorMinuto" }` |
+| PUT | `/neo/tipos-vehiculo/{codigo}` | Editar nombre, modelo (solo tipos no integrados) y tarifa |
+| DELETE | `/neo/tipos-vehiculo/{codigo}` | Eliminar un tipo sin vehículos y no integrado |
 
 Los errores siguen RFC 7807 (`application/problem+json`) con un campo `code`
 (`VALIDACION`, `VEHICULO_YA_REGISTRADO`, `VEHICULO_YA_DENTRO`, `VEHICULO_NO_DENTRO`,
-`VEHICULO_NO_ENCONTRADO`, `PARAMETRO_INVALIDO`).
+`VEHICULO_NO_ENCONTRADO`, `PARAMETRO_INVALIDO`, `TIPO_NO_ENCONTRADO`, `TIPO_YA_REGISTRADO`, `TIPO_INTEGRADO`,
+`TIPO_EN_USO`).
 
 ## Reglas de negocio
 
@@ -110,22 +117,23 @@ Los errores siguen RFC 7807 (`application/problem+json`) con un campo `code`
 - Una placa desconocida que registra entrada se da de alta como no residente; puede reclasificarse después.
 - Iniciar mes cierra el periodo activo y abre otro: las estancias quedan archivadas en su periodo y los
   acumulados de residentes vuelven a cero. Las estancias abiertas cuentan en el periodo en que salen.
-- Las tarifas viven en `application.yml`; cada tipo de vehículo tiene su propia estrategia de cobro,
-  por lo que agregar un tipo nuevo no toca los servicios existentes.
+- Los tipos de vehículo son un **catálogo administrable** (tabla `tipos_vehiculo`): cada tipo tiene un
+  nombre, un **modelo de cobro** y una tarifa por minuto. Los tres del enunciado vienen sembrados como
+  *integrados* (se puede editar su tarifa, no eliminarlos); «No residente» es el tipo *provisional* que
+  reciben las placas sin alta.
 
 ### Cómo agregar un tipo de vehículo
 
-Ejemplo, un tipo «visitante» que paga $0.30 por minuto al salir:
+Desde la página **Tipos de vehículo** (o con `POST /neo/tipos-vehiculo`): código, nombre, modelo de
+cobro y tarifa. Por ejemplo, «Visitante» con modelo *Por minuto al salir* y $0.30: en cuanto se crea
+aparece en el selector de alta y sus estancias se cobran con esa tarifa, sin tocar código ni
+reiniciar nada. No hay seguridad en v1 (ver «Mejoras futuras»), así que cualquier operador puede
+hacerlo.
 
-1. Constante `VISITANTE` en `TipoVehiculo` (dominio).
-2. Clase `CobroVisitante implements EstrategiaCobro` en `domain/cobro` (tipo, momento de cobro e importe).
-3. Línea `visitante: 0.30` bajo `acceso.tarifas` en `application.yml` y el bean en `CobroConfig`.
-4. Etiqueta del tipo en el chip de Angular (`shared/estado-chip`) y, si debe darse de alta desde la
-   interfaz, la opción en el formulario de alta y su ruta `POST /neo/vehiculos/visitantes`.
-
-Ningún caso de uso, repositorio ni migración cambia: la calculadora registra las estrategias por tipo y
-falla al arrancar si a un tipo le falta estrategia o tarifa. El procedimiento completo está en
-[.claude/skills/agregar-tipo-vehiculo](.claude/skills/agregar-tipo-vehiculo/SKILL.md).
+Los **modelos de cobro** sí viven en código, con el patrón Strategy (`EstrategiaCobro` por modelo:
+`SIN_COBRO`, `POR_MINUTO_AL_SALIR`, `POR_MINUTO_ACUMULADO`); agregar uno nuevo (p. ej. tarifa plana por
+día) es una constante, una clase y un bean, y la calculadora falla al arrancar si falta alguno. El
+procedimiento está en [.claude/skills/agregar-tipo-vehiculo](.claude/skills/agregar-tipo-vehiculo/SKILL.md).
 
 ## Estructura
 
@@ -147,11 +155,13 @@ blueprints/, .specify/, CLAUDE.md   Metodología: blueprint de arquitectura y Sp
 | Iniciar nuevo mes (confirmación) | [05-iniciar-mes-confirmacion.png](docs/capturas/05-iniciar-mes-confirmacion.png) |
 | Reporte de residentes con descarga en Excel | [06-reporte-residentes.png](docs/capturas/06-reporte-residentes.png) |
 | Manejo de errores RFC 7807 (salida sin entrada) | [07-error-salida-sin-entrada.png](docs/capturas/07-error-salida-sin-entrada.png) |
+| Tipos de vehículo (catálogo administrable) | [08-tipos-vehiculo.png](docs/capturas/08-tipos-vehiculo.png) |
 
 ![Listado de vehículos](docs/capturas/01-listado-vehiculos.png)
 
 ## Mejoras futuras
 
-Autenticación y roles (Spring Security + JWT), bitácora de auditoría, base de datos persistente,
+Autenticación y roles (Spring Security + JWT; hoy cualquier operador puede administrar tipos y tarifas),
+bitácora de auditoría, base de datos persistente,
 Docker Compose, tema oscuro y pruebas E2E con Playwright. Se dejaron fuera a propósito por el alcance
 de la prueba; ver [docs/decisiones.md](docs/decisiones.md).

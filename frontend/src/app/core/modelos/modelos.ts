@@ -1,11 +1,32 @@
-export type TipoVehiculo = 'OFICIAL' | 'RESIDENTE' | 'NO_RESIDENTE';
+/** Código de tipo de vehículo (p. ej. `RESIDENTE`); los tipos se administran desde la interfaz. */
+export type TipoVehiculo = string;
 export type MomentoCobro = 'NINGUNO' | 'INFORME_MENSUAL' | 'AL_SALIR';
-export type TipoAlta = Extract<TipoVehiculo, 'OFICIAL' | 'RESIDENTE'>;
+export type ModeloCobro = 'SIN_COBRO' | 'POR_MINUTO_AL_SALIR' | 'POR_MINUTO_ACUMULADO';
+
+export interface TipoVehiculoResponse {
+  codigo: string;
+  nombre: string;
+  modeloCobro: ModeloCobro;
+  tarifaPorMinuto: number;
+  provisional: boolean;
+  integrado: boolean;
+  vehiculos: number;
+}
+
+export interface TipoVehiculoAlta {
+  codigo: string;
+  nombre: string;
+  modeloCobro: ModeloCobro;
+  tarifaPorMinuto: number;
+}
+
+export type TipoVehiculoEdicion = Omit<TipoVehiculoAlta, 'codigo'>;
 
 export interface VehiculoResponse {
   id: number;
   placa: string;
   tipo: TipoVehiculo;
+  tipoNombre: string;
   dentro: boolean;
   createdAt: string;
 }
@@ -13,6 +34,7 @@ export interface VehiculoResponse {
 export interface VehiculoResumen {
   placa: string;
   tipo: TipoVehiculo;
+  tipoNombre: string;
   dentro: boolean;
   createdAt: string;
 }
@@ -21,6 +43,7 @@ export interface EstanciaResponse {
   id: number;
   placa: string;
   tipo: TipoVehiculo;
+  tipoNombre: string;
   entrada: string;
   salida: string | null;
   /** Segundos reales entre entrada y salida; null si la estancia sigue abierta. */
@@ -41,6 +64,7 @@ export interface VehiculoDetalleResponse {
   id: number;
   placa: string;
   tipo: TipoVehiculo;
+  tipoNombre: string;
   dentro: boolean;
   estanciaAbierta: EstanciaResponse | null;
   acumuladoPeriodo: AcumuladoResponse | null;

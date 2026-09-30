@@ -17,12 +17,6 @@ export interface ConsultaVehiculos {
   placa?: string;
 }
 
-const RUTA_ALTA: Record<TipoVehiculo, string> = {
-  OFICIAL: 'oficiales',
-  RESIDENTE: 'residentes',
-  NO_RESIDENTE: 'no-residentes',
-};
-
 @Injectable({ providedIn: 'root' })
 export class VehiculosApi {
   private readonly http = inject(HttpClient);
@@ -54,7 +48,8 @@ export class VehiculosApi {
     );
   }
 
+  /** Alta genérica: el tipo es el código administrado en `/neo/tipos-vehiculo`. */
   alta(tipo: TipoVehiculo, placa: string): Observable<VehiculoResponse> {
-    return this.http.post<VehiculoResponse>(`/neo/vehiculos/${RUTA_ALTA[tipo]}`, { placa });
+    return this.http.post<VehiculoResponse>('/neo/vehiculos', { placa, tipo });
   }
 }

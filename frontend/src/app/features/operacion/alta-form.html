@@ -4,7 +4,9 @@
   </mat-card-header>
   <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
     <mat-card-content>
-      <p class="descripcion">Los oficiales no pagan; los residentes acumulan al informe mensual.</p>
+      <p class="descripcion">
+        El tipo define el modelo de cobro; se administran en «Tipos de vehículo».
+      </p>
       <mat-form-field appearance="outline" class="campo">
         <mat-label>Placa</mat-label>
         <input
@@ -26,11 +28,20 @@
       <mat-form-field appearance="outline" class="campo">
         <mat-label>Tipo de vehículo</mat-label>
         <mat-select formControlName="tipo">
-          @for (opcion of opciones; track opcion.valor) {
-            <mat-option [value]="opcion.valor">{{ opcion.etiqueta }}</mat-option>
+          @for (tipo of tipos(); track tipo.codigo) {
+            <mat-option [value]="tipo.codigo">{{ tipo.nombre }}</mat-option>
           }
         </mat-select>
+        @if (cargandoTipos()) {
+          <mat-hint>Cargando tipos…</mat-hint>
+        }
       </mat-form-field>
+      @if (errorTipos()) {
+        <p class="aviso" role="alert">
+          No se pudieron cargar los tipos.
+          <button matButton type="button" (click)="cargarTipos()">Reintentar</button>
+        </p>
+      }
       <mat-slide-toggle formControlName="registrarEntrada" class="opcion">
         Registrar entrada ahora
       </mat-slide-toggle>

@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.Map;
 import mx.neology.acceso.domain.excepcion.ExcepcionDominio;
 import mx.neology.acceso.domain.excepcion.ParametroInvalidoException;
-import mx.neology.acceso.domain.excepcion.PlacaInvalidaException;
+import mx.neology.acceso.domain.excepcion.TipoEnUsoException;
+import mx.neology.acceso.domain.excepcion.TipoIntegradoException;
+import mx.neology.acceso.domain.excepcion.TipoNoEncontradoException;
+import mx.neology.acceso.domain.excepcion.TipoYaRegistradoException;
+import mx.neology.acceso.domain.excepcion.ValidacionException;
 import mx.neology.acceso.domain.excepcion.VehiculoNoDentroException;
 import mx.neology.acceso.domain.excepcion.VehiculoNoEncontradoException;
 import mx.neology.acceso.domain.excepcion.VehiculoYaDentroException;
@@ -34,21 +38,25 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
   static final String ERRORS = "errors";
 
   private static final Map<String, HttpStatus> ESTADOS =
-      Map.of(
-          PlacaInvalidaException.CODIGO, HttpStatus.BAD_REQUEST,
-          ParametroInvalidoException.CODIGO, HttpStatus.BAD_REQUEST,
-          VehiculoNoEncontradoException.CODIGO, HttpStatus.NOT_FOUND,
-          VehiculoYaRegistradoException.CODIGO, HttpStatus.CONFLICT,
-          VehiculoYaDentroException.CODIGO, HttpStatus.CONFLICT,
-          VehiculoNoDentroException.CODIGO, HttpStatus.CONFLICT);
+      Map.ofEntries(
+          Map.entry(ValidacionException.CODIGO, HttpStatus.BAD_REQUEST),
+          Map.entry(ParametroInvalidoException.CODIGO, HttpStatus.BAD_REQUEST),
+          Map.entry(VehiculoNoEncontradoException.CODIGO, HttpStatus.NOT_FOUND),
+          Map.entry(TipoNoEncontradoException.CODIGO, HttpStatus.NOT_FOUND),
+          Map.entry(VehiculoYaRegistradoException.CODIGO, HttpStatus.CONFLICT),
+          Map.entry(VehiculoYaDentroException.CODIGO, HttpStatus.CONFLICT),
+          Map.entry(VehiculoNoDentroException.CODIGO, HttpStatus.CONFLICT),
+          Map.entry(TipoYaRegistradoException.CODIGO, HttpStatus.CONFLICT),
+          Map.entry(TipoIntegradoException.CODIGO, HttpStatus.CONFLICT),
+          Map.entry(TipoEnUsoException.CODIGO, HttpStatus.CONFLICT));
 
   @ExceptionHandler(ExcepcionDominio.class)
   public ProblemDetail dominio(ExcepcionDominio ex, HttpServletRequest peticion) {
     HttpStatus estado = ESTADOS.getOrDefault(ex.codigo(), HttpStatus.BAD_REQUEST);
     ProblemDetail problema = ProblemDetail.forStatusAndDetail(estado, ex.getMessage());
     problema.setProperty(CODE, ex.codigo());
-    if (ex instanceof PlacaInvalidaException) {
-      problema.setProperty(ERRORS, List.of(error("placa", ex.getMessage())));
+    if (ex instanceof ValidacionException validacion) {
+      problema.setProperty(ERRORS, List.of(error(validacion.campo(), ex.getMessage())));
     }
     log.warn(
         "evento=error_negocio code={} status={} ruta={} detalle={}",
@@ -77,7 +85,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
       WebRequest request) {
     ProblemDetail problema =
         ProblemDetail.forStatusAndDetail(status, "La petición contiene campos inválidos");
-    problema.setProperty(CODE, PlacaInvalidaException.CODIGO);
+    problema.setProperty(CODE, ValidacionException.CODIGO);
     problema.setProperty(
         ERRORS,
         ex.getBindingResult().getFieldErrors().stream()
@@ -95,7 +103,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
       WebRequest request) {
     ProblemDetail problema =
         ProblemDetail.forStatusAndDetail(status, "El cuerpo de la petición no es válido");
-    problema.setProperty(CODE, PlacaInvalidaException.CODIGO);
+    problema.setProperty(CODE, ValidacionException.CODIGO);
     problema.setProperty(ERRORS, List.of());
     log.warn("evento=error_cuerpo detalle={}", ex.getMessage());
     return handleExceptionInternal(ex, problema, headers, status, request);

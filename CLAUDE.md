@@ -60,7 +60,8 @@ ruta relativa `/neo/...`) → proxy de `ng serve` → `backend/.../web/*Controll
 |---|---|
 | Contrato de negocio | `Requerimientos.md` (enunciado + "Decisiones técnicas") |
 | Esquema y datos iniciales | `backend/src/main/resources/db/migration/V*.sql` — Hibernate solo valida |
-| Tarifas y zona horaria | `backend/src/main/resources/application.yml` → `acceso.*` |
+| Zona horaria | `backend/src/main/resources/application.yml` → `acceso.zona-horaria` |
+| Tipos de vehículo y tarifas | Tabla `tipos_vehiculo` (migración `V3`), administrable desde `/tipos-vehiculo` y `/neo/tipos-vehiculo` |
 | Cálculo de cobro | `domain/cobro/` — una `EstrategiaCobro` por tipo + `CalculadoraCobro` |
 | Normalización de placa | `domain/Placa.java` y `frontend/src/app/shared/placa/placa.validator.ts` (misma regla) |
 | Códigos de error | `domain/excepcion/` + `web/ApiExceptionHandler.java` |

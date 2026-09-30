@@ -1,9 +1,9 @@
 import { Directive, inject } from '@angular/core';
 import { NgControl } from '@angular/forms';
 
-/** Pasa a mayúsculas el valor del campo de placa mientras se escribe. */
+/** Pasa a mayúsculas el valor del campo (placa o código) mientras se escribe. */
 @Directive({
-  selector: 'input[appPlacaMayusculas]',
+  selector: 'input[appPlacaMayusculas], input[appMayusculas]',
   host: { '(input)': 'alEscribir($event)' },
 })
 export class PlacaMayusculas {

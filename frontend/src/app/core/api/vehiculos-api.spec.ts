@@ -45,13 +45,11 @@ describe('VehiculosApi', () => {
     req.flush({ content: [], page: 2, size: 10, totalElements: 0, totalPages: 0 });
   });
 
-  it('da de alta en la ruta del tipo', () => {
+  it('da de alta con la ruta genérica enviando placa y tipo', () => {
     api.alta('OFICIAL', 'OFI001').subscribe();
-    const oficial = httpTesting.expectOne('/neo/vehiculos/oficiales');
-    expect(oficial.request.method).toBe('POST');
-    expect(oficial.request.body).toEqual({ placa: 'OFI001' });
-    oficial.flush({});
-    api.alta('RESIDENTE', 'RES001').subscribe();
-    httpTesting.expectOne('/neo/vehiculos/residentes').flush({});
+    const req = httpTesting.expectOne('/neo/vehiculos');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ placa: 'OFI001', tipo: 'OFICIAL' });
+    req.flush({});
   });
 });
